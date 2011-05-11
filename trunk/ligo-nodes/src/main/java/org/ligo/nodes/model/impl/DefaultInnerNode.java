@@ -271,6 +271,16 @@ public class DefaultInnerNode implements InnerNode {
 		return new DefaultInnerNode(clones);
 	}
 
+	/**{@inheritDoc}*/
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append("[");
+		for (Edge e : edges) b.append(e+" ");
+		b.append("]");
+		return b.toString();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -287,7 +297,7 @@ public class DefaultInnerNode implements InnerNode {
 			return false;
 		if (!(obj instanceof DefaultInnerNode))
 			return false;
-		DefaultInnerNode other = (DefaultInnerNode) obj;
+		DefaultInnerNode other = (DefaultInnerNode) obj;		
 		if (edges == null) {
 			if (other.edges != null)
 				return false;
