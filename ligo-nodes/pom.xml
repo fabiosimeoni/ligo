@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>ligo-parent</artifactId>
+    <groupId>org.ligo</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.ligo</groupId>
+  <artifactId>ligo-nodes</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Ligo Nodes</name>
+  <description>Default Implementation of Ligo API</description>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.ligo</groupId>
+  		<artifactId>ligo-api</artifactId>
+  		<version>${ligo.version}</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+
+</project>
