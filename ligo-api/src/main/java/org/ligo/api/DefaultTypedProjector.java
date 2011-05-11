@@ -5,6 +5,8 @@ package org.ligo.api;
 
 import javax.inject.Inject;
 
+import org.ligo.api.configuration.LigoContext;
+
 
 /**
  * @author Fabio Simeoni
@@ -12,12 +14,18 @@ import javax.inject.Inject;
  */
 public class DefaultTypedProjector<IN,OUT> implements TypedProjector<IN,OUT> {
 
-	DefaultProjector<IN,OUT> inner;
+	Projector inner;
+	
+	@Inject
+	public DefaultTypedProjector(Projector p) {
+		inner = p;
+	}
+	
 	/**
 	 * 
 	 */
 	@Inject
-	public DefaultTypedProjector(ProjectionContext<IN,OUT> ctxt) {
+	public DefaultTypedProjector(LigoContext<IN,OUT> ctxt) {
 		inner = new DefaultProjector<IN,OUT>(ctxt);
 	}
 	
@@ -29,5 +37,11 @@ public class DefaultTypedProjector<IN,OUT> implements TypedProjector<IN,OUT> {
 	@Override
 	public <T> T project(Class<T> c, IN m) {
 		return inner.project(c, m);
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public String toString() {
+		return inner.toString();
 	}
 }
