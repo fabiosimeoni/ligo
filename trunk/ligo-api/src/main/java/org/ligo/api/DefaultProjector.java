@@ -3,7 +3,11 @@
  */
 package org.ligo.api;
 
+import static java.lang.String.*;
+
 import javax.inject.Inject;
+
+import org.ligo.api.configuration.LigoContext;
 
 /**
  * @author Fabio Simeoni
@@ -11,13 +15,13 @@ import javax.inject.Inject;
  */
 public class DefaultProjector<MODEL,MATCH> implements Projector {
 
-	ProjectionContext<MODEL, MATCH> context;
+	LigoContext<MODEL, MATCH> context;
 	
 	/**
 	 * 
 	 */
 	@Inject
-	public DefaultProjector(ProjectionContext<MODEL, MATCH> c) {
+	public DefaultProjector(LigoContext<MODEL, MATCH> c) {
 		context=c;
 	}
 	
@@ -47,5 +51,11 @@ public class DefaultProjector<MODEL,MATCH> implements Projector {
 		
 		return context.binder().bind(c,match);
 		
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public String toString() {
+		return format("(%1s)",context);
 	}
 }

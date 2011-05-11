@@ -12,8 +12,8 @@ import org.ligo.api.Binder;
 import org.ligo.api.DefaultProjector;
 import org.ligo.api.Pattern;
 import org.ligo.api.PatternFactory;
-import org.ligo.api.ProjectionContext;
 import org.ligo.api.Projector;
+import org.ligo.api.configuration.LigoContext;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
@@ -70,10 +70,10 @@ public class ProjectionTests {
 		return factory;
 	}
 	
-	ProjectionContext<VoidModel,VoidModel> 
+	LigoContext<VoidModel,VoidModel> 
 		mockContext(final Binder<VoidModel> b, final PatternFactory<VoidModel,VoidModel> f) {
 		
-		return new ProjectionContext<VoidModel,VoidModel>() {
+		return new LigoContext<VoidModel,VoidModel>() {
 
 			public Binder<VoidModel> binder() {
 				return b;
