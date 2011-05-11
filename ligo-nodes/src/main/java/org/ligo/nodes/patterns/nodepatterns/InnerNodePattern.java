@@ -25,21 +25,21 @@ public class InnerNodePattern extends NodePattern {
 	List<EdgePattern> patterns;
 	
 	public InnerNodePattern() {
-		this(new LinkedList<EdgePattern>());
+		patterns = unmodifiableList(new LinkedList<EdgePattern>());
 	}
 	
 	/**
 	 * 
 	 */
 	public InnerNodePattern(List<EdgePattern> ps) {
-		patterns=ps;
+		patterns=unmodifiableList(new LinkedList<EdgePattern>(ps));
 	}
 	
 	/**
 	 * @return the patterns
 	 */
 	public List<EdgePattern> patterns() {
-		return unmodifiableList(patterns);
+		return patterns;
 	}
 	
 	/**{@inheritDoc}*/
@@ -52,7 +52,7 @@ public class InnerNodePattern extends NodePattern {
 		InnerNode node = InnerNode.class.cast(n); 
 		
 		//start assuming all edges are unmatched
-		List<Edge> unmatched = node.edges();
+		List<Edge> unmatched = new LinkedList<Edge>(node.edges());
 		
 		for (EdgePattern ep : patterns) {
 			

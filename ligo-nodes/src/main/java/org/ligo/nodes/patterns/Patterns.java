@@ -9,7 +9,9 @@ import static org.ligo.nodes.model.impl.Nodes.*;
 import javax.xml.namespace.QName;
 
 import org.ligo.nodes.patterns.constraints.AnyValue;
+import org.ligo.nodes.patterns.edgepatterns.ManyEdges;
 import org.ligo.nodes.patterns.edgepatterns.OneEdge;
+import org.ligo.nodes.patterns.edgepatterns.OptionalEdge;
 import org.ligo.nodes.patterns.nodepatterns.AnyNode;
 import org.ligo.nodes.patterns.nodepatterns.InnerNodePattern;
 import org.ligo.nodes.patterns.nodepatterns.IntegerLeaf;
@@ -42,6 +44,22 @@ public class Patterns {
 	
 	public static OneEdge one(QName l, NodePattern p) {
 		return new OneEdge(l,p);
+	}
+	
+	public static OptionalEdge opt(String l,NodePattern p) {
+		return new OptionalEdge(lbl(l),p);
+	}
+	
+	public static OptionalEdge opt(QName l, NodePattern p) {
+		return new OptionalEdge(l,p);
+	}
+	
+	public static ManyEdges many(String l,NodePattern p) {
+		return new ManyEdges(lbl(l),p);
+	}
+	
+	public static ManyEdges many(QName l, NodePattern p) {
+		return new ManyEdges(l,p);
 	}
 	
 	public static StringLeaf string = new StringLeaf(AnyValue.INSTANCE);
