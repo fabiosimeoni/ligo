@@ -3,7 +3,9 @@
  */
 package org.ligo.api;
 
-import java.lang.annotation.Annotation;
+import java.util.List;
+
+import org.ligo.api.types.api.TypeKey;
 
 /**
  * @author Fabio Simeoni
@@ -11,5 +13,5 @@ import java.lang.annotation.Annotation;
  */
 public interface ObjectFactory {
 
-	<T> T create(Class<T> type, Annotation ... annotations);
+	<T> T create(TypeKey<T> key, List<Object> args);
 }
