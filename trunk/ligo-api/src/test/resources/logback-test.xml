@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-  <appender name="GCORE" class="ch.qos.logback.core.ConsoleAppender">
+
+
+   <appender name="LIGO" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%-5p %c{1} [%t,%C{1},%M:%L] %m%n</pattern>
+      <pattern>[LIGO] %-5p %c{1} [%t,%C{1},%M:%L] %m%n</pattern>
     </encoder>
   </appender>
-    <appender name="TEST" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>[T] %-5p %c{1} [%t,%C{1},%M:%L] %m%n</pattern>
-    </encoder>
-  </appender>
+
   <logger name="org.ligo" level="TRACE"/>
+  
   <root level="WARN">
-    <appender-ref ref="GCORE"/>
+    <appender-ref ref="LIGO"/>
   </root>
+
 </configuration>
