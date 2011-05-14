@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.inject.Qualifier;
 
-import org.ligo.api.ObjectFactory;
 import org.ligo.api.Project;
 import org.ligo.api.types.api.ObjectTypeDef;
 import org.ligo.api.types.api.TypeDef;
@@ -30,16 +29,14 @@ import org.ligo.api.types.api.TypeKey;
 public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements ObjectTypeDef<TYPE> {
 
 	private Map<String,TypeDef<?>> parts = new HashMap<String, TypeDef<?>>();
-	private ObjectFactory factory;
 	private TypeDefFactory typeFactory;
 	private ConstructorDef<TYPE> constructorDef;
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
 	
-	public DefaultObjectTypeDef(TypeKey<TYPE> key, TypeDefFactory tf, ObjectFactory of) {
+	public DefaultObjectTypeDef(TypeKey<TYPE> key, TypeDefFactory tf) {
 		
 		super(key);
 		typeFactory=tf;
-		factory=of;
 		
 		build();
 	}
@@ -59,7 +56,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			for (String name : constructorDef.names())
 				vals.add(parts.get(name).newInstance(values.get(name)));
 				
-			TYPE object = factory.getInstance(key(),vals);
+			TYPE object = typeFactory.getInstance(key(),vals);
 		
 			for (MethodDef def : methodDefs) {
 				vals.clear();
@@ -119,7 +116,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 				constructorDef = new ConstructorDef<TYPE>(key().type().getDeclaredConstructor(),EMPTY_LIST);
 			}
 			catch(Throwable e) {
-				throw new RuntimeException(format("%1 has no nullary or annotated constructors",key().type()));
+				throw new RuntimeException(format("%1s has no nullary or annotated constructors",key().type()));
 			}
 	}
 	
@@ -132,33 +129,16 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 				
 				Class<?>[] params = m.getParameterTypes();
 				List<String> boundNames = addAttributes(m.getParameterAnnotations(),params);
-				if (boundNames.isEmpty()) {
-					
-					//try to find annotations in superclass
-					Class<?> original = m.getDeclaringClass();
-					if (original!=Object.class && !type.equals(original)) {
-						System.out.println("loking for annotations of "+m);
+				if (boundNames.isEmpty())
+					//look in interfaces
+					for (Class<?> i : type.getInterfaces())
 						try {
-							Method overridden = original.getMethod(m.getName(),params);	
+							Method overridden = i.getMethod(m.getName(),params);
 							boundNames = addAttributes(overridden.getParameterAnnotations(),params);
 						}
-						catch(Exception e) {
-							throw new RuntimeException(e);
-						}
-						
+						catch(NoSuchMethodException e) {
+							continue;
 					}
-					
-					//try to find annotations in interface
-					if (boundNames.isEmpty())
-						for (Class<?> i : type.getInterfaces())
-							try {
-								Method overridden = i.getMethod(m.getName(),params);
-								boundNames = addAttributes(overridden.getParameterAnnotations(),params);
-							}
-							catch(NoSuchMethodException e) {
-								continue;
-					}
-				}
 				
 				if (!boundNames.isEmpty())
 					methodDefs.add(new MethodDef(m,boundNames));
