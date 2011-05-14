@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
 import org.ligo.api.types.impl.DefaultTypeDefFactory;
+import org.ligo.api.types.impl.SimpleObjectFactory;
 
 /**
  * @author Fabio Simeoni
@@ -18,11 +19,11 @@ public class TypeDefFactoryTests {
 	public void generate() {
 		
 		
-		TypeDefFactory factory = new DefaultTypeDefFactory();
+		SimpleObjectFactory ofactory = new SimpleObjectFactory();
+		ofactory.register(ManagedDep.class,DepImpl.class);
+		TypeDefFactory factory = new DefaultTypeDefFactory(ofactory);
 		
-		factory.register(ManagedDep.class,DepImpl.class);
-		
-		TypeDef<Managed> def = factory.generate(Managed.class);
+		TypeDef<Managed> def = factory.getTypeDef(Managed.class);
 		
 		System.out.println(def);
 	}

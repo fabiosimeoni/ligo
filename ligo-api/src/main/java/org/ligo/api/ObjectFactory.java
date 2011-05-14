@@ -13,5 +13,6 @@ import org.ligo.api.types.api.TypeKey;
  */
 public interface ObjectFactory {
 
-	<T> T create(TypeKey<T> key, List<Object> args);
+	<T> T getInstance(TypeKey<T> key, List<Object> args);
+	<T> Class<? extends T> getType(TypeKey<T> key);
 }
