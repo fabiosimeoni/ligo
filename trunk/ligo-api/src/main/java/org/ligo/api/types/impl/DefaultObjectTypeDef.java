@@ -4,15 +4,11 @@
 package org.ligo.api.types.impl;
 
 import static java.lang.String.*;
-import static java.util.Arrays.*;
 import static java.util.Collections.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +59,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			for (String name : constructorDef.names())
 				vals.add(parts.get(name).newInstance(values.get(name)));
 				
-			TYPE object = factory.create(key(),vals);
+			TYPE object = factory.getInstance(key(),vals);
 		
 			for (MethodDef def : methodDefs) {
 				vals.clear();
@@ -186,7 +182,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 					else {	
 						boundNames.add(project.value());
 						@SuppressWarnings("unchecked") //must create a raw type for this key
-						TypeDef<?> def = typeFactory.generate(new TypeKey(parameters[i],getQualifier(annotationLists[i])));
+						TypeDef<?> def = typeFactory.getTypeDef(new TypeKey(parameters[i],getQualifier(annotationLists[i])));
 						parts.put(project.value(),def);
 					}
 					break;

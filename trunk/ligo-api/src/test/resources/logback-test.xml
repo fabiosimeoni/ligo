@@ -5,13 +5,11 @@
 
    <appender name="LIGO" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>[LIGO] %-5p %c{1} [%t,%C{1},%M:%L] %m%n</pattern>
+      <pattern>[LIGO] %-5p [%t,%C{1},%M:%L] %m%n</pattern>
     </encoder>
   </appender>
 
-  <logger name="org.ligo" level="TRACE"/>
-  
-  <root level="WARN">
+  <root level="TRACE">
     <appender-ref ref="LIGO"/>
   </root>
 
