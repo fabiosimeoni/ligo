@@ -12,9 +12,9 @@ import org.ligo.api.types.api.TypeKey;
  * @author Fabio Simeoni
  *
  */
-public class PrimitiveDef<TYPE> extends AbstractTypeDef<TYPE> {
+public class PrimitiveTypeDef<TYPE> extends AbstractTypeDef<TYPE> {
 	
-	public PrimitiveDef(TypeKey<TYPE> key) {
+	public PrimitiveTypeDef(TypeKey<TYPE> key) {
 		super(key);
 	}
 	

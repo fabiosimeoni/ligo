@@ -4,8 +4,11 @@
 package org.ligo.api.types.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.ligo.api.ObjectFactory;
+import org.ligo.api.types.api.ObjectTypeDef;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
 import org.ligo.api.types.api.TypeKey;
@@ -23,11 +26,31 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 	//cached typed definitions for given keys
 	private static Map<TypeKey<?>,TypeDef<?>> cache = new HashMap<TypeKey<?>, TypeDef<?>>();
 
+	private final ObjectFactory objectFactory;
+	/**
+	 * 
+	 */
+	protected AbstractTypeDefFactory(ObjectFactory f) {
+		
+		objectFactory = f;
+		
+		for (TypeDef<?> def : getPredefinedTypeDefs())
+			cache(def);
+	}
+	
+	/**
+	 * @return the objectFactory
+	 */
+	@Override
+	public <TYPE> TYPE getInstance(TypeKey<TYPE> key, List<Object> args) {
+		return objectFactory.getInstance(key, args);
+	}
 	
 	/**{@inheritDoc}*/
-	public final <TYPE> TypeDef<TYPE> getTypeDef(Class<TYPE> type) {
+	public final <TYPE> TypeDef<TYPE> getTypeDef(Class<TYPE> type) {		
 		return getTypeDef(new TypeKey<TYPE>(type));
 	}
+	
 	
 	
 	/**{@inheritDoc}*/
@@ -41,14 +64,15 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 		//delegate for the generation otherwise 
 		if (def==null) {
 			
-			def = resolveTypeDef(key);
+			//try factory;
+			Class<? extends TYPE> type = objectFactory.getType(key);
 			
-			if (def==null)
+			if (type==null)
 				throw new IllegalStateException("no type definition registered for "+key.type());
 			else {
-				logger.trace("cached type definition for {}",key);
-				cache.put(key,def);
-			}		
+				def= getObjectTypeDef(new TypeKey<TYPE>(type,key.qualifier()));
+				cache(def);
+			}	
 		}
 		else 
 			logger.trace("reusing type definition for {}",key);
@@ -56,8 +80,13 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 		return def;
 	}
 	
-	protected abstract <TYPE> TypeDef<TYPE> resolveTypeDef(TypeKey<TYPE> key);
-
-		
+	void cache(TypeDef<?> def) {
+		logger.trace("cached type definition for {}",def.key());
+		cache.put(def.key(),def);
+	}
+	
+	protected abstract List<TypeDef<?>> getPredefinedTypeDefs();
+	
+	protected abstract <TYPE> ObjectTypeDef<TYPE> getObjectTypeDef(TypeKey<TYPE> key);
 
 }
