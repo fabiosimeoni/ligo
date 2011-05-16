@@ -3,7 +3,9 @@
  */
 package org.ligo.api.types.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.ligo.api.ObjectFactory;
@@ -47,8 +49,8 @@ public class BaseTypeDefFactory implements TypeDefFactory {
 	 * @return the objectFactory
 	 */
 	@Override
-	public <TYPE> TYPE getInstance(TypeKey<TYPE> key, Object ... args) {
-		return objectFactory.getInstance(key, args);
+	public <TYPE> TYPE getInstance(TypeKey<TYPE> key, List<Object> args, Constructor<? extends TYPE> c) {
+		return objectFactory.getInstance(key, args.toArray(new Object[0]),c);
 	}
 	
 	/**{@inheritDoc}*/
@@ -76,16 +78,16 @@ public class BaseTypeDefFactory implements TypeDefFactory {
 			//if there is no specific constructor, delegate to generic object constructor
 			if (constructor==null) {
 	
-				//delegate
-				@SuppressWarnings("unchecked")
-				TypeDefConstructor<TYPE> objectConstructor = (TypeDefConstructor) typedefConstructors.get(Object.class);
-				
 				//use actual type from factory;
 				Class<? extends TYPE> actualType = objectFactory.getType(key);
 				
 				//build key based on actual type
 				TypeKey<TYPE> actualKey = new TypeKey<TYPE>(actualType,key.qualifier(),key.typeParameters());
-					
+				
+				//delegate
+				@SuppressWarnings("unchecked")
+				TypeDefConstructor<TYPE> objectConstructor = (TypeDefConstructor) typedefConstructors.get(Object.class);
+				
 				def = objectConstructor.getTypeDef(actualKey, this);
 			
 			}

@@ -5,7 +5,6 @@ package org.ligo.api.types.impl;
 
 import static java.lang.String.*;
 import static java.util.Arrays.*;
-import static java.util.Collections.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -67,7 +66,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			for (String name : constructorDef.names())
 				vals.add(parts.get(name).newInstance(values.get(name)));
 				
-			TYPE object = typeFactory.getInstance(key(),vals.toArray(new Object[0]));
+			TYPE object = typeFactory.getInstance(key(),vals,constructorDef.constructor());
 		
 			for (MethodDef m : methodDefs) {
 				vals.clear();
@@ -76,7 +75,6 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 					vals.add(part);
 				}
 				
-				m.method().setAccessible(true);
 				m.method().invoke(object,vals.toArray(new Object[0]));				
 			}
 			
@@ -110,28 +108,38 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	/**
 	 * @param constructorDef the constructorDef to set
 	 */
-	@SuppressWarnings("unchecked")
 	void setConstructor() {
 		
+		List<String> boundNames = new ArrayList<String>();
+		Constructor<?> constructor=null;
 		//identify constructorDef
 		for (Constructor<?> c : key().type().getDeclaredConstructors()) {
-			List<String> boundNames = addAttributes(c.getParameterAnnotations(), c.getGenericParameterTypes());
+			boundNames = addAttributes(c.getParameterAnnotations(), c.getGenericParameterTypes());
 			if (boundNames.size()>0) {
-				if (constructorDef==null)
-					constructorDef = new ConstructorDef<TYPE>((Constructor)c,boundNames);
+				if (constructor==null)
+					constructor=c;
 				else
 					throw new RuntimeException(format("%1 has more than one constructorDef annotated for projection",key().type()));
 			}	
 		}
 		
 		//if no constructorDef is annotated, try to use nullary one
-		if (constructorDef==null)
+		if (constructor==null)
 			try {
-				constructorDef = new ConstructorDef<TYPE>(key().type().getDeclaredConstructor(),EMPTY_LIST);
+				constructor = key().type().getDeclaredConstructor();
 			}
 			catch(Throwable e) {
 				throw new RuntimeException(format("%1s has no nullary or annotated constructors",key().type()));
+			
 			}
+		
+		constructor.setAccessible(true);
+		
+		@SuppressWarnings("unchecked")
+		ConstructorDef<TYPE> def = new ConstructorDef<TYPE>((Constructor) constructor,boundNames);
+		
+		constructorDef=def;
+		
 	}
 	
 	void setMethods() {
@@ -158,7 +166,8 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			
 					if (Modifier.isPrivate(m.getModifiers()))
 						throw new RuntimeException("cannot project over private method "+m);
-			
+					
+					m.setAccessible(true);
 					methodDefs.add(new MethodDef(m,boundNames));
 				}
 			}
