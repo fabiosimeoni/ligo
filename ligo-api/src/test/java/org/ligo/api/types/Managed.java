@@ -1,6 +1,7 @@
 package org.ligo.api.types;
 
 import java.util.List;
+import java.util.Set;
 
 import org.ligo.api.Project;
 
@@ -18,7 +19,11 @@ public class Managed {
 		System.out.println("invoked with "+d);
 	}
 	
-	public void setList(List<String> d){
-		
+	public void setList(@Project("p4") List<String> l){
+		System.out.println("invoked with "+l);
+	}
+	
+	public void setList(@Project("p5") Set<String> s){
+		System.out.println("invoked with "+s);
 	}
 }

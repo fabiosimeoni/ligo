@@ -9,6 +9,10 @@ import static java.util.Collections.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,13 +25,17 @@ import org.ligo.api.types.api.ObjectTypeDef;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
 import org.ligo.api.types.api.TypeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Simeoni
  *
  */
 public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements ObjectTypeDef<TYPE> {
-
+	
+	private static Logger logger = LoggerFactory.getLogger(DefaultObjectTypeDef.class);
+	
 	private Map<String,TypeDef<?>> parts = new HashMap<String, TypeDef<?>>();
 	private TypeDefFactory typeFactory;
 	private ConstructorDef<TYPE> constructorDef;
@@ -56,16 +64,17 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			for (String name : constructorDef.names())
 				vals.add(parts.get(name).newInstance(values.get(name)));
 				
-			TYPE object = typeFactory.getInstance(key(),vals);
+			TYPE object = typeFactory.getInstance(key(),vals.toArray(new Object[0]));
 		
-			for (MethodDef def : methodDefs) {
+			for (MethodDef m : methodDefs) {
 				vals.clear();
-				for (String name : def.names()) {
+				for (String name : m.names()) {
 					Object part = parts.get(name).newInstance(values.get(name));
 					vals.add(part);
 				}
-				def.method().setAccessible(true);
-				def.method().invoke(object,vals.toArray(new Object[0]));				
+				
+				m.method().setAccessible(true);
+				m.method().invoke(object,vals.toArray(new Object[0]));				
 			}
 			
 			return object;
@@ -82,6 +91,8 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	}
 	
 	void build() {
+		
+		logger.trace("building type definition from "+key().type());
 		
 		try {
 			setConstructor();
@@ -101,7 +112,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 		
 		//identify constructorDef
 		for (Constructor<?> c : key().type().getDeclaredConstructors()) {
-			List<String> boundNames = addAttributes(c.getParameterAnnotations(), c.getParameterTypes());
+			List<String> boundNames = addAttributes(c.getParameterAnnotations(), c.getGenericParameterTypes());
 			if (boundNames.size()>0) {
 				if (constructorDef==null)
 					constructorDef = new ConstructorDef<TYPE>((Constructor)c,boundNames);
@@ -123,46 +134,87 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	void setMethods() {
 		
 		Class<?> type = key().type();
+		
 		do 
 		
 			for (Method m : type.getDeclaredMethods()) {
 				
-				Class<?>[] params = m.getParameterTypes();
+				Type[] params = m.getGenericParameterTypes();
 				List<String> boundNames = addAttributes(m.getParameterAnnotations(),params);
 				if (boundNames.isEmpty())
 					//look in interfaces
 					for (Class<?> i : type.getInterfaces())
 						try {
-							Method overridden = i.getMethod(m.getName(),params);
+							Method overridden = i.getMethod(m.getName(),toRawType(params));
 							boundNames = addAttributes(overridden.getParameterAnnotations(),params);
 						}
 						catch(NoSuchMethodException e) {
 							continue;
-					}
-				
-				if (!boundNames.isEmpty())
+						}
+				if (!boundNames.isEmpty()) {
+			
+					if (Modifier.isPrivate(m.getModifiers()))
+						throw new RuntimeException("cannot project over private method "+m);
+			
 					methodDefs.add(new MethodDef(m,boundNames));
+				}
 			}
 		
 		while //repeat for methodDefs in superclass
-			((type=type.getSuperclass())!=null); 
+			((type=type.getSuperclass())!=null);
 		
 		
 	}
 	
-	List<String> addAttributes(Annotation[][] annotationLists, Class<?> parameters[]) {
+	Class<?>[] toRawType(Type[] ts) {
+		
+		List<Class<?>> raws = new ArrayList<Class<?>>();
+		for (Type t : ts)
+			raws.add(toRawType(t));
+		return raws.toArray(new Class<?>[0]);
+	}
+	
+	Class<?> toRawType(Type t) {
+		
+		if (t instanceof Class<?>)
+			return (Class<?>) t;
+		else if (t instanceof ParameterizedType)
+			return ((ParameterizedType) t).getRawType().getClass();
+		else
+			throw new RuntimeException("unsupported type "+t);
+	}
+	
+	List<String> addAttributes(Annotation[][] annotationLists, Type parameters[]) {
 		
 		List<String> boundNames = new LinkedList<String>();
 		for (int i =0; i<parameters.length;i++)
 			for (Annotation annotation : annotationLists[i])
 				if (annotation instanceof Project) {
+					
 					Project project = (Project) annotation;
+					
 					if (parts.containsKey(project.value()))
 						throw new RuntimeException("projected name $1s is duplicated in "+key().type());
 					else {	
+						
 						boundNames.add(project.value());
+						
+						Class<?> rawType = null;
+						Type[] typeParams = null;
+						if (parameters[i] instanceof Class<?>) {
+							rawType = (Class<?>) parameters[i];
+						}
+						else {
+							ParameterizedType generic = (ParameterizedType) parameters[i];
+							rawType = (Class<?>) generic.getRawType();
+							typeParams = generic.getActualTypeArguments();
+						}
+						
 						@SuppressWarnings("unchecked") //must create a raw type for this key
-						TypeDef<?> def = typeFactory.getTypeDef(new TypeKey(parameters[i],getQualifier(annotationLists[i])));
+						TypeKey<?> key = new TypeKey(rawType,getQualifier(annotationLists[i]),typeParams);
+						
+						TypeDef<?> def = typeFactory.getTypeDef(key);
+						
 						parts.put(project.value(),def);
 					}
 					break;
@@ -180,6 +232,6 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return super.toString()+parts;
+		return "obj"+parts;
 	}
 }

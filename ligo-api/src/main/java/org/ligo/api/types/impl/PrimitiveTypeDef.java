@@ -26,4 +26,5 @@ public class PrimitiveTypeDef<TYPE> extends AbstractTypeDef<TYPE> {
 			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),value));
 		}
 	};
+
 }

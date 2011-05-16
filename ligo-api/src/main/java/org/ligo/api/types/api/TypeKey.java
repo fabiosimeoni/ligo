@@ -3,13 +3,11 @@
  */
 package org.ligo.api.types.api;
 
-import static java.lang.String.*;
-import static java.util.Arrays.*;
-
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,21 +18,24 @@ public final class TypeKey<T> {
 
 	private Class<? extends T> type;
 	private Annotation qualifier;
-	private List<Type> parameters = new LinkedList<Type>();
+	private Type[] parameters;
 	
 	public TypeKey(Class<? extends T> t) {
-		this(t,null);
+		this(t,(Annotation)null);
 	}
 	
 	public TypeKey(Class<? extends T> t, Annotation q) {
-		this(t,q,null);
+		this(t,q,(Type[])null);
 	}
 	
-	public TypeKey(Class<? extends T> t, Annotation q, Type[] tps) {
+	public TypeKey(Class<? extends T> t, Type ... tps) {
+		this(t,null,tps);
+	}
+	
+	public TypeKey(Class<? extends T> t, Annotation q, Type ... tps) {
 		type=t;
 		qualifier=q;
-		if (tps!=null)
-			parameters=asList(tps);
+		parameters=tps;
 	}
 	
 	public Class<? extends T> type() {
@@ -45,20 +46,41 @@ public final class TypeKey<T> {
 		return qualifier;
 	}
 	
-	public List<Type> typeParameters() {
+	public Type[] typeParameters() {
 		return parameters;
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return qualifier==null?type.getSimpleName():format("(%1s,%2s)",type.getSimpleName(),qualifier.annotationType().getSimpleName());
+		StringBuilder b = new StringBuilder();
+		b.append(type.getSimpleName()).append(qualifier==null?"":","+qualifier.annotationType());
+		if (parameters!=null) {
+			List<Type> params = Arrays.asList(parameters);
+			b.append("<");
+			Iterator<Type> it = params.iterator();
+			while (it.hasNext()) {
+				Type t = it.next();
+				if (t instanceof Class<?>)
+					b.append(((Class<?>)t).getSimpleName());
+				else if (t instanceof ParameterizedType)
+					b.append(((ParameterizedType) t).getRawType().getClass().getSimpleName());
+				else 
+					b.append(t);
+				if (it.hasNext())
+					b.append(",");
+			}
+			b.append(">");
+		}
+		return b.toString();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ((parameters == null) ? 0 : parameters.hashCode());
 		result = prime * result
 				+ ((qualifier == null) ? 0 : qualifier.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -74,6 +96,11 @@ public final class TypeKey<T> {
 		if (!(obj instanceof TypeKey<?>))
 			return false;
 		TypeKey<?> other = (TypeKey<?>) obj;
+		if (parameters == null) {
+			if (other.parameters != null)
+				return false;
+		} else if (!parameters.equals(other.parameters))
+			return false;
 		if (qualifier == null) {
 			if (other.qualifier != null)
 				return false;
@@ -86,4 +113,6 @@ public final class TypeKey<T> {
 			return false;
 		return true;
 	}
+
+
 }

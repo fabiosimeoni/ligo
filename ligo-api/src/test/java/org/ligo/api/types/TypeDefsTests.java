@@ -36,6 +36,8 @@ public class TypeDefsTests {
 		Map<String,Object> depdata = new HashMap<String, Object>();
 		depdata.put("p1",10);
 		data.put("p3",depdata);
+		data.put("p4",new String[]{"hello","world"});
+		data.put("p5",new String[]{"hello","world"});
 		
 		def.newInstance(data);
 		

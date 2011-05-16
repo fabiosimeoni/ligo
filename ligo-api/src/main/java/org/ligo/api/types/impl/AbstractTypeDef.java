@@ -25,6 +25,6 @@ public abstract class AbstractTypeDef<TYPE> implements TypeDef<TYPE> {
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return key.toString();
+		return key.type().getSimpleName().toString().toLowerCase();
 	}
 }
