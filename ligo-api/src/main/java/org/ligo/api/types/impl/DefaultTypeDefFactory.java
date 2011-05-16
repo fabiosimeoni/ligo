@@ -9,12 +9,15 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.ligo.api.ObjectFactory;
+import org.ligo.api.types.impl.DefaultTypeDefConstructors.CollectionDefConstructor;
+import org.ligo.api.types.impl.DefaultTypeDefConstructors.ObjectDefConstructor;
+import org.ligo.api.types.impl.DefaultTypeDefConstructors.PrimitiveDefConstructor;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public class DefaultTypeDefFactory extends AbstractTypeDefFactory {
+public class DefaultTypeDefFactory extends BaseTypeDefFactory {
 	
 	@Inject
 	@SuppressWarnings("unchecked")
