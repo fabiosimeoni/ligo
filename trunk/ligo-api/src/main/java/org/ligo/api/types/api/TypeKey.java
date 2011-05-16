@@ -6,9 +6,10 @@ package org.ligo.api.types.api;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.lang.reflect.TypeVariable;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Fabio Simeoni
@@ -18,21 +19,21 @@ public final class TypeKey<T> {
 
 	private Class<? extends T> type;
 	private Annotation qualifier;
-	private Type[] parameters;
+	private Map<TypeVariable<?>,Type> parameters;
 	
 	public TypeKey(Class<? extends T> t) {
 		this(t,(Annotation)null);
 	}
 	
 	public TypeKey(Class<? extends T> t, Annotation q) {
-		this(t,q,(Type[])null);
+		this(t,q,(Map<TypeVariable<?>,Type>)null);
 	}
 	
-	public TypeKey(Class<? extends T> t, Type ... tps) {
+	public TypeKey(Class<? extends T> t, Map<TypeVariable<?>,Type> tps) {
 		this(t,null,tps);
 	}
 	
-	public TypeKey(Class<? extends T> t, Annotation q, Type ... tps) {
+	public TypeKey(Class<? extends T> t, Annotation q, Map<TypeVariable<?>,Type> tps) {
 		type=t;
 		qualifier=q;
 		parameters=tps;
@@ -46,7 +47,7 @@ public final class TypeKey<T> {
 		return qualifier;
 	}
 	
-	public Type[] typeParameters() {
+	public Map<TypeVariable<?>,Type> typeParameters() {
 		return parameters;
 	}
 	
@@ -56,7 +57,7 @@ public final class TypeKey<T> {
 		StringBuilder b = new StringBuilder();
 		b.append(type.getSimpleName()).append(qualifier==null?"":","+qualifier.annotationType());
 		if (parameters!=null) {
-			List<Type> params = Arrays.asList(parameters);
+			Collection<Type> params = parameters.values();
 			b.append("<");
 			Iterator<Type> it = params.iterator();
 			while (it.hasNext()) {

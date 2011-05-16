@@ -20,7 +20,7 @@ public class TypeDefFactoryTests {
 		
 		
 		SimpleObjectFactory ofactory = new SimpleObjectFactory();
-		ofactory.register(ManagedDep.class,DepImpl.class);
+		ofactory.addBinding(ManagedDep.class,DepImpl.class);
 		TypeDefFactory factory = new DefaultTypeDefFactory(ofactory);
 		
 		TypeDef<Managed> def = factory.getTypeDef(Managed.class);

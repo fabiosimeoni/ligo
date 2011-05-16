@@ -24,7 +24,7 @@ public class TypeDefsTests {
 		
 		
 		SimpleObjectFactory ofactory = new SimpleObjectFactory();
-		ofactory.register(ManagedDep.class,DepImpl.class);
+		ofactory.addBinding(ManagedDep.class,DepImpl.class);
 		TypeDefFactory factory = new DefaultTypeDefFactory(ofactory);
 		
 		
@@ -38,6 +38,9 @@ public class TypeDefsTests {
 		data.put("p3",depdata);
 		data.put("p4",new String[]{"hello","world"});
 		data.put("p5",new String[]{"hello","world"});
+		Map<String,Object> paramdepdata = new HashMap<String, Object>();
+		paramdepdata.put("p1", "hello");
+		data.put("p6",paramdepdata);
 		
 		def.newInstance(data);
 		

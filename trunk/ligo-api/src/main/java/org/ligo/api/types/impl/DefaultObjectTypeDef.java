@@ -4,6 +4,7 @@
 package org.ligo.api.types.impl;
 
 import static java.lang.String.*;
+import static java.util.Arrays.*;
 import static java.util.Collections.*;
 
 import java.lang.annotation.Annotation;
@@ -12,8 +13,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -196,29 +199,15 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 					if (parts.containsKey(project.value()))
 						throw new RuntimeException("projected name $1s is duplicated in "+key().type());
 					else {	
-						
 						boundNames.add(project.value());
-						
-						Class<?> rawType = null;
-						Type[] typeParams = null;
-						if (parameters[i] instanceof Class<?>) {
-							rawType = (Class<?>) parameters[i];
-						}
-						else {
-							ParameterizedType generic = (ParameterizedType) parameters[i];
-							rawType = (Class<?>) generic.getRawType();
-							typeParams = generic.getActualTypeArguments();
-						}
-						
-						@SuppressWarnings("unchecked") //must create a raw type for this key
-						TypeKey<?> key = new TypeKey(rawType,getQualifier(annotationLists[i]),typeParams);
-						
-						TypeDef<?> def = typeFactory.getTypeDef(key);
+						TypeDef<?> def = 
+							typeFactory.getTypeDef(buildParamKey(parameters[i],getQualifier(annotationLists[i])));
 						
 						parts.put(project.value(),def);
 					}
 					break;
 				}
+		
 		return boundNames;
 	}
 	
@@ -229,6 +218,41 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 		return null;
 	}
 	
+	private TypeKey<?> buildParamKey(Type param, Annotation qualifier) {
+		
+		Class<?> rawType = null;
+		Map<TypeVariable<?>,Type> typeParams = null;
+		if (param instanceof Class<?>)
+			rawType = (Class<?>) param;
+		
+		else if (param instanceof ParameterizedType) {
+		
+			ParameterizedType generic = (ParameterizedType) param;
+			rawType = (Class<?>) generic.getRawType();
+			typeParams = new HashMap<TypeVariable<?>, Type>();
+			Iterator<? extends TypeVariable<?>> vars =asList(rawType.getTypeParameters()).iterator();
+			Iterator<Type> types = asList(generic.getActualTypeArguments()).iterator();
+			while (vars.hasNext()) 
+				typeParams.put(vars.next(), types.next());
+		}
+		else if (param instanceof TypeVariable<?>) {
+		
+			TypeVariable<?> var = (TypeVariable<?>) param;
+			Type value = key().typeParameters().get(var);
+			if (value instanceof Class<?>) {
+				rawType = (Class<?>) key().typeParameters().get(var);
+				if (rawType==null)
+					throw new RuntimeException(var.getName()+" is unbound in "+key().typeParameters());	
+			}
+			else
+				rawType = buildParamKey(value, qualifier).type(); //TODO: we lose type parameter of variable value here!
+		}
+		
+		@SuppressWarnings("unchecked") //must create a raw type for this key
+		TypeKey<?> key = new TypeKey(rawType,qualifier,typeParams);
+		
+		return key;
+	}
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {

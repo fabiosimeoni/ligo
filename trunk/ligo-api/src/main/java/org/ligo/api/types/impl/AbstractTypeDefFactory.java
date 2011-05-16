@@ -5,6 +5,7 @@ package org.ligo.api.types.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.ligo.api.ObjectFactory;
@@ -29,7 +30,7 @@ public class AbstractTypeDefFactory implements TypeDefFactory {
 	/**
 	 * 
 	 */
-	protected AbstractTypeDefFactory(ObjectFactory f) {
+	public AbstractTypeDefFactory(ObjectFactory f) {
 		
 		objectFactory = f;
 	}
