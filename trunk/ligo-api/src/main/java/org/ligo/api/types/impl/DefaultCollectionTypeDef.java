@@ -3,6 +3,8 @@
  */
 package org.ligo.api.types.impl;
 
+import static java.util.Arrays.*;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,8 +52,8 @@ public class DefaultCollectionTypeDef<C extends Collection<?>> extends AbstractT
 			for (Object value : values)
 				temp.add(member.newInstance(value));
 		
-		C list = typeFactory.getInstance(key(),temp);
-
+		C list = typeFactory.getInstance(key(),asList(new Object[]{temp}),null);
+		
 		return list;
 	}
 	

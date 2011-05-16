@@ -24,33 +24,33 @@ public class SimpleObjectFactory implements ObjectFactory {
 		addBinding(Set.class,HashSet.class);
 	}
 	
+	public <TYPE> void addBinding(Class<TYPE> type, Class<? extends TYPE> impl) {
+		bindings.put(new TypeKey<TYPE>(type),impl);
+	}
+	
+	public <TYPE> void addBinding(TypeKey<TYPE> key, Class<? extends TYPE> impl) {
+		bindings.put(key,impl);
+	}
+	
 	/**{@inheritDoc}*/
 	@Override
-	public <T> T getInstance(TypeKey<T> key, Object ... args) {
+	public <T> T getInstance(TypeKey<T> key, Object[] args, Constructor<? extends T> constructor) {
 
-		
-			//lookup full key
-			Class<? extends T> type = getType(key);
-			
-			List<Class<?>> types = new ArrayList<Class<?>>();
-			for (Object arg : args)
-				types.add(arg.getClass());
 		try {
 		
-			//find constructor that matches argument, if any (cannot use getConstructor as it does not respect subtyping)
-			outer:for (Constructor<?> c : type.getDeclaredConstructors()) {
-				Class<?>[] params = c.getParameterTypes();
-				if (params.length==types.size()) {
-					for (int i=0; i<params.length;i++)
-						if (!params[i].isAssignableFrom(types.get(i)))
-							continue outer;
-					@SuppressWarnings("unchecked")
-					Constructor<? extends T> constructor = (Constructor) c;
-					constructor.setAccessible(true);
-					return constructor.newInstance(args);
-				}
+			if (constructor==null) {
+			
+				//lookup full key
+				Class<? extends T> type = getType(key);
+			
+				constructor = findConstructor(type, args);
+				
+				
 			}
-		
+	
+			if (constructor != null)
+				return constructor.newInstance(args);
+			
 		}
 		catch(Exception e) {
 			throw new RuntimeException(e);
@@ -60,14 +60,37 @@ public class SimpleObjectFactory implements ObjectFactory {
 
 	}
 	
-	public <TYPE> void addBinding(Class<TYPE> type, Class<? extends TYPE> impl) {
-		bindings.put(new TypeKey<TYPE>(type),impl);
+	<T> Constructor<? extends T> findConstructor(Class<T> type, Object[] args) {
+		
+		List<Class<?>> types = new ArrayList<Class<?>>();
+		for (Object arg : args)
+			types.add(arg.getClass());
+		
+		Constructor<? extends T> constructor = null;
+		
+		outer:for (Constructor<?> c : type.getDeclaredConstructors()) {
+			
+			Class<?>[] params = c.getParameterTypes();
+			
+			if (params.length==types.size()) {
+				for (int i=0; i<params.length;i++)
+					if (!params[i].isAssignableFrom(types.get(i)))
+						continue outer;
+				
+				if (constructor!=null) 
+					throw new RuntimeException("cannot identify constructor:"+constructor+" and "+c+"  are both candidates");
+				
+				c.setAccessible(true);
+					
+				@SuppressWarnings("unchecked")
+				Constructor<? extends T> cs = (Constructor) c;
+				constructor = cs;
+			}
+		}
+		
+		return constructor;
+		
 	}
-	
-	public <TYPE> void register(TypeKey<TYPE> key, Class<? extends TYPE> impl) {
-		bindings.put(key,impl);
-	}
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> Class<? extends T> getType(TypeKey<T> key) {
