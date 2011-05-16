@@ -3,6 +3,8 @@
  */
 package org.ligo.nodes.model.impl;
 
+import org.ligo.api.data.DataProvider;
+import org.ligo.api.data.ValueProvider;
 import org.ligo.nodes.model.api.Leaf;
 
 /**
@@ -30,6 +32,27 @@ public class DefaultLeaf implements Leaf {
 	@Override
 	public Leaf cloneNode() {
 		return new DefaultLeaf(value);
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public DataProvider provider() {
+		return new ValueProvider() {
+			public <T> T get(Class<T> expected) {
+				Object outcome=null;
+				if (expected.equals(String.class))
+					outcome=value;
+				else if (expected.equals(Integer.class))
+					outcome=Integer.valueOf(value);
+				else if (expected.equals(Boolean.class))
+					outcome=Boolean.valueOf(value);
+				//TODO continue
+				return (outcome==null || !expected.isAssignableFrom(outcome.getClass()))?null:expected.cast(outcome);
+			}
+			public String toString() {
+				return DefaultLeaf.this.toString();
+			}
+		};
 	}
 	
 	/**{@inheritDoc}*/

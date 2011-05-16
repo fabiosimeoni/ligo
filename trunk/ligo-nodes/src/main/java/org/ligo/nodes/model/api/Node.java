@@ -3,6 +3,8 @@
  */
 package org.ligo.nodes.model.api;
 
+import org.ligo.api.data.DataProvider;
+
 
 /**
  * 
@@ -13,5 +15,6 @@ public interface Node {
 
 	
 	Node cloneNode();
+	DataProvider provider();
 	
 }
