@@ -6,6 +6,7 @@ package org.ligo.nodes.model.impl;
 import static java.lang.System.*;
 import static java.util.Collections.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.ligo.api.data.DataProvider;
+import org.ligo.api.data.StructureProvider;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;
@@ -279,6 +282,23 @@ public class DefaultInnerNode implements InnerNode {
 		for (Edge e : edges) b.append(e+" ");
 		b.append("]");
 		return b.toString();
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public DataProvider provider() {
+		return new StructureProvider() {
+			public DataProvider[] get(QName name) {
+				List<DataProvider> providers = new ArrayList<DataProvider>();
+				for (Node n: children(name))
+					providers.add(n.provider());
+				return providers.toArray(new DataProvider[0]);
+			}
+			public String toString() {
+				return DefaultInnerNode.this.toString();
+			}
+		};
+		
 	}
 	
 	@Override
