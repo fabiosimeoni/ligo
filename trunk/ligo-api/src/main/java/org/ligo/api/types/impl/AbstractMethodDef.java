@@ -5,6 +5,8 @@ package org.ligo.api.types.impl;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 
 /**
  * @author Fabio Simeoni
@@ -12,16 +14,16 @@ import java.util.List;
  */
 public abstract class AbstractMethodDef {
 
-	private List<String> names;
+	private List<QName> names;
 	
-	public AbstractMethodDef(List<String> n) {
+	public AbstractMethodDef(List<QName> n) {
 		names = n;
 	}
 	
 	/**
 	 * 
 	 */
-	public List<String> names() {
+	public List<QName> names() {
 		return names;
 	}
 	

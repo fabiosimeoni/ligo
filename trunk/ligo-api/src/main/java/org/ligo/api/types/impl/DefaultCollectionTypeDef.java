@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.ligo.api.data.DataProvider;
 import org.ligo.api.types.api.CollectionTypeDef;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
@@ -42,15 +43,12 @@ public class DefaultCollectionTypeDef<C extends Collection<?>> extends AbstractT
 
 	/**{@inheritDoc}*/
 	@Override
-	public C newInstance(Object data) {
-		
-		Object[] values = (Object[]) data;
+	public C newInstance(DataProvider ... providers) {
 		
 		List<Object> temp = new ArrayList<Object>();
 		
-		if (values!=null)
-			for (Object value : values)
-				temp.add(member.newInstance(value));
+		for (DataProvider provider : providers)
+			temp.add(member.newInstance(provider));
 		
 		C list = typeFactory.getInstance(key(),asList(new Object[]{temp}),null);
 		

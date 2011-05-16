@@ -4,7 +4,10 @@
 package org.ligo.api.types.impl;
 
 import static java.lang.String.*;
+import static java.util.Arrays.*;
 
+import org.ligo.api.data.DataProvider;
+import org.ligo.api.data.ValueProvider;
 import org.ligo.api.types.api.TypeKey;
 
 
@@ -18,12 +21,25 @@ public class PrimitiveTypeDef<TYPE> extends AbstractTypeDef<TYPE> {
 		super(key);
 	}
 	
-	public TYPE newInstance(Object value) {
+	public TYPE newInstance(DataProvider ... providers) {
+		
 		try {
-			return key().type().cast(value);
+			
+			if (providers.length==0)
+				return null;
+			
+			if (providers.length>1)
+				throw new RuntimeException("expected one value but found many: "+asList(providers));
+			
+			if (!(providers[0] instanceof ValueProvider))
+				throw new RuntimeException("expected a value but found "+providers[0]);
+			
+			ValueProvider vp = (ValueProvider) providers[0];
+			
+			return vp.get(key().type());
 		}
 		catch(ClassCastException e) {
-			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),value));
+			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),providers));
 		}
 	};
 

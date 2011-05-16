@@ -8,7 +8,7 @@ package org.ligo.api;
  * @author Fabio Simeoni
  *
  */
-public interface Pattern<MODEL,MATCH> {
+public interface Pattern<IN,OUT> {
 
-	MATCH extract(MODEL d);
+	OUT extract(IN d);
 }

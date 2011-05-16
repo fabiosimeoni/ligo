@@ -5,6 +5,8 @@ package org.ligo.api.types.api;
 
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 
 /**
  * @author Fabio Simeoni
@@ -12,5 +14,5 @@ import java.util.Map;
  */
 public interface ObjectTypeDef<TYPE> extends TypeDef<TYPE> {
 	
-	Map<String,TypeDef<?>> attributes();
+	Map<QName,TypeDef<?>> attributes();
 }
