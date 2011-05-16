@@ -39,7 +39,7 @@ public class PrimitiveTypeDef<TYPE> extends AbstractTypeDef<TYPE> {
 			return vp.get(key().type());
 		}
 		catch(ClassCastException e) {
-			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),providers));
+			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),asList(providers)),e);
 		}
 	};
 
