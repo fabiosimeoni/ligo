@@ -21,14 +21,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Qualifier;
+import javax.xml.namespace.QName;
 
 import org.ligo.api.Project;
+import org.ligo.api.data.DataProvider;
+import org.ligo.api.data.StructureProvider;
 import org.ligo.api.types.api.ObjectTypeDef;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
 import org.ligo.api.types.api.TypeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Fabio Simeoni
@@ -38,7 +42,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	
 	private static Logger logger = LoggerFactory.getLogger(DefaultObjectTypeDef.class);
 	
-	private Map<String,TypeDef<?>> parts = new HashMap<String, TypeDef<?>>();
+	private Map<QName,TypeDef<?>> parts = new HashMap<QName, TypeDef<?>>();
 	private TypeDefFactory typeFactory;
 	private ConstructorDef<TYPE> constructorDef;
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
@@ -53,25 +57,33 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 
 	/**{@inheritDoc}*/
 	@Override
-	public TYPE newInstance(Object value) {
+	public TYPE newInstance(DataProvider ... providers) {
 		
 		try {
 		
-			@SuppressWarnings("unchecked")
-			Map<String,Object> values = (Map) value;
+			if (providers.length==0)
+				return null;
+			
+			if (providers.length>1)
+				throw new RuntimeException("expected one value but found many: "+asList(providers));
+			
+			if (!(providers[0] instanceof StructureProvider))
+				throw new RuntimeException("expected a structure but found "+providers[0]);
+			
+			StructureProvider provider = (StructureProvider) providers[0];
 			
 			List<Object> vals = new LinkedList<Object>();
 			
 			//extract constructor parameters and off-load creation to factory
-			for (String name : constructorDef.names())
-				vals.add(parts.get(name).newInstance(values.get(name)));
+			for (QName name : constructorDef.names())
+				vals.add(parts.get(name).newInstance(provider.get(name)));
 				
 			TYPE object = typeFactory.getInstance(key(),vals,constructorDef.constructor());
 		
 			for (MethodDef m : methodDefs) {
 				vals.clear();
-				for (String name : m.names()) {
-					Object part = parts.get(name).newInstance(values.get(name));
+				for (QName name : m.names()) {
+					Object part = parts.get(name).newInstance(provider.get(name));
 					vals.add(part);
 				}
 				
@@ -81,13 +93,13 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			return object;
 		}
 		catch(Throwable e) {
-			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),value),e);
+			throw new RuntimeException(format("cannot bind %1s to %2s",key().type(),asList(providers)),e);
 		}
 	}
 
 	/**{@inheritDoc}*/
 	@Override
-	public Map<String,TypeDef<?>> attributes() {
+	public Map<QName,TypeDef<?>> attributes() {
 		return parts;
 	}
 	
@@ -110,7 +122,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 	 */
 	void setConstructor() {
 		
-		List<String> boundNames = new ArrayList<String>();
+		List<QName> boundNames = new ArrayList<QName>();
 		Constructor<?> constructor=null;
 		//identify constructorDef
 		for (Constructor<?> c : key().type().getDeclaredConstructors()) {
@@ -151,7 +163,7 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			for (Method m : type.getDeclaredMethods()) {
 				
 				Type[] params = m.getGenericParameterTypes();
-				List<String> boundNames = addAttributes(m.getParameterAnnotations(),params);
+				List<QName> boundNames = addAttributes(m.getParameterAnnotations(),params);
 				if (boundNames.isEmpty())
 					//look in interfaces
 					for (Class<?> i : type.getInterfaces())
@@ -196,23 +208,24 @@ public class DefaultObjectTypeDef<TYPE> extends AbstractTypeDef<TYPE> implements
 			throw new RuntimeException("unsupported type "+t);
 	}
 	
-	List<String> addAttributes(Annotation[][] annotationLists, Type parameters[]) {
+	List<QName> addAttributes(Annotation[][] annotationLists, Type parameters[]) {
 		
-		List<String> boundNames = new LinkedList<String>();
+		List<QName> boundNames = new LinkedList<QName>();
 		for (int i =0; i<parameters.length;i++)
 			for (Annotation annotation : annotationLists[i])
 				if (annotation instanceof Project) {
 					
 					Project project = (Project) annotation;
+					QName name = new QName(project.ns(),project.value());
 					
-					if (parts.containsKey(project.value()))
+					if (parts.containsKey(name))
 						throw new RuntimeException("projected name $1s is duplicated in "+key().type());
 					else {	
-						boundNames.add(project.value());
+						boundNames.add(name);
 						TypeDef<?> def = 
 							typeFactory.getTypeDef(buildParamKey(parameters[i],getQualifier(annotationLists[i])));
 						
-						parts.put(project.value(),def);
+						parts.put(name,def);
 					}
 					break;
 				}

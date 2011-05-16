@@ -8,8 +8,8 @@ package org.ligo.api;
  * @author Fabio Simeoni
  *
  */
-public interface Binder<MODEL> {
+public interface Binder<IN> {
 
 	
-	<T> T bind(Class<T> c, MODEL m);
+	<T> T bind(Class<T> c, IN m);
 }
