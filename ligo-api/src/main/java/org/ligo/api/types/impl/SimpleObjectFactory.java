@@ -20,8 +20,8 @@ public class SimpleObjectFactory implements ObjectFactory {
 	 */
 	public SimpleObjectFactory() {
 		//predefined bindings
-		register(List.class,ArrayList.class);
-		register(Set.class,HashSet.class);
+		addBinding(List.class,ArrayList.class);
+		addBinding(Set.class,HashSet.class);
 	}
 	
 	/**{@inheritDoc}*/
@@ -60,7 +60,7 @@ public class SimpleObjectFactory implements ObjectFactory {
 
 	}
 	
-	public <TYPE> void register(Class<TYPE> type, Class<? extends TYPE> impl) {
+	public <TYPE> void addBinding(Class<TYPE> type, Class<? extends TYPE> impl) {
 		bindings.put(new TypeKey<TYPE>(type),impl);
 	}
 	

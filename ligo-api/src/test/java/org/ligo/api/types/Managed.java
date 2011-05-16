@@ -26,4 +26,8 @@ public class Managed {
 	public void setList(@Project("p5") Set<String> s){
 		System.out.println("invoked with "+s);
 	}
+	
+	public void setParametricDep(@Project("p6") GenericType<String> s){
+		System.out.println("invoked with "+s);
+	}
 }

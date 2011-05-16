@@ -58,7 +58,7 @@ public class DefaultCollectionTypeDef<C extends Collection<?>> extends AbstractT
 	
 	void build() {
 		
-		Type memberType = key().typeParameters()[0]; 
+		Type memberType = key().typeParameters().values().iterator().next(); 
 		
 		if (!(memberType instanceof Class<?>))
 			throw new RuntimeException("nested parametric types are not supported");
