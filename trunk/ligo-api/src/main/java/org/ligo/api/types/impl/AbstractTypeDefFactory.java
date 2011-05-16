@@ -3,12 +3,11 @@
  */
 package org.ligo.api.types.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.ligo.api.ObjectFactory;
-import org.ligo.api.types.api.ObjectTypeDef;
 import org.ligo.api.types.api.TypeDef;
 import org.ligo.api.types.api.TypeDefFactory;
 import org.ligo.api.types.api.TypeKey;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public abstract class AbstractTypeDefFactory implements TypeDefFactory {
+public class AbstractTypeDefFactory implements TypeDefFactory {
 
 	static Logger logger = LoggerFactory.getLogger(AbstractTypeDefFactory.class);
 	
@@ -33,16 +32,13 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 	protected AbstractTypeDefFactory(ObjectFactory f) {
 		
 		objectFactory = f;
-		
-		for (TypeDef<?> def : getPredefinedTypeDefs())
-			cache(def);
 	}
 	
 	/**
 	 * @return the objectFactory
 	 */
 	@Override
-	public <TYPE> TYPE getInstance(TypeKey<TYPE> key, List<Object> args) {
+	public <TYPE> TYPE getInstance(TypeKey<TYPE> key, Object ... args) {
 		return objectFactory.getInstance(key, args);
 	}
 	
@@ -57,22 +53,41 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 	@Override
 	public <TYPE> TypeDef<TYPE> getTypeDef(TypeKey<TYPE> key) {
 		
-		//have we generated a definition for this key before?
-		@SuppressWarnings("unchecked")  //typechecked at registration time
+		//hit cache first
+		@SuppressWarnings("unchecked")  //safe because insertion is type-checked
 		TypeDef<TYPE> def = (TypeDef) cache.get(key);
 		
-		//delegate for the generation otherwise 
+		//if not a hit, delegate to type constructor 
 		if (def==null) {
 			
-			//try factory;
-			Class<? extends TYPE> type = objectFactory.getType(key);
+			//delegate
+			@SuppressWarnings("unchecked") //safe because insertion is type-checked
+			TypeDefConstructor<TYPE> constructor = (TypeDefConstructor) typedefConstructors.get(key.type());
+				
+			//if there is no specific constructor, delegate to generic object constructor
+			if (constructor==null) {
+	
+				//delegate
+				@SuppressWarnings("unchecked")
+				TypeDefConstructor<TYPE> objectConstructor = (TypeDefConstructor) typedefConstructors.get(Object.class);
+				
+				//use actual type from factory;
+				Class<? extends TYPE> actualType = objectFactory.getType(key);
+				
+				//build key based on actual type
+				TypeKey<TYPE> actualKey = new TypeKey<TYPE>(actualType,key.qualifier(),key.typeParameters());
+					
+				def = objectConstructor.getTypeDef(actualKey, this);
 			
-			if (type==null)
-				throw new IllegalStateException("no type definition registered for "+key.type());
-			else {
-				def= getObjectTypeDef(new TypeKey<TYPE>(type,key.qualifier()));
-				cache(def);
-			}	
+			}
+			
+			else
+			
+				def = constructor.getTypeDef(key, this);
+				
+			
+			cache(def);
+			
 		}
 		else 
 			logger.trace("reusing type definition for {}",key);
@@ -85,8 +100,43 @@ public abstract class AbstractTypeDefFactory implements TypeDefFactory {
 		cache.put(def.key(),def);
 	}
 	
-	protected abstract List<TypeDef<?>> getPredefinedTypeDefs();
+	public static interface TypeDefConstructor<TYPE> {
+		
+		TypeDef<TYPE> getTypeDef(TypeKey<TYPE> key,TypeDefFactory factory);
+		
+	}
 	
-	protected abstract <TYPE> ObjectTypeDef<TYPE> getObjectTypeDef(TypeKey<TYPE> key);
+	public static class CollectionDefConstructor<C extends Collection<?>> implements TypeDefConstructor<C> {
+		/**{@inheritDoc}*/
+		@Override
+		public TypeDef<C> getTypeDef(TypeKey<C> key, TypeDefFactory factory) {
+			return new DefaultCollectionTypeDef<C>(key,factory);
+		}
+	}
+	
+	public static class PrimitiveDefConstructor<T> implements TypeDefConstructor<T> {
+		/**{@inheritDoc}*/
+		@Override
+		public TypeDef<T> getTypeDef(TypeKey<T> key, TypeDefFactory factory) {
+			return new PrimitiveTypeDef<T>(key);
+		}
+	}
+	
+	public static class ObjectDefConstructor<T> implements TypeDefConstructor<T> {
+		/**{@inheritDoc}*/
+		@Override
+		public TypeDef<T> getTypeDef(TypeKey<T> key, TypeDefFactory factory) {
+			return new DefaultObjectTypeDef<T>(key,factory);
+		}
+	}
+	
+	
+	private Map<Class<?>,TypeDefConstructor<?>> typedefConstructors = new HashMap<Class<?>, TypeDefConstructor<?>>();
+	
+	public <TYPE> void addTypeDefConstructor(TypeDefConstructor<TYPE> constructor, Class<? extends TYPE> type) {
+		
+		typedefConstructors.put(type,constructor);
+
+	}
 
 }

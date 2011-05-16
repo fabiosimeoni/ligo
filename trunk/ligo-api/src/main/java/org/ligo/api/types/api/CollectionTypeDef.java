@@ -3,6 +3,8 @@
  */
 package org.ligo.api.types.api;
 
+import java.util.Collection;
+
 
 
 
@@ -10,7 +12,8 @@ package org.ligo.api.types.api;
  * @author Fabio Simeoni
  *
  */
-public interface CollectionTypeDef<TYPE> extends TypeDef<TYPE> {
+public interface CollectionTypeDef<C extends Collection<?>> extends TypeDef<C> {
 	
-	TypeDef<?> member();
+	TypeDef<?> memberType();
+
 }
