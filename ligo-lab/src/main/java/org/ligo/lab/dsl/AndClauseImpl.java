@@ -17,7 +17,7 @@ class AndClauseImpl<TYPE,IN,OUT> implements AndClause<TYPE, IN, OUT> {
 	/**{@inheritDoc}*/
 	@Override
 	public EndClause<TYPE,IN> and(Binder<OUT, TYPE> binder) {
-		CompositeBinder<IN, OUT, TYPE> ct = new CompositeBinder<IN, OUT, TYPE>(ctxt.transform,binder); 
-		return new EndClauseImpl<TYPE, IN>(new ClauseContext<TYPE, IN,TYPE>(ctxt.boundtype(),ct));
+		CompositeBinder<IN, OUT, TYPE> ct = new CompositeBinder<IN, OUT, TYPE>(ctxt.transform(),binder); 
+		return new EndClauseImpl<TYPE, IN>(new ClauseContext<TYPE, IN,TYPE>(ctxt.type(),ct));
 	}
 }
