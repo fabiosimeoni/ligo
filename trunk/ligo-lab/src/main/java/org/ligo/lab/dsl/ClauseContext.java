@@ -2,16 +2,15 @@ package org.ligo.lab.dsl;
 
 import org.ligo.lab.binders.Binder;
 
-class ClauseContext<T,IN,OUT> {
+public class ClauseContext<T,IN,OUT> {
 	
-	Binder<IN,OUT> transform;
+	private Binder<IN,OUT> transform;
 	
-	Class<T> boundtype;
-	/**
-	 * 
-	 */
-	public ClauseContext(Class<T>type) {
-		boundtype = type;
+	private Class<T> type;
+	
+	
+	public ClauseContext(Class<T> t) {
+		type = t;
 	}
 	
 	public ClauseContext(Class<T>type, Binder<IN, OUT> t) {
@@ -19,8 +18,8 @@ class ClauseContext<T,IN,OUT> {
 		transform=t;
 	}
 	
-	public Class<T> boundtype() {
-		return boundtype;
+	public Class<T> type() {
+		return type;
 	}
 	
 	public Binder<IN, OUT> transform() {

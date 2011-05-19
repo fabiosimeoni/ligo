@@ -12,4 +12,7 @@ public interface WithClause<TYPE> {
 	
 	<IN,OUT> AndClause<TYPE,IN,OUT> with(DataBinder<IN,OUT> binder);
 	<IN,OUT> AndClause<TYPE,IN,OUT> with(DataBinderFactory<TYPE,IN,OUT> factory);
+	
+	<IN> EndClause<TYPE,IN> with(DSLDefaults<IN> defaults);
 }
+

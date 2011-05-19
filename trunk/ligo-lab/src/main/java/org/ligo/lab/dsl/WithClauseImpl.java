@@ -16,29 +16,34 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	/**{@inheritDoc}*/
 	@Override
 	public <IN> EndClause<TYPE,IN> with(Binder<IN, TYPE> binder) {
-		return new EndClauseImpl<TYPE,IN>(new ClauseContext<TYPE,IN,TYPE>(ctxt.boundtype(),binder));
+		return new EndClauseImpl<TYPE,IN>(new ClauseContext<TYPE,IN,TYPE>(ctxt.type(),binder));
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
 	public <IN> EndClause<TYPE,IN> with(BinderFactory<IN, TYPE> factory) {
-		return with(factory.bind(ctxt.boundtype()));
+		return with(factory.bind(ctxt.type()));
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <IN, OUT> AndClause<TYPE, IN, OUT> with(DataBinder<IN, OUT> pattern) {
+	public <IN, OUT> AndClause<TYPE, IN, OUT> with(DataBinder<IN, OUT> binder) {
 		
-		ClauseContext<TYPE,IN,OUT> c = new ClauseContext<TYPE,IN,OUT>(ctxt.boundtype,pattern);
+		ClauseContext<TYPE,IN,OUT> c = new ClauseContext<TYPE,IN,OUT>(ctxt.type(),binder);
 		return new AndClauseImpl<TYPE, IN, OUT>(c);
 	}
 
 	/**{@inheritDoc}*/
 	@Override
-	public <IN, OUT> AndClause<TYPE, IN, OUT> with(DataBinderFactory<TYPE, IN, OUT> translation) {
-		ClauseContext<TYPE, IN, OUT> c = new ClauseContext<TYPE, IN, OUT>(ctxt.boundtype(), translation.bind(ctxt.boundtype));
+	public <IN, OUT> AndClause<TYPE, IN, OUT> with(DataBinderFactory<TYPE, IN, OUT> factory) {
+		ClauseContext<TYPE, IN, OUT> c = new ClauseContext<TYPE, IN, OUT>(ctxt.type(), factory.bind(ctxt.type()));
 		return new AndClauseImpl<TYPE, IN, OUT>(c);
 	}
 	
+	/**{@inheritDoc}*/
+	@Override
+	public <IN> EndClause<TYPE, IN> with(DSLDefaults<IN> defaults) {
+		return defaults.complete(this,ctxt);
+	}
 	
 }
