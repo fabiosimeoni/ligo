@@ -194,13 +194,21 @@ class MyPatternFactory<T> implements DataBinderFactory<T,MyData,Match> {
 	}
 }
 
-class MyDefaults implements DSLDefaults<MyData> {
-	public static MyDefaults DEFAULTS = new MyDefaults();
-	private MyDefaults(){};
-	@Override
-	public <TYPE> EndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?,?> ctxt) {
-		return clause.with(new MyPatternFactory<TYPE>()).and(new MatchBinder<TYPE>(ctxt.type()));
-	}
+class MyDefaults {
+	public static DSLDefaults<MyData> DEFAULTS = new DSLDefaults<MyData>() {
+		@Override
+		public <TYPE> EndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?,?> ctxt) {
+			return clause.with(new MyPatternFactory<TYPE>()).and(new MatchBinder<TYPE>(ctxt.type()));
+		}
+	};
+	public static DSLDefaults<MyData> OTHERDEFAULTS = new DSLDefaults<MyData>() {
+		@Override
+		public <TYPE> EndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?,?> ctxt) {
+			return clause.with(new MyBinder<TYPE>(ctxt.type()));
+		}
+	};
+	
+	
 }
 
 //sample app model
