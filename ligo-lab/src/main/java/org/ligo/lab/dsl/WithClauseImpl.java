@@ -1,9 +1,9 @@
 package org.ligo.lab.dsl;
 
-import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
 import org.ligo.lab.binders.DataBinder;
 import org.ligo.lab.binders.DataBinderFactory;
+import org.ligo.lab.binders.TypeBinder;
 
 class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
@@ -15,7 +15,7 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <IN> EndClause<TYPE,IN> with(Binder<IN, TYPE> binder) {
+	public <IN> EndClause<TYPE,IN> with(TypeBinder<IN, TYPE> binder) {
 		return new EndClauseImpl<TYPE,IN>(new ClauseContext<TYPE,IN,TYPE>(ctxt.type(),binder));
 	}
 	
