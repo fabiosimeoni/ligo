@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.ligo.lab.binders.Binder;
-import org.ligo.lab.binders.BinderFactory;
+import org.ligo.lab.binders.TypeBinderFactory;
 import org.ligo.lab.binders.DataBinder;
 import org.ligo.lab.binders.DataBinderFactory;
 import org.ligo.lab.binders.TypeBinder;
@@ -118,6 +118,7 @@ public class Test {
 		
 		//define
 		Binder<Reader,SomeType> defaulted = bind(SomeType.class).with(DEFAULTS).and(parser);
+		//Binder<MyData,SomeType> defaulted2 = bind(SomeType.class).with(DEFAULTS).build();
 		
 		//use
 		bound = defaulted.bind(stream);
@@ -150,7 +151,7 @@ class MyBinder<T> implements TypeBinder<MyData,T> {
 	}
 }
 
-class MyBinderFactory<T> implements BinderFactory<MyData,T> {
+class MyBinderFactory<T> implements TypeBinderFactory<MyData,T> {
 	/**{@inheritDoc}*/
 	@Override
 	public MyBinder<T> bind(Class<T> in) {
