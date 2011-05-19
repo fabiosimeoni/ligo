@@ -1,6 +1,6 @@
 package org.ligo.lab.dsl;
 
-import org.ligo.lab.binders.BinderFactory;
+import org.ligo.lab.binders.TypeBinderFactory;
 import org.ligo.lab.binders.DataBinder;
 import org.ligo.lab.binders.DataBinderFactory;
 import org.ligo.lab.binders.TypeBinder;
@@ -21,7 +21,7 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <IN> EndClause<TYPE,IN> with(BinderFactory<IN, TYPE> factory) {
+	public <IN> EndClause<TYPE,IN> with(TypeBinderFactory<IN, TYPE> factory) {
 		return with(factory.bind(ctxt.type()));
 	}
 	
