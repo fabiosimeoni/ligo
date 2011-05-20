@@ -10,10 +10,9 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.ligo.lab.binders.Binder;
-import org.ligo.lab.binders.TypeBinderFactory;
 import org.ligo.lab.binders.DataBinder;
 import org.ligo.lab.binders.DataBinderFactory;
-import org.ligo.lab.binders.TypeBinder;
+import org.ligo.lab.binders.TypeBinderFactory;
 import org.ligo.lab.dsl.ClauseContext;
 import org.ligo.lab.dsl.DSLDefaults;
 import org.ligo.lab.dsl.EndClause;
@@ -135,7 +134,7 @@ class MyDataReader implements DataBinder<Reader,MyData> {
 	}
 }
 
-class MyBinder<T> implements TypeBinder<MyData,T> {
+class MyBinder<T> implements Binder<MyData,T> {
 	private Class<T> type;
 	public MyBinder(Class<T> t) {
 		type=t;
