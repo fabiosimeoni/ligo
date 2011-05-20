@@ -1,8 +1,12 @@
 package org.ligo.lab.dsl;
 
 import org.ligo.lab.binders.Binder;
+import org.ligo.lab.binders.BinderFactory;
 
-public interface AndClause<TYPE,IN,OUT> {
+public interface AndClause<TYPE,IN> {
 	
-	EndClause<TYPE,IN> and(Binder<OUT,TYPE> binder);
+	<SOURCE> AndClause<TYPE,SOURCE> and(Binder<SOURCE,IN> transform);
+	<SOURCE> AndClause<TYPE,SOURCE> and(BinderFactory<Class<TYPE>,SOURCE,IN> transformFactory);
+	
+	Binder<IN,TYPE> build();
 }

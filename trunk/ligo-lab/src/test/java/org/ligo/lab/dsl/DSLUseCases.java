@@ -26,10 +26,9 @@ public class DSLUseCases {
 	@Test
 	public void raw() {
 	
-		//the tool offers binders that instantiate types from data. no DSL required
-		//it may well stop here: fixed model, bound type = projected type, external parsing.
-		//goodies are in the quality of binders and for this the tool has chosen Ligo's 
-		//(@Project and associated binding services, DI injection, and SPI-level facilities)
+		//here the binding tool offers binders that instantiate types from data.
+		//no data pipeling is required, hence no DSL: fixed model, out-of-band parsing facilities, bound type = projected type.
+		//tools uses Ligo used for its SPI facilities (@Project and associated binding services, DI injection)
 		
 		//------------------------- configuration code -----------------------------------------------
 		
@@ -45,24 +44,27 @@ public class DSLUseCases {
 		//minimality notwithstanding, there are a number of generic observations we can make already from
 		//client perspective:
 		
-		// a) Binder is a type-specific abstraction (a single binder binds a given type multiple times). 
-		// Compare with SNAQue or JAXB or ...Clients that bind multiple types use multiple binders 
-		// (which does not exclude that they may have been configured to share state).
+		// -) In contrast with JAXB, SNAQue, and other tools, binder is a type-specific abstraction 
+		//(a single binder binds a given type one or more times). 
+		// scheme does not limit implementation choices. binder may pre-process MyType,
+		//use a cache of pre-processed representations, recur with dynamic dispatch over the representations, etc.
+		//Clients that bind multiple types use multiple binders (which does not exclude 
+		//that they may have been configured to share state).
 		
-		// b) data parsing, if required, is dealt with upstream. the tool will offer a separate factory/ies
+		// -) data parsing, if required, is dealt with upstream. the tool will offer a separate factory/ies
 		// appropriate to MyData model.
 		
-		// c) data can be created programmatically and passed (or arrive somehow) to "binding code" without
+		// -) data can be created programmatically and passed (or arrive somehow) to "binding code" without
 		// the need of intermediate serialisation (as one would need to do with JAXB and XML). If
 		// the binder is based on true projections, this enables a by-copy form of metamorphoses. Don't think JAXB
 		// has ever been used to enable type changes, even when its binding logic would be appropriate.
 		
-		//d) clients use Ligo interfaces in "binding code", which allows configuration to grow later, independently.
+		//-) clients use Ligo interfaces in "binding code", which allows configuration to grow later, independently.
 		
-		//e) DI container can easily create and inject dependencies into the binder, and then the binder in "binding code".
+		//-) DI container can easily create and inject dependencies into the binder, and then the binder in "binding code".
 		//This is particularly of value when the binder has various dependencies to other components of the tools.
 		
-		//f) for increased decoupling from Ligo API, clients can get DI to create and inject a Provider<MyType> that takes
+		//-) for increased decoupling from Ligo API, clients can get DI to create and inject a Provider<MyType> that takes
 		//data and produces instances, using an (injected) Binder inside. Ligo dependencies would thus be isolated
 		//in source (a la Guice modules), perhaps even in a separate build module (perhaps with overlapping packages for
 		//package private access). Not sure how much value to attach to this extra effort in this simple scenario.
@@ -72,10 +74,10 @@ public class DSLUseCases {
 
 	
 	@Test
-	public void parsing() {
+	public void parsingPipe() {
 	
-		//DSL is introduced only for the convenience of encapsulating parsing within the binder.
-		//the Ligo implementation offers a number of input-type specific parsers.
+		//here a simple pipeline is introduced which encapsulates parsing within the binder.
+		//the binding tool offers a number of input-type specific parsers.
 		
 		//------------------------- configuration code -----------------------------------------------
 		
@@ -83,7 +85,7 @@ public class DSLUseCases {
 		
 		MyDataReader parser = new MyDataReader();
 		
-		Binder<Reader,SomeType> readingbinder = bind(SomeType.class).with(binder).and(parser);
+		Binder<Reader,SomeType> readingbinder = bind(SomeType.class).with(binder).and(parser).build();
 		
 		//------------------------- binding code -----------------------------------------------------
 		
@@ -91,15 +93,15 @@ public class DSLUseCases {
 	
 		readingbinder.bind(stream);
 		
-		//a) types are usually bound to data that becomes available in the same form.
+		//-) types are usually bound to data that becomes available in the same form.
 		//hence input-type parsers (e.g. for character streams) are common.
 		
-		//b) the encapsulation of sufficiently general parser (e.g. Readers indeed)
+		//-) the encapsulation of sufficiently general parser (e.g. Readers indeed)
 		//can hide the data model from "binding code". evolving it along with the rest 
 		// of the binding configuration leaves the "binding code" untouched. not sure this
 		//flexibility is actually required in practice.
 		
-		//c) DI cannot inject into sentence (especially not in Spring, not without a special parser anyway).
+		//-) DI cannot inject into sentence (especially not in Spring, not without a special parser anyway).
 		//Clients that use DSL sentences inject Binders and Parsers into Provider<MyType> and Provider<MyType>s into
 		//the other components.
 	}
@@ -108,9 +110,8 @@ public class DSLUseCases {
 	@Test
 	public void generatedbinders() {
 	
-		//DSL is used to introduce dynamic binding generation in the configuration process.
-		//binders are generated from factories, typically because they operate by dynamical dispatch.
-		
+		//DSL is used to insert dynamic binding generation in the configuration process,
+		//instead of hiding without a binder front-end.
 		
 		//------------------------- configuration code -----------------------------------------------
 		
@@ -118,7 +119,7 @@ public class DSLUseCases {
 		
 		MyDataReader parser = new MyDataReader();
 		
-		Binder<Reader,SomeType> binder = bind(SomeType.class).with(factory).and(parser);
+		Binder<Reader,SomeType> binder = bind(SomeType.class).with(factory).and(parser).build();
 		
 		
 		//------------------------- binding code -----------------------------------------------------
@@ -127,8 +128,41 @@ public class DSLUseCases {
 	
 		binder.bind(stream);
 		
+		//if cross-input parsing is desirable over model abstraction:
+		
+		Binder<MyData,SomeType> databinder = bind(SomeType.class).with(factory).build();
+		
+		databinder.bind(new MyData());
 	}
 	
+	@Test
+	public void newtypes() {
+	
+		//DSL is here used to separate the type to be bound from the type to be used for projection.
+		//the tool offers binders from the data model to the same or another model. the output model
+		//is then bound to instances of the initial type.
+		
+		//------------------------- configuration code -----------------------------------------------
+		
+		MyBinderFactory<SomeType> factory = new MyBinderFactory<SomeType>();
+		
+		MyDataReader parser = new MyDataReader();
+		
+		Binder<Reader,SomeType> binder = bind(SomeType.class).with(factory).and(parser).build();
+		
+		
+		//------------------------- binding code -----------------------------------------------------
+		
+		Reader stream = new StringReader(".......");
+	
+		binder.bind(stream);
+		
+		//if cross-input parsing is desirable over model abstraction:
+		
+		Binder<MyData,SomeType> databinder = bind(SomeType.class).with(factory).build();
+		
+		databinder.bind(new MyData());
+	}
 }
 
 //sample app model

@@ -6,9 +6,7 @@ package org.ligo.lab.dsl;
 import java.io.Reader;
 
 import org.ligo.lab.binders.Binder;
-import org.ligo.lab.binders.DataBinder;
-import org.ligo.lab.binders.DataBinderFactory;
-import org.ligo.lab.binders.TypeBinderFactory;
+import org.ligo.lab.binders.BinderFactory;
 
 /**
  * @author Fabio Simeoni
@@ -19,7 +17,7 @@ public class DummyLigoImpl {
 	//sample impl
 	static class MyData {}
 	
-	static class MyDataReader implements DataBinder<Reader,MyData> {
+	static class MyDataReader implements Binder<Reader,MyData> {
 		public MyData bind(Reader in) {
 			System.out.println("parsing with a "+in.getClass().getSimpleName());
 			return new MyData();
@@ -42,7 +40,7 @@ public class DummyLigoImpl {
 		}
 	}
 
-	static class MyBinderFactory<T> implements TypeBinderFactory<MyData,T> {
+	static class MyBinderFactory<T> implements BinderFactory<Class<T>,MyData,T> {
 		/**{@inheritDoc}*/
 		@Override
 		public MyBinder<T> bind(Class<T> in) {
@@ -69,14 +67,14 @@ public class DummyLigoImpl {
 
 	static class Match {}
 
-	static class MyPattern implements DataBinder<MyData,Match> {
+	static class MyPattern implements Binder<MyData,Match> {
 		public Match bind(MyData in) {
 			System.out.println("matching "+in);
 			return new Match();
 		}
 	}
 
-	static class MyPatternFactory<T> implements DataBinderFactory<T,MyData,Match> {
+	static class MyPatternFactory<T> implements BinderFactory<Class<T>,MyData,Match> {
 		
 		/**{@inheritDoc}*/
 		@Override
@@ -89,13 +87,13 @@ public class DummyLigoImpl {
 	static class MyDefaults {
 		public static DSLDefaults<MyData> DEFAULTS = new DSLDefaults<MyData>() {
 			@Override
-			public <TYPE> EndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?,?> ctxt) {
-				return clause.with(new MyPatternFactory<TYPE>()).and(new MatchBinder<TYPE>(ctxt.type()));
+			public <TYPE> AndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?> ctxt) {
+				return clause.with(new MatchBinder<TYPE>(ctxt.type())).and(new MyPatternFactory<TYPE>());
 			}
 		};
 		public static DSLDefaults<MyData> OTHERDEFAULTS = new DSLDefaults<MyData>() {
 			@Override
-			public <TYPE> EndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?,?> ctxt) {
+			public <TYPE> AndClause<TYPE,MyData> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?> ctxt) {
 				return clause.with(new MyBinder<TYPE>(ctxt.type()));
 			}
 		};
