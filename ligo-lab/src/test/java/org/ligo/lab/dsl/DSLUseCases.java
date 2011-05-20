@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.dsl;
 
+import static org.ligo.lab.dsl.DummyLigoImpl.Defaults.*;
 import static org.ligo.lab.dsl.Ligo.*;
 
 import java.io.Reader;
@@ -10,10 +11,17 @@ import java.io.StringReader;
 
 import org.junit.Test;
 import org.ligo.lab.binders.Binder;
-import org.ligo.lab.dsl.DummyLigoImpl.MyBinder;
-import org.ligo.lab.dsl.DummyLigoImpl.MyBinderFactory;
-import org.ligo.lab.dsl.DummyLigoImpl.MyData;
-import org.ligo.lab.dsl.DummyLigoImpl.MyDataReader;
+import org.ligo.lab.dsl.DummyLigoImpl.Data;
+import org.ligo.lab.dsl.DummyLigoImpl.DataBinder;
+import org.ligo.lab.dsl.DummyLigoImpl.DataBinderFactory;
+import org.ligo.lab.dsl.DummyLigoImpl.DataReader;
+import org.ligo.lab.dsl.DummyLigoImpl.OpenTransform;
+import org.ligo.lab.dsl.DummyLigoImpl.OpenTransformFactory;
+import org.ligo.lab.dsl.DummyLigoImpl.Transform;
+import org.ligo.lab.dsl.DummyLigoImpl.TransformFactory;
+import org.ligo.lab.dsl.DummyLigoImpl.TransformedData;
+import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinder;
+import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinderFactory;
 
 
 /**
@@ -32,12 +40,12 @@ public class DSLUseCases {
 		
 		//------------------------- configuration code -----------------------------------------------
 		
-		Binder<MyData,SomeType> binder = new MyBinder<SomeType>(SomeType.class);
+		Binder<Data,SomeType> binder = new DataBinder<SomeType>(SomeType.class);
 		
 		
 		//------------------------- binding code -----------------------------------------------------
 		
-		MyData data = new MyData();
+		Data data = new Data();
 		
 		binder.bind(data);
 		
@@ -52,7 +60,7 @@ public class DSLUseCases {
 		//that they may have been configured to share state).
 		
 		// -) data parsing, if required, is dealt with upstream. the tool will offer a separate factory/ies
-		// appropriate to MyData model.
+		// appropriate to Data model.
 		
 		// -) data can be created programmatically and passed (or arrive somehow) to "binding code" without
 		// the need of intermediate serialisation (as one would need to do with JAXB and XML). If
@@ -81,9 +89,9 @@ public class DSLUseCases {
 		
 		//------------------------- configuration code -----------------------------------------------
 		
-		MyBinder<SomeType> binder = new MyBinder<SomeType>(SomeType.class);
+		DataBinder<SomeType> binder = new DataBinder<SomeType>(SomeType.class);
 		
-		MyDataReader parser = new MyDataReader();
+		DataReader parser = new DataReader();
 		
 		Binder<Reader,SomeType> readingbinder = bind(SomeType.class).with(binder).and(parser).build();
 		
@@ -106,64 +114,143 @@ public class DSLUseCases {
 		//the other components.
 	}
 	
-	
 	@Test
-	public void generatedbinders() {
+	public void transformPipe() {
 	
-		//DSL is used to insert dynamic binding generation in the configuration process,
-		//instead of hiding without a binder front-end.
+		//here we add to pipeline to transform the data upstream of binding.
 		
 		//------------------------- configuration code -----------------------------------------------
 		
-		MyBinderFactory<SomeType> factory = new MyBinderFactory<SomeType>();
+		DataBinder<SomeType> binder = new DataBinder<SomeType>(SomeType.class);
 		
-		MyDataReader parser = new MyDataReader();
+		Transform transform = new Transform();
 		
-		Binder<Reader,SomeType> binder = bind(SomeType.class).with(factory).and(parser).build();
-		
+		Binder<Data,SomeType> transformingbinder = bind(SomeType.class).with(binder).and(transform).build();
 		
 		//------------------------- binding code -----------------------------------------------------
 		
+		Data data = new Data();
+		
+		transformingbinder.bind(data);
+		
+		//of course, parsing can be chained. let's show this once for all:
+		
+		
+		//------------------------- configuration code -----------------------------------------------
+		
+		DataReader parser = new DataReader();
+		
+		Binder<Reader,SomeType> databinder = bind(SomeType.class).with(binder).and(transform).and(parser).build();
+		
+		//------------------------- binding code -----------------------------------------------
+	
 		Reader stream = new StringReader(".......");
 	
-		binder.bind(stream);
+		databinder.bind(stream);
+	}
+	
+	
+	@Test
+	public void opentransformPipe() {
+	
+		//pipeline steps do not need to be 'closed' under a single data model:
+		//for example a tool can offer transforms from an input model to an output model which is then bound.
 		
-		//if cross-input parsing is desirable over model abstraction:
 		
-		Binder<MyData,SomeType> databinder = bind(SomeType.class).with(factory).build();
+		//------------------------- configuration code -----------------------------------------------
 		
-		databinder.bind(new MyData());
+		TransformedDataBinder<SomeType> binder = new TransformedDataBinder<SomeType>(SomeType.class);
+		
+		
+		OpenTransform transform = new OpenTransform();
+		
+		//open transform change data model
+		assert( transform.bind(new Data()) instanceof TransformedData);
+		
+
+		Binder<Data,SomeType> transformingbinder = bind(SomeType.class).with(binder).and(transform).build();
+		
+		//------------------------- binding code -----------------------------------------------------
+		
+		Data data = new Data();
+		
+		transformingbinder.bind(data);
 	}
 	
 	@Test
-	public void newtypes() {
+	public void bindingFactories() {
 	
-		//DSL is here used to separate the type to be bound from the type to be used for projection.
-		//the tool offers binders from the data model to the same or another model. the output model
-		//is then bound to instances of the initial type.
+		//tools will normally generate binders from factories, and these factories can be lifted in the configuration instead 
+		//of hiding without a binder front-end.
 		
 		//------------------------- configuration code -----------------------------------------------
 		
-		MyBinderFactory<SomeType> factory = new MyBinderFactory<SomeType>();
+		DataBinderFactory<SomeType> factory = new DataBinderFactory<SomeType>();
 		
-		MyDataReader parser = new MyDataReader();
-		
-		Binder<Reader,SomeType> binder = bind(SomeType.class).with(factory).and(parser).build();
+		Binder<Data,SomeType> binder = bind(SomeType.class).with(factory).build();
 		
 		
 		//------------------------- binding code -----------------------------------------------------
 		
-		Reader stream = new StringReader(".......");
+		Data data = new Data();
 	
+		binder.bind(data);;
+	}
+	
+	@Test
+	public void transformFactories() {
+	
+		//similarly, transformations be derived by type-driven factories.
+		//here we show a combination of binder and transformation factories:
+		
+		//------------------------- configuration code -----------------------------------------------
+		
+		DataBinderFactory<SomeType> bfactory = new DataBinderFactory<SomeType>();
+		
+		TransformFactory<SomeType> tfactory = new TransformFactory<SomeType>();
+		
+		Binder<Data,SomeType> binder = bind(SomeType.class).with(bfactory).and(tfactory).build();
+		
+		
+		//------------------------- binding code -----------------------------------------------------
+		
+		Data data = new Data();
+	
+		binder.bind(data);
+	}
+	
+	@Test
+	public void defaults() {
+	
+		//tools may offer a single pipeline, or at least a default one.
+		//when this becomes complex, the tool may provide defaults that can be 'completed' in configuration code
+		
+		//e.g. consider this (artificially?) heavy pipline with factories, heterogeneous transforms, and parsers:
+		
+		
+		
+		//------------------------- configuration code -----------------------------------------------
+		
+		
+		DataReader parser = new DataReader();
+		TransformFactory<SomeType> tfactory = new TransformFactory<SomeType>();
+		OpenTransformFactory<SomeType> ttfactory = new OpenTransformFactory<SomeType>();
+		TransformedDataBinderFactory<SomeType> tbfactory = new TransformedDataBinderFactory<SomeType>();
+				
+		Binder<Reader,SomeType> binder = bind(SomeType.class).with(tbfactory).and(ttfactory).and(tfactory).and(parser).build();
+		
+		//part of the construction can be instead captured by default provided by the tool, and the completed as required:
+		
+		binder = bind(SomeType.class).with(FULLPIPE).and(parser).build();
+		
+		//------------------------- binding code -----------------------------------------------------
+		Reader stream = new StringReader(".......");
+		
 		binder.bind(stream);
-		
-		//if cross-input parsing is desirable over model abstraction:
-		
-		Binder<MyData,SomeType> databinder = bind(SomeType.class).with(factory).build();
-		
-		databinder.bind(new MyData());
 	}
 }
+
+
 
 //sample app model
 class SomeType {}
