@@ -6,7 +6,7 @@ import org.ligo.lab.binders.BinderFactory;
 public interface AndClause<TYPE,IN> {
 	
 	<SOURCE> AndClause<TYPE,SOURCE> and(Binder<SOURCE,IN> transform);
-	<SOURCE> AndClause<TYPE,SOURCE> and(BinderFactory<Class<TYPE>,SOURCE,IN> transformFactory);
+	<SOURCE> AndClause<TYPE,SOURCE> and(BinderFactory<TYPE,SOURCE,IN> transformFactory);
 	
 	Binder<IN,TYPE> build();
 }
