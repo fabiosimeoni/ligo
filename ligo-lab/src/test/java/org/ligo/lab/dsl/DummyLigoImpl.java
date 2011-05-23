@@ -7,6 +7,8 @@ import java.io.Reader;
 
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
+import org.ligo.lab.typebinders.Key;
+import org.ligo.lab.typebinders.TypeLiteral;
 
 /**
  * @author Fabio Simeoni
@@ -25,26 +27,27 @@ public class DummyLigoImpl {
 	}
 
 	static class DataBinder<T> implements Binder<Data,T> {
-		private Class<T> type;
+		private Key<T> key;
+		public DataBinder(Key<T> t) {
+			key=t;
+		}
+		public DataBinder(TypeLiteral<T> t) {
+			key=Key.get(t);
+		}
 		public DataBinder(Class<T> t) {
-			type=t;
+			key=Key.get(t);
 		}
 		public T bind(Data in) {
-			System.out.println("binding "+in.getClass().getSimpleName());
-			try {
-				return type.newInstance();
-			}
-			catch(Exception e) {
-				throw new RuntimeException(e);
-			}
+			System.out.println("binding "+in.getClass().getSimpleName()+" to "+key.kind());
+			return null;
 		}
 	}
 
-	static class DataBinderFactory<T> implements BinderFactory<Class<T>,Data,T> {
+	static class DataBinderFactory<T> implements BinderFactory<T,Data,T> {
 		/**{@inheritDoc}*/
 		@Override
-		public DataBinder<T> bind(Class<T> in) {
-			System.out.println("generating binder from "+in.getSimpleName());
+		public DataBinder<T> bind(Key<T> in) {
+			System.out.println("generating binder from "+in.kind());
 			return new DataBinder<T>(in);
 		}
 	}
@@ -57,12 +60,12 @@ public class DummyLigoImpl {
 		}
 	}
 	
-	static class TransformFactory<T> implements BinderFactory<Class<T>,Data,Data> {
+	static class TransformFactory<T> implements BinderFactory<T,Data,Data> {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public Transform bind(Class<T> in) {
-			System.out.println("generating closed transform from "+in.getSimpleName());
+		public Transform bind(Key<T> in) {
+			System.out.println("generating closed transform from "+in.kind());
 			return new Transform();
 		}
 	}
@@ -75,26 +78,24 @@ public class DummyLigoImpl {
 	static class TransformedData {}
 
 	static class TransformedDataBinder<T> implements Binder<TransformedData,T> {
-		private Class<T> type;
+		private Key<T> key;
+		public TransformedDataBinder(Key<T> t) {
+			key=t;
+		}
 		public TransformedDataBinder(Class<T> t) {
-			type=t;
+			key=Key.get(t);
 		}
 		public T bind(TransformedData in) {
-			System.out.println("binding "+in.getClass().getSimpleName());
-			try {
-				return type.newInstance();
-			}
-			catch(Exception e) {
-				throw new RuntimeException(e);
-			}
+			System.out.println("binding "+in.getClass().getSimpleName()+" to "+key.kind());
+			return null;
 		}
 	}
 	
-	static class TransformedDataBinderFactory<T> implements BinderFactory<Class<T>,TransformedData,T> {
+	static class TransformedDataBinderFactory<T> implements BinderFactory<T,TransformedData,T> {
 		/**{@inheritDoc}*/
 		@Override
-		public TransformedDataBinder<T> bind(Class<T> in) {
-			System.out.println("generating binder for transformed data from "+in.getSimpleName());
+		public TransformedDataBinder<T> bind(Key<T> in) {
+			System.out.println("generating binder for transformed data from "+in.kind());
 			return new TransformedDataBinder<T>(in);
 		}
 	}
@@ -106,12 +107,12 @@ public class DummyLigoImpl {
 		}
 	}
 
-	static class OpenTransformFactory<T> implements BinderFactory<Class<T>,Data,TransformedData> {
+	static class OpenTransformFactory<T> implements BinderFactory<T,Data,TransformedData> {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public OpenTransform bind(Class<T> in) {
-			System.out.println("generating open transform from "+in.getSimpleName());
+		public OpenTransform bind(Key<T> in) {
+			System.out.println("generating open transform from "+in.kind());
 			return new OpenTransform();
 		}
 	}
@@ -128,7 +129,7 @@ public class DummyLigoImpl {
 		public static DSLDefaults<Data> OTHERDEFAULTS = new DSLDefaults<Data>() {
 			@Override
 			public <TYPE> AndClause<TYPE,Data> complete(WithClause<TYPE> clause, ClauseContext<TYPE,?> ctxt) {
-				return clause.with(new DataBinder<TYPE>(ctxt.type()));
+				return clause.with(new DataBinder<TYPE>(ctxt.key()));
 			}
 		};
 		

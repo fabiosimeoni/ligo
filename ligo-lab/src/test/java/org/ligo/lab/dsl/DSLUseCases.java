@@ -22,6 +22,7 @@ import org.ligo.lab.dsl.DummyLigoImpl.TransformFactory;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedData;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinder;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinderFactory;
+import org.ligo.lab.typebinders.TypeLiteral;
 
 
 /**
@@ -36,7 +37,7 @@ public class DSLUseCases {
 	
 		//here the binding tool offers binders that instantiate types from data.
 		//no data pipeling is required, hence no DSL: fixed model, out-of-band parsing facilities, bound type = projected type.
-		//tools uses Ligo used for its SPI facilities (@Project and associated binding services, DI injection)
+		//tools uses Ligo used for its SPI facilities (@Bind and associated binding services, DI injection)
 		
 		//------------------------- configuration code -----------------------------------------------
 		
@@ -248,9 +249,26 @@ public class DSLUseCases {
 		
 		binder.bind(stream);
 	}
+	
+	@Test
+	public void generics() {
+		
+		TypeLiteral<SomeGeneric<SomeType>> literal = new TypeLiteral<SomeGeneric<SomeType>>() {};
+		DataBinder<SomeGeneric<SomeType>> binder = new DataBinder<SomeGeneric<SomeType>>(literal);
+		
+		DataReader parser = new DataReader();
+		
+		Binder<Reader,SomeGeneric<SomeType>> readingbinder = bind(literal).with(binder).and(parser).build();
+		
+		//------------------------- binding code -----------------------------------------------------
+		
+		Reader stream = new StringReader(".......");
+	
+		readingbinder.bind(stream);
+	}
 }
 
 
-
+class SomeGeneric<T> {}
 //sample app model
 class SomeType {}
