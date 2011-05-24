@@ -50,7 +50,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	private ConstructorDef constructorDef;
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
 	
-	private Map<QName,TypeBinder<?>> parts = new HashMap<QName, TypeBinder<?>>();
+	private Map<QName,TypeBinder<?>> binders = new HashMap<QName, TypeBinder<?>>();
 	
 	
 	public DefaultObjectBinder(Key<TYPE> key) {
@@ -93,7 +93,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	
 	/**{@inheritDoc}*/
 	public Map<QName,TypeBinder<?>> binders() {
-		return parts;
+		return binders;
 	}
 	
 	/**{@inheritDoc}*/
@@ -110,7 +110,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 				}
 			
 			
-			DataProvider dp = provided.get(0).provided();
+			DataProvider dp = provided.get(0).provider();
 			
 			if (!(dp instanceof StructureProvider))
 				switch(mode()) {
@@ -126,14 +126,14 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			
 			//extract constructor parameters and off-load creation to factory
 			for (QName name : constructorDef.names())
-				vals.add(parts.get(name).bind(provider.get(name)));
+				vals.add(binders.get(name).bind(provider.get(name)));
 				
 			TYPE object = env.resolver().resolve(key(),vals);
 		
 			for (MethodDef m : methodDefs) {
 				vals.clear();
 				for (QName name : m.names()) {
-					Object part = parts.get(name).bind(provider.get(name));
+					Object part = binders.get(name).bind(provider.get(name));
 					vals.add(part);
 				}
 				
@@ -158,12 +158,12 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			
 			//identify constructor
 			for (Constructor<?> c : parent.getDeclaredConstructors()) {
-				boundNames = addParts(parent,c.getParameterAnnotations(), c.getGenericParameterTypes());
+				boundNames = addBinder(parent,c.getParameterAnnotations(), c.getGenericParameterTypes());
 				if (boundNames.size()>0) {
 					if (constructor==null)
 						constructor=c;
 					else
-						throw new RuntimeException(format("%1s has more than one bound constructor",clazz));
+						throw new RuntimeException(format("%1s has more than one bound constructor",clazz.getName()));
 				}	
 			
 			}
@@ -177,13 +177,13 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 				constructor = clazz.getDeclaredConstructor();
 			}
 			catch(Throwable e) {
-				throw new RuntimeException(format("%1s has no nullary or annotated constructors",clazz));
+				throw new RuntimeException(format("%1s has no nullary or annotated constructors",clazz.getName()));
 			
 			}
 		
 		constructor.setAccessible(true);
 		
-		logger.trace("bound constructor for {} is {}",clazz,constructor);
+		logger.trace("bound constructor for {} is {}",clazz.getName(),constructor.getName());
 		
 		constructorDef = new ConstructorDef(constructor,boundNames);
 		
@@ -201,7 +201,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					continue;
 						
 				Type[] params = m.getGenericParameterTypes();
-				List<QName> boundNames = addParts(clazz,m.getParameterAnnotations(),params);
+				List<QName> boundNames = addBinder(clazz,m.getParameterAnnotations(),params);
 				
 				//scan interfaces for possible annotations
 				if (boundNames.isEmpty())
@@ -210,7 +210,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 							//find methods by 'raw' type (interface could be parametric)
 							Method overridden = i.getMethod(m.getName(),m.getParameterTypes());
 							//but do use the resolved parameters
-							boundNames = addParts(clazz,overridden.getParameterAnnotations(),params);
+							boundNames = addBinder(clazz,overridden.getParameterAnnotations(),params);
 						}
 						catch(NoSuchMethodException e) {
 							continue;
@@ -220,12 +220,12 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					
 					//no private methods
 					if (Modifier.isPrivate(m.getModifiers()))
-						throw new RuntimeException("cannot project over private method "+m);
+						throw new RuntimeException(format("cannot project over private method '%1s' in %2s",m.getName(),clazz.getName()));
 					
 					m.setAccessible(true);
 					methodDefs.add(new MethodDef(m,boundNames));
 					
-					logger.trace("bound method {} for {}",m.getName(),clazz);
+					logger.trace("bound method '{}' for {}",m.getName(),clazz.getName());
 				}
 			}
 		
@@ -235,7 +235,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	}
 	
 	
-	List<QName> addParts(Class<?> clazz,Annotation[][] annotationLists, Type parameters[]) {
+	List<QName> addBinder(Class<?> clazz,Annotation[][] annotationLists, Type parameters[]) {
 		
 		List<QName> boundNames = new LinkedList<QName>();
 		for (int i =0; i<parameters.length;i++)
@@ -245,8 +245,8 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					Bind bindAnnotation = (Bind) annotation;
 					QName name = new QName(bindAnnotation.ns(),bindAnnotation.value());
 					
-					if (parts.containsKey(name))
-						throw new RuntimeException(format("bound name %1s is duplicated in %2s",name,clazz));
+					if (binders.containsKey(name))
+						throw new RuntimeException(format("bound name %1s is duplicated in %2s",name,clazz.getName()));
 					else {	
 						
 						boundNames.add(name);
@@ -258,7 +258,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 						//set mode
 						binder.setMode(bindAnnotation.mode());
 						
-						parts.put(name,binder);
+						binders.put(name,binder);
 					}
 					break;
 				}
@@ -276,7 +276,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return "obj"+parts;
+		return "obj"+binders;
 	}
 	
 	

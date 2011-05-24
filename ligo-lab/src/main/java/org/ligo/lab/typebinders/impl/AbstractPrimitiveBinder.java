@@ -39,7 +39,7 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 						return null;
 				}
 			
-			DataProvider dp = provided.get(0).provided();
+			DataProvider dp = provided.get(0).provider();
 		
 			if (!(dp instanceof ValueProvider))
 				switch(mode()) {
