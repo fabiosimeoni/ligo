@@ -3,7 +3,6 @@
  */
 package org.ligo.lab.typebinders;
 
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 
@@ -14,9 +13,9 @@ import java.lang.reflect.TypeVariable;
  */
 public interface Environment {
 
-	<T> TypeBinder<T> binder(Key<T> key);
+	<T> TypeBinder<T> bind(Key<T> key);
 
-	void addVariable(TypeVariable<?> var,Type t);
+	void bindVariable(TypeVariable<?> var,TypeBinder<?> binder);
 
 	Resolver resolver();
 	

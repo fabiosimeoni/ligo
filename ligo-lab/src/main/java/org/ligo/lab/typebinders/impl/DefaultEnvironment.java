@@ -8,7 +8,6 @@ import static org.ligo.lab.typebinders.Key.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
 
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +15,8 @@ import java.util.Map;
 
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.Resolver;
+import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder.ObjectBinderProvider;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
@@ -85,7 +84,7 @@ public class DefaultEnvironment implements Environment {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <T> TypeBinder<T> binder(Key<T> key) {
+	public <T> TypeBinder<T> bind(Key<T> key) {
 		
 		//hit cache
 		@SuppressWarnings("unchecked") //internally consistent
@@ -131,8 +130,8 @@ public class DefaultEnvironment implements Environment {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public void addVariable(TypeVariable<?> var, Type type) {
-		cache.put(get(var), binder(get(type)));
+	public void bindVariable(TypeVariable<?> var, TypeBinder<?> binder) {
+		cache.put(get(var), binder);
 	}
 	
 }
