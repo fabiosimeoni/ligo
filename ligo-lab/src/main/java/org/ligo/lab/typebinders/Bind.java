@@ -24,11 +24,11 @@ import java.lang.annotation.Target;
  */
 public @interface Bind {
 
-	public static enum Mode{STRICT,LAX}
+	public static enum Mode{STRICT,LAX,DEFAULT}
 	
 	String value();
 	
 	String ns() default "";
 	
-	Mode mode() default STRICT;
+	Mode mode() default DEFAULT;
 }

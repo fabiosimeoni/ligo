@@ -4,6 +4,7 @@
 package org.ligo.lab.typebinders.impl;
 
 import static java.lang.String.*;
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 
@@ -256,7 +257,8 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 						TypeBinder<?> binder = env.binderFor(key);
 						
 						//set mode
-						binder.setMode(bindAnnotation.mode());
+						if (bindAnnotation.mode()!=DEFAULT)
+							binder.setMode(bindAnnotation.mode());
 						
 						binders.put(name,binder);
 					}
@@ -282,8 +284,6 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	
 	public static class ObjectBinderProvider implements BinderProvider<Object> {
 
-		public static final ObjectBinderProvider INSTANCE =  new ObjectBinderProvider();
-		
 		/**{@inheritDoc}*/
 		@Override
 		public TypeBinder<Object> binder(Key<Object> key, Environment env) {

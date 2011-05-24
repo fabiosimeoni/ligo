@@ -5,6 +5,7 @@ package org.ligo.lab.typebinders.impl;
 
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 
@@ -34,8 +35,11 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	private TypeBinder<?> binder;
 	
 	DefaultCollectionBinder(Key<COLLTYPE> key, Environment e) {
+		
 		super(key);
 		env=e;
+		
+		setMode(LAX);
 		
 		switch (key.kind().value()) {
 			case CLASS: //simply type-extract class itself
@@ -54,15 +58,27 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	public TypeBinder<?> binder() {
 		return binder;
 	}
+	
 	@Override
 	public COLLTYPE bind(List<Provided> provided) {
 		
 		List<Object> temp = new ArrayList<Object>();
 		
 		for (Provided p : provided)
-			temp.add(binder.bind(singletonList(p)));
+			try {
+				temp.add(binder.bind(singletonList(p)));
+			}
+			catch(RuntimeException e) {
+				switch(mode()) {
+					case STRICT: throw e;
+					case LAX: continue;
+				}
+				
+			}
 		
 		COLLTYPE list = env.resolver().resolve(key(),asList(new Object[]{temp}));
+		
+		logger.trace("bound {} ",list);
 		
 		return list;
 	}
