@@ -9,9 +9,12 @@ import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
 
 import java.lang.reflect.TypeVariable;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
@@ -40,15 +43,19 @@ public class DefaultEnvironment implements Environment {
 	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
 	@SuppressWarnings("unchecked")
-	private static final List<? extends BinderProvider<?>> PROVIDERS = asList(
-			ObjectBinderProvider.INSTANCE, 
+	private static final List<BinderProvider<?>> PROVIDERS = (List) asList(
+			ObjectBinderProvider.INSTANCE,
+			DefaultCollectionBinder.provider(List.class),
+			DefaultCollectionBinder.provider(Set.class),
+			DefaultCollectionBinder.provider(Queue.class),
+			DefaultCollectionBinder.provider(Deque.class),
 			StringBinder.INSTANCE.provider(),
 			IntBinder.INSTANCE.provider(),
 			FloatBinder.INSTANCE.provider(),
 			DoubleBinder.INSTANCE.provider(),
 			BooleanBinder.INSTANCE.provider()
 	);
-	
+
 	private final Resolver implProvider;
 	
 	/**
@@ -117,9 +124,8 @@ public class DefaultEnvironment implements Environment {
 		
 		//try raw type
 		Kind<?> kind = key.kind();
-		if (provider==null && kind.value()==GENERIC) {
+		if (provider==null && kind.value()==GENERIC)
 			provider = providers.get(get(GENERIC(kind).getRawType(),key.qualifier()));
-		}
 
 		//default to object
 		if (provider==null)

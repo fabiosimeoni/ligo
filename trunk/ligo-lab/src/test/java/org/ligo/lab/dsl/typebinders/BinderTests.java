@@ -110,8 +110,9 @@ public class BinderTests {
 		Managed(@Bind("foo") String s) {};
 		
 		void foo(@Bind("foo2") String s){}
+		void goo(@Bind("foo3") List<String> s){}
 		
-		public void poo(@Bind("foo3") String s){}
+		public void poo(@Bind("foo4") String s){}
 	}
 	
 	static class BadlyManaged {

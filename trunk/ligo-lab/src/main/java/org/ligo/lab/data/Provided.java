@@ -11,5 +11,5 @@ package org.ligo.lab.data;
  */
 public interface Provided {
 
-	DataProvider provided();
+	DataProvider provider();
 }
