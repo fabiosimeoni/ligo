@@ -24,10 +24,11 @@ import javax.inject.Qualifier;
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.data.Provided;
+import org.ligo.lab.data.StructureProvider;
 import org.ligo.lab.typebinders.Bind;
+import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.TypeBinderFactory;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,22 +41,21 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassBinder.class);
 	
-	private final TypeBinderFactory factory;
+	private final Environment env;
 	
-	@SuppressWarnings("unused")
 	private ConstructorDef constructorDef;
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
 	
 	private Map<QName,TypeBinder<?>> parts = new HashMap<QName, TypeBinder<?>>();
 	
 	
-	public ClassBinder(Key<TYPE> key,TypeBinderFactory f) {
+	public ClassBinder(Key<TYPE> key,Environment e) {
 		
 		super(key);
-		factory = f;
+		env = e;
 		
 		//resolve key to implementation
-		Kind<?> provided = factory.resolver().resolve(key);
+		Kind<?> provided = env.resolver().resolve(key);
 		
 		//extract 'raw' type
 		Class<?> clazz = null;
@@ -69,7 +69,7 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 				//push variable bindings
 				TypeVariable<?>[] vars = clazz.getTypeParameters(); 
 				for (int i = 0; i<vars.length; i++)
-					factory.addVariable(vars[i], pt.getActualTypeArguments()[i]);
+					env.addVariable(vars[i], pt.getActualTypeArguments()[i]);
 				break;
 			default:
 				throw new RuntimeException("unexpected kind "+provided);
@@ -90,9 +90,41 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public TYPE bind(List<Provided> in) {
-		//TODO
-		return null;
+	public TYPE bind(List<Provided> provided) {
+		try {
+			
+			if (provided.size()!=1)
+				throw new RuntimeException("expected one value but found zero or many: "+provided);
+			
+			
+			if (!(provided.get(0) instanceof StructureProvider))
+				throw new RuntimeException("expected a structure but found "+provided.get(0));
+			
+			StructureProvider provider = (StructureProvider) provided.get(0);
+			
+			List<Object> vals = new LinkedList<Object>();
+			
+			//extract constructor parameters and off-load creation to factory
+			for (QName name : constructorDef.names())
+				vals.add(parts.get(name).bind(provider.get(name)));
+				
+			TYPE object = env.resolver().resolve(key(),vals);
+		
+			for (MethodDef m : methodDefs) {
+				vals.clear();
+				for (QName name : m.names()) {
+					Object part = parts.get(name).bind(provider.get(name));
+					vals.add(part);
+				}
+				
+				m.method().invoke(object,vals.toArray(new Object[0]));				
+			}
+			
+			return object;
+		}
+		catch(Throwable e) {
+			throw new RuntimeException(format("cannot bind %1s to %2s",key(),provided),e);
+		}
 	}
 	
 	
@@ -198,7 +230,7 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 					else {	
 						boundNames.add(name);
 						Key<?> key = get(parameters[i],getQualifier(annotationLists[i]));
-						TypeBinder<?> binder = factory.binder(key);
+						TypeBinder<?> binder = env.binder(key);
 						parts.put(name,binder);
 					}
 					break;
@@ -221,12 +253,12 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 	}
 	
 	
-	public static class DefaultClassBinderProvider<T> implements BinderProvider<T> {
+	public static class ClassBinderProvider implements BinderProvider<Object> {
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<T> binder(Key<T> key, TypeBinderFactory factory) {
-			return new ClassBinder<T>(key, factory);
+		public TypeBinder<Object> binder(Key<Object> key, Environment env) {
+			return new ClassBinder<Object>(key, env);
 		}
 		
 	}
