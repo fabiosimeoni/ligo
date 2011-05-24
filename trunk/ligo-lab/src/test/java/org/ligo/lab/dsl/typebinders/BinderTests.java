@@ -8,6 +8,7 @@ import static org.ligo.lab.typebinders.Key.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -113,6 +114,8 @@ public class BinderTests {
 		void goo(@Bind("foo3") List<String> s){}
 		
 		public void poo(@Bind("foo4") String s){}
+		
+		public void noo(@Bind("foo5") Iterator<String> s){}
 	}
 	
 	static class BadlyManaged {

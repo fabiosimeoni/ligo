@@ -9,6 +9,7 @@ import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
 
 import java.lang.reflect.TypeVariable;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.ligo.lab.typebinders.impl.DefaultIteratorBinder.IteratorBinderProvider;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder.ObjectBinderProvider;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
@@ -43,17 +45,19 @@ public class DefaultEnvironment implements Environment {
 	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
 	@SuppressWarnings("unchecked")
-	private static final List<BinderProvider<?>> PROVIDERS = (List) asList(
-			ObjectBinderProvider.INSTANCE,
+	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
+			new ObjectBinderProvider(),
+			DefaultCollectionBinder.provider(Collection.class),
 			DefaultCollectionBinder.provider(List.class),
 			DefaultCollectionBinder.provider(Set.class),
 			DefaultCollectionBinder.provider(Queue.class),
 			DefaultCollectionBinder.provider(Deque.class),
-			StringBinder.INSTANCE.provider(),
-			IntBinder.INSTANCE.provider(),
-			FloatBinder.INSTANCE.provider(),
-			DoubleBinder.INSTANCE.provider(),
-			BooleanBinder.INSTANCE.provider()
+			new IteratorBinderProvider(),
+			new StringBinder().provider(),
+			new IntBinder().provider(),
+			new FloatBinder().provider(),
+			new DoubleBinder().provider(),
+			new BooleanBinder().provider()
 	);
 
 	private final Resolver implProvider;
@@ -68,7 +72,7 @@ public class DefaultEnvironment implements Environment {
 	 * 
 	 */
 	public DefaultEnvironment(Resolver p) {
-		this(p,PROVIDERS);
+		this(p,DEFAULT_PROVIDERS);
 	}
 	
 	public DefaultEnvironment(Resolver p, List<? extends BinderProvider<?>> ps) {
@@ -123,10 +127,11 @@ public class DefaultEnvironment implements Environment {
 		BinderProvider<?> provider = providers.get(key);
 		
 		//try raw type
+		
 		Kind<?> kind = key.kind();
 		if (provider==null && kind.value()==GENERIC)
 			provider = providers.get(get(GENERIC(kind).getRawType(),key.qualifier()));
-
+		
 		//default to object
 		if (provider==null)
 			provider = providers.get(Object.class);

@@ -3,6 +3,8 @@
  */
 package org.ligo.lab.typebinders.impl;
 
+import static org.ligo.lab.typebinders.Bind.Mode.*;
+
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.Bind.Mode;
@@ -19,7 +21,7 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	
 	private final Key<TYPE> key;
 	
-	private Mode mode;
+	private Mode mode = STRICT;
 	
 	protected AbstractBinder(Key<TYPE> key) {
 		logger.trace("processing {}",key);
