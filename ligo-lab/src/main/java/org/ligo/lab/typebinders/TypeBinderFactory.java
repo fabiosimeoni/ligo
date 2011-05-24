@@ -3,24 +3,30 @@
  */
 package org.ligo.lab.typebinders;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.util.List;
 
-
+import org.ligo.lab.binders.Binder;
+import org.ligo.lab.binders.BinderFactory;
+import org.ligo.lab.data.Provided;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public interface TypeBinderFactory {
+public class TypeBinderFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
 
-	<T> TypeBinder<T> binder(Key<T> key);
+	private final Environment context;
 	
-	TypeResolver resolver();
+	/**
+	 * 
+	 */
+	public TypeBinderFactory(Environment ctxt) {
+		context = ctxt;
+	}
 	
-	void addVariable(TypeVariable<?> var,Type t);
-	//Type get(TypeVariable<?> var);
-	
-	//<TYPE> TYPE getInstance(Key<TYPE> key, List<Object> args, Constructor<? extends TYPE> c);
-	
+	/**{@inheritDoc}*/
+	@Override
+	public Binder<List<Provided>,TYPE> bind(Key<TYPE> key) {
+		return context.binder(key);
+	}
 }

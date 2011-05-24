@@ -16,10 +16,10 @@ import org.ligo.lab.typebinders.Bind;
 import org.ligo.lab.typebinders.TypeResolver;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.TypeBinderFactory;
+import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.TypeLiteral;
 import org.ligo.lab.typebinders.impl.BinderProvider;
-import org.ligo.lab.typebinders.impl.BinderFactory;
+import org.ligo.lab.typebinders.impl.DefaultEnvironment;
 import org.ligo.lab.typebinders.impl.ClassBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders;
 import org.ligo.lab.typebinders.kinds.Kind;
@@ -32,7 +32,7 @@ import org.mockito.stubbing.Answer;
  */
 public class ClassBinderTest {
 
-	BinderFactory factory;
+	DefaultEnvironment factory;
 	
 	@Before 
 	@SuppressWarnings("unchecked")
@@ -45,10 +45,10 @@ public class ClassBinderTest {
 			}
 		});
 		
-		factory = new BinderFactory(p);
+		factory = new DefaultEnvironment(p);
 		
 		factory.addBinderProvider(get(String.class), new BinderProvider<String>() {
-			public TypeBinder<String> binder(Key<String> key,TypeBinderFactory factory) {
+			public TypeBinder<String> binder(Key<String> key,Environment factory) {
 				return PrimitiveBinders.STRING_BINDER;
 			}
 		});

@@ -1,8 +1,10 @@
 package org.ligo.lab.data;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 public interface StructureProvider extends DataProvider{
 
-	DataProvider[] get(QName name);
+	List<Provided> get(QName name);
 }

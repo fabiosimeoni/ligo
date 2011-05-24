@@ -15,7 +15,7 @@ import java.util.Map;
 import org.ligo.lab.typebinders.TypeResolver;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.TypeBinderFactory;
+import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class BinderFactory implements TypeBinderFactory {
+public class DefaultEnvironment implements Environment {
 
-	private static Logger logger = LoggerFactory.getLogger(BinderFactory.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 	
 	private static Map<Key<?>,TypeBinder<?>> cache = new HashMap<Key<?>,TypeBinder<?>>();
 	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
@@ -37,7 +37,7 @@ public class BinderFactory implements TypeBinderFactory {
 	/**
 	 * 
 	 */
-	public BinderFactory(TypeResolver p) {
+	public DefaultEnvironment(TypeResolver p) {
 		implProvider = p;
 	}
 	
