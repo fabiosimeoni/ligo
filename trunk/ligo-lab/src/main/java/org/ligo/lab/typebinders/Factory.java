@@ -13,14 +13,14 @@ import org.ligo.lab.data.Provided;
  * @author Fabio Simeoni
  *
  */
-public class TypeBinderFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
+public class Factory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
 
 	private final Environment context;
 	
 	/**
 	 * 
 	 */
-	public TypeBinderFactory(Environment ctxt) {
+	public Factory(Environment ctxt) {
 		context = ctxt;
 	}
 	

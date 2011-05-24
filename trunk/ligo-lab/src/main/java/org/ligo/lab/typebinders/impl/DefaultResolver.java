@@ -6,14 +6,14 @@ package org.ligo.lab.typebinders.impl;
 import java.util.List;
 
 import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.kinds.Kind;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public class DefaultResolver implements TypeResolver {
+public class DefaultResolver implements Resolver {
 
 	/**{@inheritDoc}*/
 	public Kind<?> resolve(Key<?> key) {

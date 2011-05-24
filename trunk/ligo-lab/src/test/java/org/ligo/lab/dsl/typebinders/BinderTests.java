@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.ligo.lab.typebinders.Bind;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.TypeLiteral;
-import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.Literal;
+import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
 import org.ligo.lab.typebinders.kinds.Kind;
@@ -35,7 +35,7 @@ public class BinderTests {
 	@SuppressWarnings("unchecked")
 	public void setup() {
 		
-		TypeResolver p = mock(TypeResolver.class);
+		Resolver p = mock(Resolver.class);
 		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Kind<?>>() {
 			public Kind<?> answer(InvocationOnMock invocation) throws Throwable {
 				return ((Key)invocation.getArguments()[0]).kind();
@@ -49,7 +49,7 @@ public class BinderTests {
 	public void badinputs() {
 		
 		try {
-			TypeLiteral<List<String>> lit = new TypeLiteral<List<String>>() {};
+			Literal<List<String>> lit = new Literal<List<String>>() {};
 			new DefaultObjectBinder<List<String>>(get(lit), factory);
 			fail();
 		}
@@ -90,7 +90,7 @@ public class BinderTests {
 	@Test
 	public void generics() {
 		
-		TypeLiteral<Raw<String>> lit = new TypeLiteral<Raw<String>>() {};
+		Literal<Raw<String>> lit = new Literal<Raw<String>>() {};
 		TypeBinder<Raw<String>> binder = new DefaultObjectBinder<Raw<String>>(get(lit), factory); 
 				
 		System.out.println(binder);

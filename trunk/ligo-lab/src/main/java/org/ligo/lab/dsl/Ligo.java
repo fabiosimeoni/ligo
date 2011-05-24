@@ -4,7 +4,7 @@ import static org.ligo.lab.typebinders.Key.*;
 
 import java.lang.annotation.Annotation;
 
-import org.ligo.lab.typebinders.TypeLiteral;
+import org.ligo.lab.typebinders.Literal;
 
 public class Ligo {
 
@@ -16,11 +16,11 @@ public class Ligo {
 		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(get(type,a)));
 	}
 	
-	public static <TYPE> WithClause<TYPE> bind(TypeLiteral<TYPE> type) {
+	public static <TYPE> WithClause<TYPE> bind(Literal<TYPE> type) {
 		return bind(type,null);
 	}
 	
-	public static <TYPE> WithClause<TYPE> bind(TypeLiteral<TYPE> type, Class<? extends Annotation> a) {
+	public static <TYPE> WithClause<TYPE> bind(Literal<TYPE> type, Class<? extends Annotation> a) {
 		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(get(type,a)));
 	}
 }

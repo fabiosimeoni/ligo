@@ -18,7 +18,7 @@ public interface Environment {
 
 	void addVariable(TypeVariable<?> var,Type t);
 
-	TypeResolver resolver();
+	Resolver resolver();
 	
 	
 }

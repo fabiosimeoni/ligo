@@ -31,11 +31,11 @@ public final class Key<T> {
 		return new Key<T>(kindOf(t),a);
 	}
 	
-	public static <T> Key<T> get(TypeLiteral<T> t) {
+	public static <T> Key<T> get(Literal<T> t) {
 		return get(t,null);
 	}
 	
-	public static <T> Key<T> get(TypeLiteral<T> t, Class<? extends Annotation> a) {
+	public static <T> Key<T> get(Literal<T> t, Class<? extends Annotation> a) {
 		return new Key<T>(kindOf(t.type()),a);
 	}
 	

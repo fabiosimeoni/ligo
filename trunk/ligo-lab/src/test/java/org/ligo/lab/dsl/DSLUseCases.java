@@ -22,7 +22,7 @@ import org.ligo.lab.dsl.DummyLigoImpl.TransformFactory;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedData;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinder;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinderFactory;
-import org.ligo.lab.typebinders.TypeLiteral;
+import org.ligo.lab.typebinders.Literal;
 
 
 /**
@@ -253,7 +253,7 @@ public class DSLUseCases {
 	@Test
 	public void generics() {
 		
-		TypeLiteral<SomeGeneric<SomeType>> literal = new TypeLiteral<SomeGeneric<SomeType>>() {};
+		Literal<SomeGeneric<SomeType>> literal = new Literal<SomeGeneric<SomeType>>() {};
 		DataBinder<SomeGeneric<SomeType>> binder = new DataBinder<SomeGeneric<SomeType>>(literal);
 		
 		DataReader parser = new DataReader();

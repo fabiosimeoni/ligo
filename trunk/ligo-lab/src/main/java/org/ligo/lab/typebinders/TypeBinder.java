@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.data.Provided;
+import org.ligo.lab.typebinders.Bind.Mode;
 
 
 
@@ -20,5 +21,7 @@ import org.ligo.lab.data.Provided;
 public interface TypeBinder<TYPE> extends Binder<List<Provided>,TYPE> {
 
 	Key<TYPE> key();
+	
+	void setMode(Mode m);
 
 }

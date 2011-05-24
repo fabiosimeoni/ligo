@@ -17,7 +17,7 @@ import java.util.Map;
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder.ObjectBinderProvider;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
@@ -50,7 +50,7 @@ public class DefaultEnvironment implements Environment {
 			BooleanBinder.INSTANCE.provider()
 	);
 	
-	private final TypeResolver implProvider;
+	private final Resolver implProvider;
 	
 	/**
 	 * 
@@ -61,11 +61,11 @@ public class DefaultEnvironment implements Environment {
 	/**
 	 * 
 	 */
-	public DefaultEnvironment(TypeResolver p) {
+	public DefaultEnvironment(Resolver p) {
 		this(p,PROVIDERS);
 	}
 	
-	public DefaultEnvironment(TypeResolver p, List<? extends BinderProvider<?>> ps) {
+	public DefaultEnvironment(Resolver p, List<? extends BinderProvider<?>> ps) {
 		implProvider = p;
 		for (BinderProvider<?> provider : ps)
 			providers.put(provider.matchingKey(), provider);
@@ -73,7 +73,7 @@ public class DefaultEnvironment implements Environment {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public TypeResolver resolver() {
+	public Resolver resolver() {
 		return implProvider;
 	}
 	

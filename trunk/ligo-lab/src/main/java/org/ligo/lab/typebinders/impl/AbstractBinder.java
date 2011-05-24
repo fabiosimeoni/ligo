@@ -5,6 +5,7 @@ package org.ligo.lab.typebinders.impl;
 
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.ligo.lab.typebinders.Bind.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,22 +13,32 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public abstract class AbstractTypeBinder<TYPE> implements TypeBinder<TYPE> {
+public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractTypeBinder.class);
-	
-	public static enum Mode {STRICT,LAX};
+	private static final Logger logger = LoggerFactory.getLogger(AbstractBinder.class);
 	
 	private final Key<TYPE> key;
 	
+	private Mode mode;
 	
-	protected AbstractTypeBinder(Key<TYPE> key) {
+	protected AbstractBinder(Key<TYPE> key) {
 		logger.trace("processing {}",key);
 		this.key=key;
 	}
 	
+	
 	public Key<TYPE> key() {
 		return key;
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public void setMode(Mode m) {
+		mode=m;
+	}
+	
+	Mode mode() {
+		return mode;
 	}
 	
 	/**{@inheritDoc}*/
