@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.inject.Qualifier;
 import javax.xml.namespace.QName;
 
+import org.ligo.lab.data.DataProvider;
 import org.ligo.lab.data.Provided;
 import org.ligo.lab.data.StructureProvider;
 import org.ligo.lab.typebinders.Bind;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class DefaultObjectBinder<TYPE> extends AbstractTypeBinder<TYPE> implements ObjectBinder<TYPE> {
+public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBinder<TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
@@ -102,13 +103,25 @@ public class DefaultObjectBinder<TYPE> extends AbstractTypeBinder<TYPE> implemen
 		try {
 			
 			if (provided.size()!=1)
-				throw new RuntimeException("expected one value but found zero or many: "+provided);
+				switch(mode()) {
+					case STRICT:
+							throw new RuntimeException("expected one value but found zero or many: "+provided);
+					case LAX:
+							return null;
+				}
 			
 			
-			if (!(provided.get(0) instanceof StructureProvider))
-				throw new RuntimeException("expected a structure but found "+provided.get(0));
+			DataProvider dp = provided.get(0).provided();
 			
-			StructureProvider provider = (StructureProvider) provided.get(0);
+			if (!(dp instanceof StructureProvider))
+				switch(mode()) {
+					case STRICT:
+						throw new RuntimeException("expected a structure but found: "+provided);
+					case LAX:
+						return null;
+		}
+			
+			StructureProvider provider = (StructureProvider) dp;
 			
 			List<Object> vals = new LinkedList<Object>();
 			
@@ -237,8 +250,12 @@ public class DefaultObjectBinder<TYPE> extends AbstractTypeBinder<TYPE> implemen
 						throw new RuntimeException(format("bound name %1s is duplicated in %2s",name,clazz));
 					else {	
 						boundNames.add(name);
-						Key<?> key = get(parameters[i],getQualifier(annotationLists[i]));
+						Key<?> key = get(parameters[i],qualifier(annotationLists[i]));
 						TypeBinder<?> binder = env.binder(key);
+						
+						//set mode
+						binder.setMode(bindAnnotation.mode());
+						
 						parts.put(name,binder);
 					}
 					break;
@@ -247,7 +264,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractTypeBinder<TYPE> implemen
 		return boundNames;
 	}
 	
-	Class<? extends Annotation> getQualifier(Annotation[] annotations) {
+	Class<? extends Annotation> qualifier(Annotation[] annotations) {
 		for (Annotation a : annotations)
 			if (a.annotationType().isAnnotationPresent(Qualifier.class))
 				return a.annotationType();

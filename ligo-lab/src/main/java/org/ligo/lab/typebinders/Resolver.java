@@ -13,7 +13,7 @@ import org.ligo.lab.typebinders.kinds.Kind;
  * @author Fabio Simeoni
  *
  */
-public interface TypeResolver {
+public interface Resolver {
 	
 	/**
 	 * Resolves a key into a kind that may refine the key's.

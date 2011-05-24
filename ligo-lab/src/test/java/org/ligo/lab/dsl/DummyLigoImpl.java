@@ -8,7 +8,7 @@ import java.io.Reader;
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
 import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.TypeLiteral;
+import org.ligo.lab.typebinders.Literal;
 
 /**
  * @author Fabio Simeoni
@@ -31,7 +31,7 @@ public class DummyLigoImpl {
 		public DataBinder(Key<T> t) {
 			key=t;
 		}
-		public DataBinder(TypeLiteral<T> t) {
+		public DataBinder(Literal<T> t) {
 			key=Key.get(t);
 		}
 		public DataBinder(Class<T> t) {

@@ -3,11 +3,11 @@ package org.ligo.lab.typebinders;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public abstract class TypeLiteral<T> {
+public abstract class Literal<T> {
 	
 	private Type type;
 	
-	protected TypeLiteral() {
+	protected Literal() {
 		type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 	
@@ -29,9 +29,9 @@ public abstract class TypeLiteral<T> {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof TypeLiteral<?>))
+		if (!(obj instanceof Literal<?>))
 			return false;
-		TypeLiteral<?> other = (TypeLiteral<?>) obj;
+		Literal<?> other = (Literal<?>) obj;
 		if (type == null) {
 			if (other.type != null)
 				return false;

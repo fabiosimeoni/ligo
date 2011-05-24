@@ -19,7 +19,7 @@ import org.ligo.lab.typebinders.TypeBinder;
  * @author Fabio Simeoni
  *
  */
-public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractTypeBinder<TYPE> {
+public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	public AbstractPrimitiveBinder(Key<TYPE> c) {
 		super(c);
@@ -29,19 +29,32 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractTypeBinder<T
 		
 		try {
 			
-
 			if (provided.size()!=1)
-				throw new RuntimeException("expected one value but found "+provided);
+				switch(mode()) {
+					
+					case STRICT:
+						throw new RuntimeException("expected one value but found: "+provided);
+					
+					case LAX:
+						return null;
+				}
 			
-			DataProvider provider = provided.get(0).provided();
-			
-			if (!(provider instanceof ValueProvider))
-				throw new RuntimeException("expected a value provider but found "+provided);
+			DataProvider dp = provided.get(0).provided();
 		
-			
-			ValueProvider vp = (ValueProvider) provider;
+			if (!(dp instanceof ValueProvider))
+				switch(mode()) {
+						
+					case STRICT:
+						throw new RuntimeException("expected a scalar but found: "+provided);
+						
+					case LAX:
+						return null;
+				}
+		
+			ValueProvider vp = (ValueProvider) dp;
 			
 			return accept(vp.get());
+			
 		}
 		catch(ClassCastException e) {
 			throw new RuntimeException(format("cannot bind %1s to %2s",key(),provided),e);

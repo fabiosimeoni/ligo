@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.TypeLiteral;
+import org.ligo.lab.typebinders.Literal;
 import org.ligo.lab.typebinders.kinds.Kind;
 
 /**
@@ -21,9 +21,9 @@ import org.ligo.lab.typebinders.kinds.Kind;
  */
 public class KeyAndKindTest {
 
-	TypeLiteral<String> lit = new TypeLiteral<String>() {};
-	TypeLiteral<List<String>> plit = new TypeLiteral<List<String>>() {};
-	TypeLiteral<List<String>[]> palit = new TypeLiteral<List<String>[]>() {};
+	Literal<String> lit = new Literal<String>() {};
+	Literal<List<String>> plit = new Literal<List<String>>() {};
+	Literal<List<String>[]> palit = new Literal<List<String>[]>() {};
 	
 	
 	@Test
@@ -31,15 +31,15 @@ public class KeyAndKindTest {
 		
 		//non-parametric type (pathological case)
 		assertEquals(String.class, lit.type());
-		assertEquals(new TypeLiteral<String>() {}, lit);
+		assertEquals(new Literal<String>() {}, lit);
 		assertEquals(CLASS,kindOf(lit.type()).value());
 		
 		//parametric type (key case)
-		assertEquals(new TypeLiteral<List<String>>() {}, plit);
+		assertEquals(new Literal<List<String>>() {}, plit);
 		assertEquals(GENERIC,kindOf(plit.type()).value());;
 		
 		//parametric array (key case)
-		assertEquals(new TypeLiteral<List<String>[]>() {}, palit);
+		assertEquals(new Literal<List<String>[]>() {}, palit);
 		assertEquals(GENERICARRAY,kindOf(palit.type()).value());
 		
 	}
@@ -68,7 +68,7 @@ public class KeyAndKindTest {
 		assertEquals(CLASS, kind.value());
 		assertEquals(String.class, CLASS(kind));
 		
-		TypeLiteral<List<String>> lit = new TypeLiteral<List<String>>() {};
+		Literal<List<String>> lit = new Literal<List<String>>() {};
 		Key<List<String>> pkey = get(lit);
 		kind = pkey.kind();
 		assertEquals(GENERIC, kind.value());
