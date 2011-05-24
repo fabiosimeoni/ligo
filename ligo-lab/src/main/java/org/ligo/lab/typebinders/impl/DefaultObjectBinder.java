@@ -251,8 +251,11 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					if (parts.containsKey(name))
 						throw new RuntimeException(format("bound name %1s is duplicated in %2s",name,clazz));
 					else {	
+						
 						boundNames.add(name);
+						
 						Key<?> key = get(parameters[i],qualifier(annotationLists[i]));
+						
 						TypeBinder<?> binder = env.bind(key);
 						
 						//set mode
