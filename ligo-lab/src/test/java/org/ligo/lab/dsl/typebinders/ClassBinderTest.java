@@ -103,7 +103,10 @@ public class ClassBinderTest {
 		TypeBinder<Raw<String>> binder = new ClassBinder<Raw<String>>(get(lit), factory); 
 				
 		System.out.println(binder);
+	
+		TypeBinder<RawString> binder2 = new ClassBinder<RawString>(get(RawString.class), factory); 
 		
+		System.out.println(binder2);
 	}
 	
 	interface IManaged<T> {
@@ -134,9 +137,19 @@ public class ClassBinderTest {
 	
 	static class Nullary {}
 	
-	static class Raw<T> {
+	static interface IRaw<T> {
 		
-		Raw(@Bind("foo") String s) {};
+		void foo(@Bind("foo") T s);
+	}
+	
+	static class Raw<T> implements IRaw<T> {
+		
+		Raw(@Bind("foo2") String s) {};
+		public void foo(T s) {};
+	}
+	
+	static class RawString extends Raw<String> {
+		RawString(String s) {super(s);}
 	}
 	
 	

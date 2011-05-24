@@ -100,17 +100,25 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 		
 		List<QName> boundNames = new ArrayList<QName>();
 		Constructor<?> constructor=null;
-		//identify constructor
-		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
-			boundNames = addParts(clazz,c.getParameterAnnotations(), c.getGenericParameterTypes());
-			if (boundNames.size()>0) {
-				if (constructor==null)
-					constructor=c;
-				else
-					throw new RuntimeException(format("%1s has more than one bound constructor",clazz));
-			}	
 		
-		}
+		Class<?> parent = clazz; 
+		do 
+			
+			//identify constructor
+			for (Constructor<?> c : parent.getDeclaredConstructors()) {
+				boundNames = addParts(parent,c.getParameterAnnotations(), c.getGenericParameterTypes());
+				if (boundNames.size()>0) {
+					if (constructor==null)
+						constructor=c;
+					else
+						throw new RuntimeException(format("%1s has more than one bound constructor",clazz));
+				}	
+			
+			}
+		
+		while //repeat for inherited methods
+			((parent=parent.getSuperclass())!=null);
+		
 		//if no constructorDef is annotated, try to use nullary one
 		if (constructor==null)
 			try {
@@ -136,16 +144,20 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 		
 			for (Method m : clazz.getDeclaredMethods()) {
 				
+				//skip methods that do not occur in source
 				if (m.isSynthetic())
 					continue;
 						
 				Type[] params = m.getGenericParameterTypes();
 				List<QName> boundNames = addParts(clazz,m.getParameterAnnotations(),params);
+				
+				//scan interfaces for possible annotations
 				if (boundNames.isEmpty())
-					//look in interfaces
 					for (Class<?> i : clazz.getInterfaces())
 						try {
+							//find methods by 'raw' type (interface could be parametric)
 							Method overridden = i.getMethod(m.getName(),m.getParameterTypes());
+							//but do use the resolved parameters
 							boundNames = addParts(clazz,overridden.getParameterAnnotations(),params);
 						}
 						catch(NoSuchMethodException e) {
@@ -153,17 +165,19 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 						}
 		
 				if (!boundNames.isEmpty()) {
-			
+					
+					//no private methods
 					if (Modifier.isPrivate(m.getModifiers()))
 						throw new RuntimeException("cannot project over private method "+m);
 					
 					m.setAccessible(true);
-					logger.trace("bound method {} for {}",m.getName(),clazz);
 					methodDefs.add(new MethodDef(m,boundNames));
+					
+					logger.trace("bound method {} for {}",m.getName(),clazz);
 				}
 			}
 		
-		while //repeat for methodDefs in superclass
+		while //repeat for inherited methods
 			((clazz=clazz.getSuperclass())!=null);
 		
 	}
