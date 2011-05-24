@@ -20,7 +20,7 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	/**{@inheritDoc}*/
 	@Override
 	public <IN> AndClause<TYPE,IN> with(BinderFactory<TYPE,IN, TYPE> factory) {
-		return with(factory.bind(ctxt.key()));
+		return with(factory.binderFor(ctxt.key()));
 	}
 	
 	/**{@inheritDoc}*/

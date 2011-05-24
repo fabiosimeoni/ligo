@@ -84,7 +84,7 @@ public class DefaultEnvironment implements Environment {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <T> TypeBinder<T> bind(Key<T> key) {
+	public <T> TypeBinder<T> binderFor(Key<T> key) {
 		
 		//hit cache
 		@SuppressWarnings("unchecked") //internally consistent

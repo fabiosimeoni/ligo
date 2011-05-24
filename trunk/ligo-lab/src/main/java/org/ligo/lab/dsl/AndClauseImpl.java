@@ -25,7 +25,7 @@ class AndClauseImpl<TYPE,IN> implements AndClause<TYPE, IN> {
 	/**{@inheritDoc}*/
 	@Override
 	public <SOURCE> AndClause<TYPE, SOURCE> and(BinderFactory<TYPE, SOURCE, IN> transformFactory) {
-		return and(transformFactory.bind(ctxt.key()));
+		return and(transformFactory.binderFor(ctxt.key()));
 	}
 	
 	/**{@inheritDoc}*/
