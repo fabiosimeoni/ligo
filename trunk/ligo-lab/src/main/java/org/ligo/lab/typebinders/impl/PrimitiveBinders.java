@@ -12,8 +12,9 @@ import static org.ligo.lab.typebinders.Key.*;
  */
 public class PrimitiveBinders {
 
-	public static final StringBinder STRING_BINDER = new StringBinder();
 	public static class StringBinder extends AbstractPrimitiveBinder<String> {
+		
+		public static final StringBinder INSTANCE = new StringBinder();
 		
 		StringBinder() {
 			super(get(String.class));
@@ -27,6 +28,8 @@ public class PrimitiveBinders {
 	}
 	
 	public static class IntBinder extends AbstractPrimitiveBinder<Integer> {
+		
+		public static final IntBinder INSTANCE = new IntBinder();
 		
 		public IntBinder() {
 			super(get(Integer.class));
@@ -43,6 +46,8 @@ public class PrimitiveBinders {
 	
 	public static class LongBinder extends AbstractPrimitiveBinder<Long> {
 		
+		public static final LongBinder INSTANCE = new LongBinder();
+		
 		public LongBinder() {
 			super(get(Long.class));
 		}
@@ -57,6 +62,8 @@ public class PrimitiveBinders {
 	}
 	
 	public static class FloatBinder extends AbstractPrimitiveBinder<Float> {
+		
+		public static final FloatBinder INSTANCE = new FloatBinder();
 		
 		public FloatBinder() {
 			super(get(Float.class));
@@ -73,6 +80,8 @@ public class PrimitiveBinders {
 	
 public static class DoubleBinder extends AbstractPrimitiveBinder<Double> {
 		
+		public static final DoubleBinder INSTANCE = new DoubleBinder();
+	
 		public DoubleBinder() {
 			super(get(Double.class));
 		}
@@ -87,6 +96,8 @@ public static class DoubleBinder extends AbstractPrimitiveBinder<Double> {
 	}
 
 	public static class BooleanBinder extends AbstractPrimitiveBinder<Boolean> {
+		
+		public static final BooleanBinder INSTANCE = new BooleanBinder();
 		
 		public BooleanBinder() {
 			super(get(Boolean.class));

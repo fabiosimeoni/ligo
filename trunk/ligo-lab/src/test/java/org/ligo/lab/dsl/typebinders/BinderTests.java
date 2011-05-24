@@ -13,15 +13,12 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.ligo.lab.typebinders.Bind;
-import org.ligo.lab.typebinders.TypeResolver;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.TypeLiteral;
-import org.ligo.lab.typebinders.impl.BinderProvider;
+import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
-import org.ligo.lab.typebinders.impl.ClassBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -30,7 +27,7 @@ import org.mockito.stubbing.Answer;
  * @author Fabio Simeoni
  *
  */
-public class ClassBinderTest {
+public class BinderTests {
 
 	DefaultEnvironment factory;
 	
@@ -46,12 +43,6 @@ public class ClassBinderTest {
 		});
 		
 		factory = new DefaultEnvironment(p);
-		
-		factory.addBinderProvider(get(String.class), new BinderProvider<String>() {
-			public TypeBinder<String> binder(Key<String> key,Environment factory) {
-				return PrimitiveBinders.STRING_BINDER;
-			}
-		});
 	}
 
 	@Test
@@ -59,7 +50,7 @@ public class ClassBinderTest {
 		
 		try {
 			TypeLiteral<List<String>> lit = new TypeLiteral<List<String>>() {};
-			new ClassBinder<List<String>>(get(lit), factory);
+			new DefaultObjectBinder<List<String>>(get(lit), factory);
 			fail();
 		}
 		catch(RuntimeException e) {
@@ -67,7 +58,7 @@ public class ClassBinderTest {
 		}
 		
 		try {
-			new ClassBinder<BadlyManaged>(get(BadlyManaged.class),factory); 
+			new DefaultObjectBinder<BadlyManaged>(get(BadlyManaged.class),factory); 
 			fail();
 		}
 		catch(RuntimeException e) {
@@ -75,7 +66,7 @@ public class ClassBinderTest {
 		}
 		
 		try {
-			new ClassBinder<BadlyManaged2>(get(BadlyManaged2.class),factory); 
+			new DefaultObjectBinder<BadlyManaged2>(get(BadlyManaged2.class),factory); 
 			fail();
 		}
 		catch(RuntimeException e) {
@@ -88,9 +79,9 @@ public class ClassBinderTest {
 	@Test
 	public void raw() {
 		
-		TypeBinder<?> binder = new ClassBinder<Nullary>(get(Nullary.class), factory); 
+		TypeBinder<?> binder = new DefaultObjectBinder<Nullary>(get(Nullary.class), factory); 
 		
-		binder = new ClassBinder<Managed>(get(Managed.class),factory); 
+		binder = new DefaultObjectBinder<Managed>(get(Managed.class),factory); 
 		
 		System.out.println(binder);
 		
@@ -100,11 +91,11 @@ public class ClassBinderTest {
 	public void generics() {
 		
 		TypeLiteral<Raw<String>> lit = new TypeLiteral<Raw<String>>() {};
-		TypeBinder<Raw<String>> binder = new ClassBinder<Raw<String>>(get(lit), factory); 
+		TypeBinder<Raw<String>> binder = new DefaultObjectBinder<Raw<String>>(get(lit), factory); 
 				
 		System.out.println(binder);
 	
-		TypeBinder<RawString> binder2 = new ClassBinder<RawString>(get(RawString.class), factory); 
+		TypeBinder<RawString> binder2 = new DefaultObjectBinder<RawString>(get(RawString.class), factory); 
 		
 		System.out.println(binder2);
 	}

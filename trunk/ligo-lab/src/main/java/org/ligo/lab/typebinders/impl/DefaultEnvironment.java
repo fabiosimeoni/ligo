@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.typebinders.impl;
 
+import static java.util.Arrays.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
@@ -10,12 +11,19 @@ import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.Environment;
+import org.ligo.lab.typebinders.TypeResolver;
+import org.ligo.lab.typebinders.impl.DefaultObjectBinder.ObjectBinderProvider;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.FloatBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.IntBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.StringBinder;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +40,35 @@ public class DefaultEnvironment implements Environment {
 	private static Map<Key<?>,TypeBinder<?>> cache = new HashMap<Key<?>,TypeBinder<?>>();
 	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
+	@SuppressWarnings("unchecked")
+	private static final List<? extends BinderProvider<?>> PROVIDERS = asList(
+			ObjectBinderProvider.INSTANCE, 
+			StringBinder.INSTANCE.provider(),
+			IntBinder.INSTANCE.provider(),
+			FloatBinder.INSTANCE.provider(),
+			DoubleBinder.INSTANCE.provider(),
+			BooleanBinder.INSTANCE.provider()
+	);
+	
 	private final TypeResolver implProvider;
 	
 	/**
 	 * 
 	 */
+	public DefaultEnvironment() {
+		this(new DefaultResolver());
+	}
+	/**
+	 * 
+	 */
 	public DefaultEnvironment(TypeResolver p) {
+		this(p,PROVIDERS);
+	}
+	
+	public DefaultEnvironment(TypeResolver p, List<? extends BinderProvider<?>> ps) {
 		implProvider = p;
+		for (BinderProvider<?> provider : ps)
+			providers.put(provider.matchingKey(), provider);
 	}
 	
 	/**{@inheritDoc}*/

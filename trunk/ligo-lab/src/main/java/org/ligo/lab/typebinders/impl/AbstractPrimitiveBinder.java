@@ -10,7 +10,9 @@ import java.util.List;
 import org.ligo.lab.data.DataProvider;
 import org.ligo.lab.data.Provided;
 import org.ligo.lab.data.ValueProvider;
+import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
+import org.ligo.lab.typebinders.TypeBinder;
 
 
 /**
@@ -45,7 +47,21 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractTypeBinder<T
 			throw new RuntimeException(format("cannot bind %1s to %2s",key(),provided),e);
 		}
 	};
+	
 
 	protected abstract TYPE accept(Object o);
+	
+	BinderProvider<TYPE> provider() {
+		return new BinderProvider<TYPE>() {
+			@Override public Key<TYPE> matchingKey() {
+				return key();
+			}
+			/**{@inheritDoc}*/
+			@Override
+			public TypeBinder<TYPE> binder(Key<TYPE> key, Environment factory) {
+				return AbstractPrimitiveBinder.this;
+			}
+		};
+	}
 
 }
