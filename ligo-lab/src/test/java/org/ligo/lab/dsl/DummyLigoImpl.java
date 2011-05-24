@@ -46,7 +46,7 @@ public class DummyLigoImpl {
 	static class DataBinderFactory<T> implements BinderFactory<T,Data,T> {
 		/**{@inheritDoc}*/
 		@Override
-		public DataBinder<T> bind(Key<T> in) {
+		public DataBinder<T> binderFor(Key<T> in) {
 			System.out.println("generating binder from "+in.kind());
 			return new DataBinder<T>(in);
 		}
@@ -64,7 +64,7 @@ public class DummyLigoImpl {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public Transform bind(Key<T> in) {
+		public Transform binderFor(Key<T> in) {
 			System.out.println("generating closed transform from "+in.kind());
 			return new Transform();
 		}
@@ -94,7 +94,7 @@ public class DummyLigoImpl {
 	static class TransformedDataBinderFactory<T> implements BinderFactory<T,TransformedData,T> {
 		/**{@inheritDoc}*/
 		@Override
-		public TransformedDataBinder<T> bind(Key<T> in) {
+		public TransformedDataBinder<T> binderFor(Key<T> in) {
 			System.out.println("generating binder for transformed data from "+in.kind());
 			return new TransformedDataBinder<T>(in);
 		}
@@ -111,7 +111,7 @@ public class DummyLigoImpl {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public OpenTransform bind(Key<T> in) {
+		public OpenTransform binderFor(Key<T> in) {
 			System.out.println("generating open transform from "+in.kind());
 			return new OpenTransform();
 		}

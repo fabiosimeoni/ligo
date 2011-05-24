@@ -69,18 +69,15 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		//extract 'raw' type
 		Class<?> clazz = null;
 		switch (provided.value()) {
-			case CLASS:
+			case CLASS: //simply type-extract class itself
 				clazz = CLASS(provided); 
 				break;
-			case GENERIC:
+			case GENERIC: //extract raw type and store variable bindings in the environment
 				ParameterizedType pt = GENERIC(provided);
 				clazz = (Class<?>) pt.getRawType();
-				//push variable bindings
 				TypeVariable<?>[] vars = clazz.getTypeParameters(); 
-				for (int i = 0; i<vars.length; i++) {
-					TypeBinder<?> varbinder = env.bind(get(pt.getActualTypeArguments()[i]));
-					env.bindVariable(vars[i], varbinder);
-				}
+				for (int i = 0; i<vars.length; i++)
+					env.bindVariable(vars[i], env.binderFor(get(pt.getActualTypeArguments()[i])));
 				break;
 			default:
 				throw new RuntimeException("unexpected kind "+provided);
@@ -95,7 +92,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	}
 	
 	/**{@inheritDoc}*/
-	public Map<QName,TypeBinder<?>> parts() {
+	public Map<QName,TypeBinder<?>> binders() {
 		return parts;
 	}
 	
@@ -256,7 +253,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 						
 						Key<?> key = get(parameters[i],qualifier(annotationLists[i]));
 						
-						TypeBinder<?> binder = env.bind(key);
+						TypeBinder<?> binder = env.binderFor(key);
 						
 						//set mode
 						binder.setMode(bindAnnotation.mode());

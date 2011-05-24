@@ -5,10 +5,15 @@ package org.ligo.lab.binders;
  * 
  * @author Fabio Simeoni
  *
- * @param <IN> the type of the input
- * @param <OUT> the type of the output
+ * @param <IN> the input type
+ * @param <OUT> the output type
  */
 public interface Binder<IN,OUT> {
 	
-	OUT bind(IN in);
+	/**
+	 * Binds an input to an output.
+	 * @param i the input
+	 * @return the output
+	 */
+	OUT bind(IN i);
 }
