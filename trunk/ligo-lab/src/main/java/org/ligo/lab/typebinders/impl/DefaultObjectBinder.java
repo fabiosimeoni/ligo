@@ -77,8 +77,10 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 				clazz = (Class<?>) pt.getRawType();
 				//push variable bindings
 				TypeVariable<?>[] vars = clazz.getTypeParameters(); 
-				for (int i = 0; i<vars.length; i++)
-					env.addVariable(vars[i], pt.getActualTypeArguments()[i]);
+				for (int i = 0; i<vars.length; i++) {
+					TypeBinder<?> varbinder = env.bind(get(pt.getActualTypeArguments()[i]));
+					env.bindVariable(vars[i], varbinder);
+				}
 				break;
 			default:
 				throw new RuntimeException("unexpected kind "+provided);
@@ -251,7 +253,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					else {	
 						boundNames.add(name);
 						Key<?> key = get(parameters[i],qualifier(annotationLists[i]));
-						TypeBinder<?> binder = env.binder(key);
+						TypeBinder<?> binder = env.bind(key);
 						
 						//set mode
 						binder.setMode(bindAnnotation.mode());

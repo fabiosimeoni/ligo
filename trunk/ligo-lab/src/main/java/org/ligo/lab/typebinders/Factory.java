@@ -27,6 +27,6 @@ public class Factory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
 	/**{@inheritDoc}*/
 	@Override
 	public Binder<List<Provided>,TYPE> bind(Key<TYPE> key) {
-		return context.binder(key);
+		return context.bind(key);
 	}
 }
