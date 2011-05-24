@@ -28,18 +28,21 @@ import org.ligo.lab.data.StructureProvider;
 import org.ligo.lab.typebinders.Bind;
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
+import org.ligo.lab.typebinders.ObjectBinder;
 import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A {@link TypeBinder} for arbitrary object structures.
+ * 
  * @author Fabio Simeoni
  *
  */
-public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
+public class DefaultObjectBinder<TYPE> extends AbstractTypeBinder<TYPE> implements ObjectBinder<TYPE> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ClassBinder.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
 	private final Environment env;
 	
@@ -49,7 +52,12 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 	private Map<QName,TypeBinder<?>> parts = new HashMap<QName, TypeBinder<?>>();
 	
 	
-	public ClassBinder(Key<TYPE> key,Environment e) {
+	public DefaultObjectBinder(Key<TYPE> key) {
+		this(key,new DefaultEnvironment());
+	}
+	
+	
+	public DefaultObjectBinder(Key<TYPE> key,Environment e) {
 		
 		super(key);
 		env = e;
@@ -253,13 +261,22 @@ public class ClassBinder<TYPE> extends AbstractTypeBinder<TYPE> {
 	}
 	
 	
-	public static class ClassBinderProvider implements BinderProvider<Object> {
+	public static class ObjectBinderProvider implements BinderProvider<Object> {
 
+		public static final ObjectBinderProvider INSTANCE =  new ObjectBinderProvider();
+		
 		/**{@inheritDoc}*/
 		@Override
 		public TypeBinder<Object> binder(Key<Object> key, Environment env) {
-			return new ClassBinder<Object>(key, env);
+			return new DefaultObjectBinder<Object>(key, env);
+		}
+		
+		/**{@inheritDoc}*/
+		@Override
+		public Key<Object> matchingKey() {
+			return get(Object.class);
 		}
 		
 	}
+	
 }

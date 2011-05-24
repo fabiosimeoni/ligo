@@ -20,6 +20,7 @@ public abstract class AbstractTypeBinder<TYPE> implements TypeBinder<TYPE> {
 	
 	private final Key<TYPE> key;
 	
+	
 	protected AbstractTypeBinder(Key<TYPE> key) {
 		logger.trace("processing {}",key);
 		this.key=key;
