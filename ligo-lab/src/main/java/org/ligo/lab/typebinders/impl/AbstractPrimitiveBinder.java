@@ -26,10 +26,8 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 	
 	private static Logger logger= LoggerFactory.getLogger(AbstractPrimitiveBinder.class);
 	
-	private static String BINDING_ERROR = "[%1s] could not bind %2s to %3s";
 	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
 	private static String INPUT_ERROR = "[%1s] binder for %2s required a scalar but found: %3s";
-	private static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
 	
 	public AbstractPrimitiveBinder(Key<TYPE> c) {
 		super(c);
@@ -83,6 +81,7 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 	
 	
 	public BinderProvider<TYPE> provider() {
+		logger.trace(BUILT_LOG,AbstractPrimitiveBinder.this,mode());
 		return new BinderProvider<TYPE>() {
 			
 			@Override public Key<TYPE> matchingKey() {
@@ -91,7 +90,7 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 			
 			@Override
 			public TypeBinder<TYPE> binder(Key<TYPE> key, Environment factory) {
-				return AbstractPrimitiveBinder.this;
+				return AbstractPrimitiveBinder.this; 
 			}
 		};
 	}

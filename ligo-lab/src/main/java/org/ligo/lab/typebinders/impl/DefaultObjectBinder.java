@@ -90,6 +90,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		setConstructor(clazz);
 		setMethods(clazz);
 		
+		logger.trace(BUILT_LOG,this,mode());
 	}
 	
 	/**{@inheritDoc}*/
@@ -175,7 +176,10 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		//if no constructorDef is annotated, try to use nullary one
 		if (constructor==null)
 			try {
-				constructor = clazz.getDeclaredConstructor();
+				constructor = 
+					clazz.isAnonymousClass()?
+							clazz.getSuperclass().getDeclaredConstructor():
+							clazz.getDeclaredConstructor();
 			}
 			catch(Throwable e) {
 				throw new RuntimeException(format("%1s has no nullary or annotated constructors",clazz.getName()));

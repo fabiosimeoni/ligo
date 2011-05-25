@@ -123,6 +123,19 @@ public class BinderTests {
 		
 	}
 	
+	@Test 
+	public void object() {
+	
+		@SuppressWarnings("all")	
+		SomeInterface clazz = new SomeInterface() {
+			public void m(@Bind("1") String s){};
+		};
+		
+		TypeBinder<SomeInterface> ob = new DefaultObjectBinder<SomeInterface>(get(clazz.getClass()),factory);
+		
+		
+	}
+	
 	@Test
 	public void badinputs() {
 		
@@ -178,6 +191,8 @@ public class BinderTests {
 		System.out.println(binder2);
 	}
 	
+	interface SomeInterface {}
+
 	interface IManaged<T> {
 		
 		void poo(@Bind("foo3") T s);

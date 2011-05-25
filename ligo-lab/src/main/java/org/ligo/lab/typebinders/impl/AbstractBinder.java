@@ -8,8 +8,6 @@ import static org.ligo.lab.typebinders.Bind.Mode.*;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.Bind.Mode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Simeoni
@@ -17,14 +15,16 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractBinder.class);
+	protected static String BUILT_LOG = "built binder for {} [{}]";
+	protected static String BINDING_ERROR = "[%1s] could not bind %2s to %3s";
+	protected static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
+	
 	
 	private final Key<TYPE> key;
 	
 	private Mode mode = STRICT;
 	
 	protected AbstractBinder(Key<TYPE> key) {
-		logger.trace("building binder for {}",key);
 		this.key=key;
 	}
 	
