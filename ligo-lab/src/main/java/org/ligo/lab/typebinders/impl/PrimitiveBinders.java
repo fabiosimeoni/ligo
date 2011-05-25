@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.typebinders.impl;
 
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
 
 
@@ -21,7 +22,8 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected String accept(Object o) {
-			return o instanceof String? (String) o : null;
+			return o instanceof String? (String) o : 
+								mode()==STRICT? null: o.toString();
 		}
 	}
 	
@@ -34,9 +36,16 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected Integer accept(Object o) {
-			return o instanceof Integer? (Integer) o : 
-				o instanceof String? Integer.valueOf((String)o):
-					null;
+			try {
+				return o instanceof Integer? (Integer) o :Integer.valueOf((String)o);
+			} 
+			catch (Exception e) {
+				if (mode()==STRICT)
+					throw new RuntimeException(e);
+				else
+					return 0;
+			}
+				
 		}
 	}
 	
@@ -49,9 +58,16 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected Long accept(Object o) {
-			return o instanceof Long? (Long) o : 
-				o instanceof String? Long.valueOf((String)o):
-					null;
+			try {
+				return o instanceof Long? (Long) o : Long.valueOf((String)o);
+			} 
+			catch (Exception e) {
+				if (mode()==STRICT)
+					throw new RuntimeException(e);
+				else
+					return 0L;
+			}
+			
 		}
 	}
 	
@@ -64,9 +80,15 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected Float accept(Object o) {
-			return o instanceof Float? (Float) o : 
-				o instanceof String? Long.valueOf((String)o):
-					null;
+			try {
+				return o instanceof Float? (Float) o : Float.valueOf((String)o);
+			} 
+			catch (Exception e) {
+				if (mode()==STRICT)
+					throw new RuntimeException(e);
+				else
+					return 0f;
+			}
 		}
 	}
 	
@@ -79,9 +101,15 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected Double accept(Object o) {
-			return o instanceof Double? (Double) o : 
-				o instanceof String? Double.valueOf((String)o):
-					null;
+			try {
+				return o instanceof Double? (Double) o : Double.valueOf((String)o);
+			} 
+			catch (Exception e) {
+				if (mode()==STRICT)
+					throw new RuntimeException(e);
+				else
+					return 0d;
+			}
 		}
 	}
 
@@ -94,9 +122,15 @@ public class PrimitiveBinders {
 		/**{@inheritDoc}*/
 		@Override
 		protected Boolean accept(Object o) {
-			return o instanceof Boolean? (Boolean) o : 
-				o instanceof String? Boolean.valueOf((String)o):
-					null;
+				try {
+					return o instanceof Boolean? (Boolean) o : Boolean.valueOf((String)o);
+				} 
+				catch (Exception e) {
+					if (mode()==STRICT)
+						throw new RuntimeException(e);
+					else
+						return false;
+				}
 		}
 	}
 	

@@ -5,22 +5,26 @@ package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
 import static org.ligo.lab.dsl.typebinders.TestData.*;
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ligo.lab.data.Provided;
 import org.ligo.lab.typebinders.Bind;
 import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.Literal;
 import org.ligo.lab.typebinders.Resolver;
-import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
+import org.ligo.lab.typebinders.TypeBinder;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
+import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
@@ -52,7 +56,71 @@ public class BinderTests {
 	public void primitive() {
 		
 		TypeBinder<String> sb = new PrimitiveBinders.StringBinder();
-		sb.bind(v("hello"));
+		String bound = sb.bind(v("hello"));
+		
+		assertEquals("hello",bound);
+		
+		try {
+			sb.bind(v(3));
+		}
+		catch(RuntimeException e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+		
+		try {
+			sb.bind(s(p("1",v("hello"))));
+			fail();
+		}
+		catch(RuntimeException e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+		
+		List<Provided> ps = new ArrayList<Provided>(v("hello"));
+		ps.add(v("world").get(0));
+		try {
+			sb.bind(ps);
+			fail();
+		}
+		catch(RuntimeException e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+		
+		sb.setMode(LAX);
+		
+		bound = sb.bind(v(3));
+		assertEquals("3",bound);
+		
+		bound = sb.bind(s(p("1",v("hello"))));
+		assertNull(bound);
+		
+		bound = sb.bind(ps);
+		assertNull(bound);
+	}
+	
+	@Test
+	public void otherprimitive() {
+		
+		TypeBinder<Integer> sb = new PrimitiveBinders.IntBinder();
+		
+		int bound = sb.bind(v(1));
+		assertEquals(1,bound);
+		
+		bound = sb.bind(v("1"));
+		assertEquals(1,bound);
+		
+		try {
+			sb.bind(v("hello"));
+		}
+		catch(RuntimeException e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+		
+		sb.setMode(LAX);
+		
+		bound = sb.bind(v("hello"));
+		assertEquals(0,bound);
+		
+		
 	}
 	
 	@Test

@@ -39,6 +39,9 @@ public class TestData {
 								result.add(p.p);
 						return result;
 					}
+					public String toString() {
+						return asList(ps).toString();
+					}
 				};
 			}
 			public String toString() {
@@ -54,7 +57,11 @@ public class TestData {
 					public Object get() {
 						return o;
 					}
+					public String toString() {
+						return o.toString();
+					}
 				};
+				
 			}
 
 			public String toString() {
