@@ -4,6 +4,7 @@
 package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
+import static org.ligo.lab.dsl.typebinders.TestData.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -20,6 +21,7 @@ import org.ligo.lab.typebinders.Literal;
 import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -46,6 +48,13 @@ public class BinderTests {
 		factory = new DefaultEnvironment(p);
 	}
 
+	@Test
+	public void primitive() {
+		
+		TypeBinder<String> sb = new PrimitiveBinders.StringBinder();
+		sb.bind(v("hello"));
+	}
+	
 	@Test
 	public void badinputs() {
 		
