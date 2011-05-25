@@ -14,7 +14,7 @@ public class PrimitiveBinders {
 
 	public static class StringBinder extends AbstractPrimitiveBinder<String> {
 		
-		StringBinder() {
+		public StringBinder() {
 			super(get(String.class));
 		}
 		

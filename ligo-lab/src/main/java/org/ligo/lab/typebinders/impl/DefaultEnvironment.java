@@ -87,6 +87,7 @@ public class DefaultEnvironment implements Environment {
 	 */
 	public DefaultEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
 		resolver = r;
+		//load providers
 		for (BinderProvider<?> provider : ps)
 			providers.put(provider.matchingKey(), provider);
 	}
@@ -111,7 +112,7 @@ public class DefaultEnvironment implements Environment {
 		}
 		
 		//resolve provider
-		BinderProvider<?> provider = getProvider(key);
+		BinderProvider<?> provider = provider(key);
 		
 		if (provider==null)
 			throw new RuntimeException("no provider available for "+key);
@@ -126,7 +127,12 @@ public class DefaultEnvironment implements Environment {
 		
 	}
 
-	BinderProvider<?> getProvider(Key<?> key) {
+	/**
+	 * Used internally to resolve {@link BinderProvider}s from {@link Key}s.
+	 * @param key the key.
+	 * @return the provider.
+	 */
+	BinderProvider<?> provider(Key<?> key) {
 		
 		BinderProvider<?> provider = providers.get(key);
 		
@@ -136,7 +142,7 @@ public class DefaultEnvironment implements Environment {
 		if (provider==null && kind.value()==GENERIC)
 			provider = providers.get(get(GENERIC(kind).getRawType(),key.qualifier()));
 		
-		//default to object
+		//defaults to object
 		if (provider==null)
 			provider = providers.get(Object.class);
 		

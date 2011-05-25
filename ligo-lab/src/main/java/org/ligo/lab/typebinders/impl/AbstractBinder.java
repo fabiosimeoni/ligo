@@ -24,7 +24,7 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	private Mode mode = STRICT;
 	
 	protected AbstractBinder(Key<TYPE> key) {
-		logger.trace("processing {}",key);
+		logger.trace("building binder for {}",key);
 		this.key=key;
 	}
 	
