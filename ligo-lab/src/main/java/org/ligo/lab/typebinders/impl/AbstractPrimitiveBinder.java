@@ -4,6 +4,7 @@
 package org.ligo.lab.typebinders.impl;
 
 import static java.lang.String.*;
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 
 import java.util.List;
 
@@ -27,49 +28,50 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 	
 	public TYPE bind(List<Provided> provided) {
 		
-		try {
-			
-			if (provided.size()!=1)
-				switch(mode()) {
-					
-					case STRICT:
-						throw new RuntimeException("expected one value but found: "+provided);
-					
-					case LAX:
-						return null;
-				}
-			
-			DataProvider dp = provided.get(0).provider();
+		if (provided.size()!=1)
+			switch(mode()) {
+				
+				case STRICT:
+					throw new RuntimeException("expected one value but found: "+provided);
+				
+				case LAX:
+					return null;
+			}
 		
-			if (!(dp instanceof ValueProvider))
-				switch(mode()) {
-						
-					case STRICT:
-						throw new RuntimeException("expected a scalar but found: "+provided);
-						
-					case LAX:
-						return null;
-				}
+		DataProvider dp = provided.get(0).provider();
+	
+		if (!(dp instanceof ValueProvider))
+			switch(mode()) {
+					
+				case STRICT:
+					throw new RuntimeException("expected a scalar but found: "+provided);
+					
+				case LAX:
+					return null;
+			}
+	
+		ValueProvider vp = (ValueProvider) dp;
 		
-			ValueProvider vp = (ValueProvider) dp;
-			
-			return accept(vp.get());
-			
-		}
-		catch(ClassCastException e) {
-			throw new RuntimeException(format("cannot bind %1s to %2s",key(),provided),e);
-		}
+		Object input = vp.get();
+		TYPE result = accept(input);
+		
+		if (result == null && mode()==STRICT)
+			throw new RuntimeException(format("could not bind %1s to %2s",input,this));
+		
+		return result;
 	};
 	
 
 	protected abstract TYPE accept(Object o);
 	
-	BinderProvider<TYPE> provider() {
+	
+	public BinderProvider<TYPE> provider() {
 		return new BinderProvider<TYPE>() {
+			
 			@Override public Key<TYPE> matchingKey() {
 				return key();
 			}
-			/**{@inheritDoc}*/
+			
 			@Override
 			public TypeBinder<TYPE> binder(Key<TYPE> key, Environment factory) {
 				return AbstractPrimitiveBinder.this;
