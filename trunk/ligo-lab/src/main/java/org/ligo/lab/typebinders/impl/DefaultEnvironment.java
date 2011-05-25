@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
+ * A default, caching binding {@link Environment}.
+ * 
  * @author Fabio Simeoni
  *
  */
@@ -60,23 +62,31 @@ public class DefaultEnvironment implements Environment {
 			new BooleanBinder().provider()
 	);
 
-	private final Resolver implProvider;
+	
+	private final Resolver resolver;
 	
 	/**
-	 * 
+	 * Creates an instance with default dependencies.
 	 */
 	public DefaultEnvironment() {
 		this(new DefaultResolver());
 	}
+	
 	/**
-	 * 
+	 * Creates an instance with a given {@link Resolver} and default {@link BinderProvider}s.
+	 * @param r the resolver.
 	 */
-	public DefaultEnvironment(Resolver p) {
-		this(p,DEFAULT_PROVIDERS);
+	public DefaultEnvironment(Resolver r) {
+		this(r,DEFAULT_PROVIDERS);
 	}
 	
-	public DefaultEnvironment(Resolver p, List<? extends BinderProvider<?>> ps) {
-		implProvider = p;
+	/**
+	 * Creates an instance with a given {@link Resolver} and given {@link BinderProvider}s.
+	 * @param r the resolver.
+	 * @param ps the providers.
+	 */
+	public DefaultEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
+		resolver = r;
 		for (BinderProvider<?> provider : ps)
 			providers.put(provider.matchingKey(), provider);
 	}
@@ -84,13 +94,7 @@ public class DefaultEnvironment implements Environment {
 	/**{@inheritDoc}*/
 	@Override
 	public Resolver resolver() {
-		return implProvider;
-	}
-	
-	public <T> void addBinderProvider(Key<T> key,BinderProvider<T> provider) {
-		
-		providers.put(key,provider);
-
+		return resolver;
 	}
 	
 	/**{@inheritDoc}*/
