@@ -14,6 +14,8 @@ import org.ligo.lab.data.ValueProvider;
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -22,6 +24,13 @@ import org.ligo.lab.typebinders.TypeBinder;
  */
 public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
+	private static Logger logger= LoggerFactory.getLogger(AbstractPrimitiveBinder.class);
+	
+	private static String BINDING_ERROR = "[%1s] could not bind %2s to %3s";
+	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
+	private static String INPUT_ERROR = "[%1s] binder for %2s required a scalar but found: %3s";
+	private static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
+	
 	public AbstractPrimitiveBinder(Key<TYPE> c) {
 		super(c);
 	}
@@ -29,34 +38,42 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 	public TYPE bind(List<Provided> provided) {
 		
 		if (provided.size()!=1)
-			switch(mode()) {
-				
-				case STRICT:
-					throw new RuntimeException("expected one value but found: "+provided);
-				
-				case LAX:
-					return null;
+			if (mode()==STRICT)
+				throw new RuntimeException(format(CARDINALITY_ERROR,mode(),this,provided));
+			else {
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),provided,this,null});
+				return null;
 			}
 		
 		DataProvider dp = provided.get(0).provider();
 	
 		if (!(dp instanceof ValueProvider))
-			switch(mode()) {
-					
-				case STRICT:
-					throw new RuntimeException("expected a scalar but found: "+provided);
-					
-				case LAX:
-					return null;
+			if (mode()==STRICT)
+					throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
+			else {
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,null});
+				return null;
 			}
 	
 		ValueProvider vp = (ValueProvider) dp;
 		
 		Object input = vp.get();
-		TYPE result = accept(input);
+		TYPE result = null;
+		
+		Throwable error=null;
+		try{
+			result = accept(input);
+		}
+		catch(Throwable t) {
+			error=t;
+		}
 		
 		if (result == null && mode()==STRICT)
-			throw new RuntimeException(format("could not bind %1s to %2s",input,this));
+			throw error==null?
+					new RuntimeException(format(BINDING_ERROR,mode(),input,this)):
+					new RuntimeException(format(BINDING_ERROR,mode(),input,this),error);
+		
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,result});
 		
 		return result;
 	};
