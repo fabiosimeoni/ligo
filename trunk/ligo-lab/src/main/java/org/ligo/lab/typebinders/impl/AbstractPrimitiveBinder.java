@@ -5,6 +5,7 @@ package org.ligo.lab.typebinders.impl;
 
 import static java.lang.String.*;
 import static org.ligo.lab.typebinders.Bind.Mode.*;
+import static org.ligo.lab.typebinders.kinds.Kind.*;
 
 import java.util.List;
 
@@ -95,4 +96,9 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 		};
 	}
 
+	/**{@inheritDoc}*/
+	@Override
+	public String toString() {
+		return CLASS(key().kind()).getSimpleName().toLowerCase();
+	}
 }
