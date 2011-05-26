@@ -7,6 +7,7 @@ import static java.util.Arrays.*;
 import static org.ligo.lab.typebinders.Key.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
+import static org.ligo.lab.typebinders.utils.ReflectionUtils.*;
 
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
@@ -144,9 +145,16 @@ public class DefaultEnvironment implements Environment {
 		if (provider==null && kind.value()==GENERIC)
 			provider = providers.get(get(GENERIC(kind).getRawType(),key.qualifier()));
 		
+		if (provider==null) {
+			Class<?> clazz = key.kind().toClass();
+			if (clazz!=null && clazz.isPrimitive())
+				provider = providers.get(get(wrapperOf(clazz),key.qualifier()));	
+		}
+		
+				
 		//defaults to object
 		if (provider==null)
-			provider = providers.get(Object.class);
+			provider = providers.get(get(Object.class));
 		
 		return provider;
 	}
