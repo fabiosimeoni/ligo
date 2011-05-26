@@ -17,13 +17,15 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RUNTIME)
-@Target(value=PARAMETER)
+@Target(value={CONSTRUCTOR,METHOD,PARAMETER})
 /**
  * Identifies the data required for binding and the method and constructor parameters through which the 
  * data can be bound.
  */
 public @interface Bind {
 
+	public static final String NULL=null;
+	
 	public static enum Mode{STRICT,LAX,DEFAULT}
 	
 	String value();
