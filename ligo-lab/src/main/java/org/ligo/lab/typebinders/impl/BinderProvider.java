@@ -6,6 +6,6 @@ import org.ligo.lab.typebinders.Environment;
 
 public interface BinderProvider<T> {
 	
-	Key<T> matchingKey();
+	Key<? extends T> matchingKey();
 	TypeBinder<T> binder(Key<T> key, Environment factory);
 }

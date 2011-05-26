@@ -20,16 +20,16 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	protected static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
 	
 	
-	private final Key<TYPE> key;
+	private final Key<? extends TYPE> key;
 	
 	private Mode mode = STRICT;
 	
-	protected AbstractBinder(Key<TYPE> key) {
+	protected AbstractBinder(Key<? extends TYPE> key) {
 		this.key=key;
 	}
 	
 	
-	public Key<TYPE> key() {
+	public Key<? extends TYPE> key() {
 		return key;
 	}
 	

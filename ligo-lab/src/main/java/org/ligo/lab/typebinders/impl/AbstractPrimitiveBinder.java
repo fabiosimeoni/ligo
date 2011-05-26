@@ -84,7 +84,7 @@ public abstract class AbstractPrimitiveBinder<TYPE> extends AbstractBinder<TYPE>
 		logger.trace(BUILT_LOG,AbstractPrimitiveBinder.this,mode());
 		return new BinderProvider<TYPE>() {
 			
-			@Override public Key<TYPE> matchingKey() {
+			@Override public Key<? extends TYPE> matchingKey() {
 				return key();
 			}
 			

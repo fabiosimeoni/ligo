@@ -7,11 +7,11 @@ import static org.junit.Assert.*;
 import static org.ligo.lab.dsl.typebinders.TestData.*;
 import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
+import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +46,22 @@ public class BinderTests {
 		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Kind<?>>() {
 			public Kind<?> answer(InvocationOnMock invocation) throws Throwable {
 				return ((Key)invocation.getArguments()[0]).kind();
+			}
+		});
+		when(p.resolve(any(Key.class),any(List.class))).thenAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				Kind<?> kind = ((Key)invocation.getArguments()[0]).kind();
+				Object instance = null;
+				try {
+					switch(kind.value()) {
+						case CLASS: instance = CLASS(kind).newInstance();break;
+						case GENERIC: instance = ((Class<?>) GENERIC(kind).getRawType()).newInstance();
+					}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				return instance;
 			}
 		});
 		
@@ -122,20 +138,113 @@ public class BinderTests {
 		
 		
 	}
-	
+		
 	@Test 
-	public void object() {
+	public void object() throws Exception {
 	
-		@SuppressWarnings("all")	
-		SomeInterface clazz = new SomeInterface() {
-			public void m(@Bind("1") String s){};
-		};
+		TypeBinder<SomeInterface> ob = new DefaultObjectBinder<SomeInterface>(get(Empty.class),factory);
 		
-		TypeBinder<SomeInterface> ob = new DefaultObjectBinder<SomeInterface>(get(clazz.getClass()),factory);
+		try{
+			ob.bind(v(5));
+			fail();
+		}
+		catch(Exception e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
 		
+		SomeInterface result = ob.bind(s());
+		assertNotNull(result);
 		
+		//badly annotated constructor
+		try {
+			new DefaultObjectBinder<SomeInterface>(get(BadConstructor.class),factory);
+		}
+		catch(Exception e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+		
+		TypeBinder<GoodMethod> gc = new DefaultObjectBinder<GoodMethod>(get(GoodMethod.class),factory);
+		
+		GoodMethod gcresult = gc.bind(s(p("a","hello")));
+		assertNotNull(gcresult);
+		assertTrue(gcresult.invoked);
+		
+		TypeBinder<GoodMethod2> gc2 = new DefaultObjectBinder<GoodMethod2>(get(GoodMethod2.class),factory);
+		
+		GoodMethod2 gc2result = gc2.bind(s(p("a","hello")));
+		assertNotNull(gc2result);
+		assertTrue(gc2result.invoked);
+
+		TypeBinder<MultiParams> mp = new DefaultObjectBinder<MultiParams>(get(MultiParams.class),factory);
+		
+		MultiParams mpresult = mp.bind(s(p("a","hello"),p("b","world")));
+		assertNotNull(mpresult);
+		assertTrue(mpresult.invoked);
+		
+		TypeBinder<Partial> pb = new DefaultObjectBinder<Partial>(get(Partial.class),factory);
+		
+		Partial pbresult = pb.bind(s(p("a","hello"),p("c","world")));
+		assertNotNull(pbresult);
+		assertTrue(pbresult.invoked);
 	}
 	
+
+	interface SomeInterface {}
+
+	//un-annotated class
+	static class Empty implements SomeInterface {}
+	
+	//standard class
+	static class BadConstructor implements SomeInterface {
+		@Bind("a")
+		public BadConstructor() {}
+	}
+	
+	//standard class
+	static class TooManyConstructors implements SomeInterface {
+		
+		@Bind("a")
+		public TooManyConstructors(Integer i) {}
+		
+		@Bind("b")
+		public TooManyConstructors(String s) {}
+	}
+	
+	//standard class
+	static class GoodMethod implements SomeInterface {
+		
+		boolean invoked;
+		
+		@Bind("a")
+		public void m(String s) {invoked=true;}
+	}
+	
+	//standard class
+	static class GoodMethod2 implements SomeInterface {
+		
+		boolean invoked;
+		
+		public void m(@Bind("a") String s) {invoked=true;}
+	}
+
+	//standard class
+	static class MultiParams implements SomeInterface {
+		
+		boolean invoked;
+		
+		public void m(@Bind("a") String s1, @Bind("b") String s2) {invoked=true;}
+	}
+	
+	//standard class
+	static class Partial implements SomeInterface {
+		
+		boolean invoked;
+		
+		public void m(@Bind("a") String s1, String s2, @Bind("c") String s3) {
+			assertNull(s2);
+			invoked=true;
+		}
+	}
 	@Test
 	public void badinputs() {
 		
@@ -191,9 +300,7 @@ public class BinderTests {
 		System.out.println(binder2);
 	}
 	
-	interface SomeInterface {}
-
-	interface IManaged<T> {
+		interface IManaged<T> {
 		
 		void poo(@Bind("foo3") T s);
 		
@@ -226,7 +333,7 @@ public class BinderTests {
 	
 	static interface IRaw<T> {
 		
-		void foo(@Bind("foo") T s);
+		void foo(@Bind(".") T s);
 	}
 	
 	static class Raw<T> implements IRaw<T> {
@@ -240,5 +347,9 @@ public class BinderTests {
 	}
 	
 	
+	//////////////////////////////////////////////////////////////////
+	
+
+
 }
 

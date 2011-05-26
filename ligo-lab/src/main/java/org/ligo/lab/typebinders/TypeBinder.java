@@ -26,7 +26,7 @@ public interface TypeBinder<TYPE> extends Binder<List<Provided>,TYPE> {
 	 * Returns the key of the bound type.
 	 * @return the key
 	 */
-	Key<TYPE> key();
+	Key<? extends TYPE> key();
 	
 	/**
 	 * Sets the binding {@link Mode} on the binder.
