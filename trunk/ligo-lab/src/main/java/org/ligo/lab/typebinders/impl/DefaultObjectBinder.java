@@ -227,7 +227,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			return object;
 		}
 		catch(Throwable e) {
-			throw new RuntimeException(format(BINDING_ERROR,key(),provided),e);
+			throw new RuntimeException(format(BINDING_ERROR,mode(),key(),provided),e);
 		}
 	}
 	
@@ -324,13 +324,25 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					break; //ignore other annotations 
 				}
 		
-			if (!boundParam)
+			if (!boundParam) {
+				Kind<?> kind = kindOf(parameters[i]);
+				Class<?> paramClass;
+				switch (kind.value()) {
+					case CLASS: paramClass=CLASS(kind);break;
+					case GENERIC:paramClass=(Class<?>)GENERIC(kind).getRawType();
+					default:
+						throw new RuntimeException("TODO");
+				}
+				if (paramClass.isPrimitive())
+					throw new RuntimeException("cannot bind constant to primitive type");
+				
 				boundNames.add(UNBOUND_PARAM);
+			}
 		}
 
-		if (!boundMethod)
+		if (!boundMethod) {
 			boundNames.clear();
-		
+		}
 		return boundNames;
 	}
 	
