@@ -186,6 +186,14 @@ public class BinderTests {
 		Partial pbresult = pb.bind(s(p("a","hello"),p("c","world")));
 		assertNotNull(pbresult);
 		assertTrue(pbresult.invoked);
+		
+		
+		try {
+			new DefaultObjectBinder<BadPartial>(get(BadPartial.class),factory);
+		}
+		catch(Exception e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
 	}
 	
 
@@ -249,12 +257,7 @@ public class BinderTests {
 	//standard class
 	static class BadPartial implements SomeInterface {
 		
-		boolean invoked;
-		
-		public void m(@Bind("a") String s1, int s2, @Bind("c") String s3) {
-			assertEquals(0,s2);
-			invoked=true;
-		}
+		public void m(@Bind("a") String s1, int s2, @Bind("c") String s3) {}
 	}
 	
 	

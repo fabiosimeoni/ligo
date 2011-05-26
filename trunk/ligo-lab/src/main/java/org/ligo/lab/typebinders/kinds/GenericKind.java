@@ -27,6 +27,11 @@ public final class GenericKind extends Kind<ParameterizedType> {
 	
 		/**{@inheritDoc}*/
 		@Override
+		public Class<?> toClass() {
+			return (Class<?>) type().getRawType();
+		}
+		/**{@inheritDoc}*/
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append(kindOf(type().getRawType())).append("<");

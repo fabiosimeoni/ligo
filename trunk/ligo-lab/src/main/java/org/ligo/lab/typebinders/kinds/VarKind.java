@@ -23,6 +23,11 @@ public final class VarKind extends Kind<TypeVariable<?>> {
 			return TYPEVAR;
 		}
 
+		/**{@inheritDoc}*/
+		@Override
+		public Class<?> toClass() {
+			return null;
+		}
 		
 		/**{@inheritDoc}*/
 		@Override

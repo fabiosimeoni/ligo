@@ -25,6 +25,12 @@ public final class GenericArrayKind extends Kind<GenericArrayType> {
 
 		/**{@inheritDoc}*/
 		@Override
+		public Class<?> toClass() {
+			return kindOf(type().getGenericComponentType()).toClass();
+		}
+		
+		/**{@inheritDoc}*/
+		@Override
 		public String toString() {
 			return kindOf(type().getGenericComponentType()).toString();
 		}
