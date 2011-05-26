@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.ligo.lab.typebinders.TypeBinder;
+
 
 /**
  * @author Fabio Simeoni
@@ -14,17 +16,25 @@ import javax.xml.namespace.QName;
  */
 public abstract class AbstractMethodDef {
 
-	private List<QName> names;
+	public static class NamedBinder {
+		QName name;
+		TypeBinder<?> binder;
+		public NamedBinder(QName n,TypeBinder<?> b) {
+			name=n;binder=b;
+		}
+	}
 	
-	public AbstractMethodDef(List<QName> n) {
-		names = n;
+	private List<NamedBinder> binders;
+	
+	public AbstractMethodDef(List<NamedBinder> n) {
+		binders = n;
 	}
 	
 	/**
 	 * 
 	 */
-	public List<QName> names() {
-		return names;
+	public List<NamedBinder> binders() {
+		return binders;
 	}
 	
 }
