@@ -5,14 +5,13 @@ package org.ligo.lab.typebinders.impl;
 
 import static java.util.Arrays.*;
 import static org.ligo.lab.typebinders.Key.*;
-import static org.ligo.lab.typebinders.kinds.Kind.*;
-import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
 import static org.ligo.lab.typebinders.utils.ReflectionUtils.*;
 
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -22,15 +21,7 @@ import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.impl.DefaultIteratorBinder.IteratorBinderProvider;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder.ObjectBinderProvider;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.FloatBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.IntBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.LongBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinders.StringBinder;
-import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +47,15 @@ public class DefaultEnvironment implements Environment {
 			DefaultCollectionBinder.provider(Set.class),
 			DefaultCollectionBinder.provider(Queue.class),
 			DefaultCollectionBinder.provider(Deque.class),
-			new IteratorBinderProvider(),
-			new StringBinder().provider(),
-			new IntBinder().provider(),
-			new LongBinder().provider(),
-			new FloatBinder().provider(),
-			new DoubleBinder().provider(),
-			new BooleanBinder().provider()
+			PrimitiveBinder.provider(String.class),
+			PrimitiveBinder.provider(Byte.class),
+			PrimitiveBinder.provider(Short.class),
+			PrimitiveBinder.provider(Integer.class),
+			PrimitiveBinder.provider(Long.class),
+			PrimitiveBinder.provider(Float.class),
+			PrimitiveBinder.provider(Double.class),
+			PrimitiveBinder.provider(Character.class),
+			PrimitiveBinder.provider(Boolean.class)
 	);
 
 	
@@ -105,6 +98,10 @@ public class DefaultEnvironment implements Environment {
 	@Override
 	public <T> TypeBinder<T> binderFor(Key<T> key) {
 		
+		//get rid of qualifiers for lookup purposes
+		if (key.qualifier()!=null)
+			key = new Key<T>(key.kind(),null);
+		
 		//hit cache
 		@SuppressWarnings("unchecked") //internally consistent
 		TypeBinder<T> binder = (TypeBinder) cache.get(key);
@@ -139,22 +136,29 @@ public class DefaultEnvironment implements Environment {
 		
 		BinderProvider<?> provider = providers.get(key);
 		
-		//try raw type
-		
-		Kind<?> kind = key.kind();
-		if (provider==null && kind.value()==GENERIC)
-			provider = providers.get(get(GENERIC(kind).getRawType(),key.qualifier()));
-		
 		if (provider==null) {
+			
+			//reduce search space to 'raw' types
 			Class<?> clazz = key.kind().toClass();
-			if (clazz!=null && clazz.isPrimitive())
-				provider = providers.get(get(wrapperOf(clazz),key.qualifier()));	
-		}
+			if (clazz==null)
+				return null;
 		
-				
-		//defaults to object
-		if (provider==null)
-			provider = providers.get(get(Object.class));
+			//lookup raw type
+			provider = providers.get(get(clazz));
+			
+			if (provider==null && Collection.class.isAssignableFrom(clazz))
+				provider=providers.get(get(Collection.class));
+
+			if (provider==null && Iterator.class.isAssignableFrom(clazz))
+				provider=providers.get(get(Iterator.class));
+			
+			if (provider==null && clazz.isPrimitive())
+				provider = providers.get(get(wrapperOf(clazz),key.qualifier()));	
+					
+			//defaults to object
+			if (provider==null)
+				provider = providers.get(get(Object.class));
+		}
 		
 		return provider;
 	}

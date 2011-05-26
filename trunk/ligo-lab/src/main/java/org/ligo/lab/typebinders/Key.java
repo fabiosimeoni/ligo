@@ -43,12 +43,13 @@ public final class Key<T> {
 		return get(t,null);
 	}
 	
+	
 	@SuppressWarnings("unchecked")
 	public static Key<?> get(Type t, Class<? extends Annotation> a) {
 		return new Key(kindOf(t),a);
 	}
 	
-	Key(Kind<?> k,Class<? extends Annotation> a) {
+	public Key(Kind<?> k,Class<? extends Annotation> a) {
 		kind=k;
 		qualifier=a;
 	}
@@ -66,23 +67,6 @@ public final class Key<T> {
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		b.append(kind).append(qualifier==null?"":","+qualifier.getSimpleName());
-//		if (parameters!=null) {
-//			Collection<Type> params = parameters.values();
-//			b.append("<");
-//			Iterator<Type> it = params.iterator();
-//			while (it.hasNext()) {
-//				Type t = it.next();
-//				if (t instanceof Class<?>)
-//					b.append(((Class<?>)t).getSimpleName());
-//				else if (t instanceof ParameterizedType)
-//					b.append(((ParameterizedType) t).getRawType().getClass().getSimpleName());
-//				else 
-//					b.append(t);
-//				if (it.hasNext())
-//					b.append(",");
-//			}
-//			b.append(">");
-//		}
 		return b.toString();
 	}
 
@@ -90,8 +74,6 @@ public final class Key<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-//		result = prime * result
-//				+ ((parameters == null) ? 0 : parameters.hashCode());
 		result = prime * result
 				+ ((qualifier == null) ? 0 : qualifier.hashCode());
 		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
