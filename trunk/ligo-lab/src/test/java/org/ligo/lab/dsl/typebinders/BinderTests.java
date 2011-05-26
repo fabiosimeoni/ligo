@@ -174,6 +174,12 @@ public class BinderTests {
 		GoodMethod2 gc2result = gc2.bind(s(p("a","hello")));
 		assertNotNull(gc2result);
 		assertTrue(gc2result.invoked);
+		
+		TypeBinder<Primitive> prb = new DefaultObjectBinder<Primitive>(get(Primitive.class),factory);
+		
+		Primitive prbresult = prb.bind(s(p("a",3)));
+		assertNotNull(prbresult);
+		assertTrue(prbresult.invoked);
 
 		TypeBinder<MultiParams> mp = new DefaultObjectBinder<MultiParams>(get(MultiParams.class),factory);
 		
@@ -232,6 +238,15 @@ public class BinderTests {
 		boolean invoked;
 		
 		public void m(@Bind("a") String s) {invoked=true;}
+	}
+	
+	//standard class
+	static class Primitive implements SomeInterface {
+		
+		boolean invoked;
+		
+		@Bind("a")
+		public void m(int s) {invoked=true;}
 	}
 
 	//standard class

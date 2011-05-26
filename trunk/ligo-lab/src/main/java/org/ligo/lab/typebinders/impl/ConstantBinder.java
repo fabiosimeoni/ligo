@@ -5,6 +5,7 @@ package org.ligo.lab.typebinders.impl;
 
 import static java.lang.String.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
+import static org.ligo.lab.typebinders.utils.ReflectionUtils.*;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -28,24 +29,8 @@ public class ConstantBinder implements TypeBinder<Object>  {
 	public ConstantBinder(Type t) {
 		
 		 setClass(t);
+		 constant = defaultOf(clazz);
 
-		 if (clazz==Boolean.TYPE) {
-		      constant = Boolean.FALSE;
-		 }
-		 else if (clazz==Character.TYPE) {
-		      constant = '\u0000';
-		 }
-		 else if (clazz==Long.TYPE || 
-				 clazz==Integer.TYPE || 
-				 clazz==Short.TYPE || 
-				 clazz==Byte.TYPE ||
-				 clazz==Float.TYPE || 
-				 clazz==Double.TYPE ||
-				 clazz==Character.TYPE) {
-			 constant = (byte) 0;
-		 }
-		 else
-			 constant = null;
 		 
 	}
 	
