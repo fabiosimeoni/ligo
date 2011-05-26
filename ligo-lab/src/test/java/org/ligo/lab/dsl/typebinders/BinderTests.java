@@ -245,6 +245,25 @@ public class BinderTests {
 			invoked=true;
 		}
 	}
+	
+	//standard class
+	static class BadPartial implements SomeInterface {
+		
+		boolean invoked;
+		
+		public void m(@Bind("a") String s1, int s2, @Bind("c") String s3) {
+			assertEquals(0,s2);
+			invoked=true;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	@Test
 	public void badinputs() {
 		
