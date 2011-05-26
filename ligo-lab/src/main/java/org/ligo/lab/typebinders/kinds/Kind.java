@@ -55,6 +55,7 @@ public abstract class Kind<T extends Type> {
 		type=t;
 	}
 	
+	abstract public Class<?> toClass();
 	abstract public KindValue value();
 	
 	T type() {

@@ -26,6 +26,12 @@ public final class ClassKind extends Kind<Class<?>> {
 		
 		/**{@inheritDoc}*/
 		@Override
+		public Class<?> toClass() {
+			return type();
+		}
+		
+		/**{@inheritDoc}*/
+		@Override
 		public String toString() {
 			return type().getName();
 		}

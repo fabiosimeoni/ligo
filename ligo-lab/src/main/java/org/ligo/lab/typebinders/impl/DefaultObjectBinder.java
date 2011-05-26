@@ -4,15 +4,17 @@
 package org.ligo.lab.typebinders.impl;
 
 import static java.lang.String.*;
+import static java.util.Collections.*;
 import static org.ligo.lab.typebinders.Bind.Mode.*;
 import static org.ligo.lab.typebinders.Key.*;
+import static org.ligo.lab.typebinders.impl.DefaultObjectBinder.ParameterContext.*;
 import static org.ligo.lab.typebinders.kinds.Kind.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
@@ -46,10 +48,10 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
-	private static final String KIND_ERROR="unexpected kind %1s";
+	private static final String KIND_ERROR="unexpected type %1s";
 	private static final String INTERFACE_ERROR="unexpected interface %1s";
 	private static final String BINDMETHOD_ERROR= 
-		"@Bind is allowed only on single-parameter constructors/methods, this is not the case for %1s, annotate individual parameters instead";
+		"@Bind is allowed only on single-type constructors/methods, this is not the case for %1s, annotate individual parameters instead";
 	private static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
 	private static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
 	private static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
@@ -78,26 +80,25 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		env = e;
 		
 		//resolve key, as we need to analyse an implementation
-		Kind<?> provided = env.resolver().resolve(key);
+		Kind<?> resolved = env.resolver().resolve(key);
 		
-		//extract concrete implementation from type
-		Class<?> clazz = null;
-		switch (provided.value()) {
-			case CLASS: //simply type-extract class itself
-				clazz = CLASS(provided); 
-				break;
-			case GENERIC: //extract raw type and store variable bindings in the environment
-				ParameterizedType pt = GENERIC(provided);
-				clazz = (Class<?>) pt.getRawType();
+		//extract class from kind
+		Class<?> clazz;
+		switch (resolved.value()) {
+			case GENERIC:
+				clazz = resolved.toClass();
+				//bind type variables
 				TypeVariable<?>[] vars = clazz.getTypeParameters(); 
 				for (int i = 0; i<vars.length; i++)
-					env.bindVariable(vars[i], env.binderFor(get(pt.getActualTypeArguments()[i])));
+					env.bindVariable(vars[i], env.binderFor(get(GENERIC(resolved).getActualTypeArguments()[i])));
+			case CLASS: 
+				clazz = CLASS(resolved); 
 				break;
-			default:
-				throw new RuntimeException(format(KIND_ERROR,provided));
+			default: //not other kinds can be processed by this binder
+				throw new RuntimeException(format(KIND_ERROR,resolved));
 		}
 		
-		//is it an implementation?
+		//we do need class to be  implementation
 		if (clazz.isInterface()) 
 			throw new RuntimeException(format(INTERFACE_ERROR,clazz));
 		
@@ -120,14 +121,15 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			
 			//@Bind on constructor or @Bind on params?
 			Bind bindAnnotation = c.getAnnotation(Bind.class);
-			if (bindAnnotation==null)	//@Bind on parameters
-				boundNames = addBinder(clazz,c.getParameterAnnotations(),params);
+			if (bindAnnotation==null) //@Bind on parameters 
+				boundNames = addBinder(buildContexts(clazz, c, params, c.getParameterAnnotations()));
 			else //@Bind on constructor
 				if (params.length!=1) //validate
 					throw new RuntimeException(format(BINDMETHOD_ERROR,c));
 				else
-					boundNames = addBinder(clazz,new Annotation[][]{new Annotation[]{bindAnnotation}},new Type[]{params[0]});
-			
+					boundNames = addBinder(new ParameterContext(clazz,c,params[0],c.getAnnotations()));
+				
+				
 			//remember and check uniqueness
 			if (boundNames.size()>0) {
 				if (constructor==null)
@@ -245,18 +247,17 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 					continue;
 				
 				Type[] params = m.getGenericParameterTypes();
-				
-				Bind bindAnnotation = m.getAnnotation(Bind.class);
-				
 				List<QName> boundNames = null;
-				if (bindAnnotation!=null) {
-					if (params.length!=1)
+				
+				//@Bind on constructor or @Bind on params?
+				Bind bindAnnotation = m.getAnnotation(Bind.class);
+				if (bindAnnotation==null) //@Bind on parameters 
+					boundNames = addBinder(buildContexts(clazz, m, params, m.getParameterAnnotations()));
+				else //@Bind on constructor
+					if (params.length!=1) //validate
 						throw new RuntimeException(format(BINDMETHOD_ERROR,m));
 					else
-						boundNames = addBinder(clazz,new Annotation[][]{new Annotation[]{bindAnnotation}},new Type[]{params[0]});
-				}
-				else 
-					boundNames = addBinder(clazz,m.getParameterAnnotations(),params);
+						boundNames = addBinder(new ParameterContext(clazz,m,params[0],m.getAnnotations()));
 				
 				//scan interfaces for possible annotations
 				if (boundNames.isEmpty())
@@ -265,7 +266,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 							//find methods by 'raw' type (interface could be parametric)
 							Method overridden = i.getMethod(m.getName(),m.getParameterTypes());
 							//but do use the resolved parameters
-							boundNames = addBinder(clazz,overridden.getParameterAnnotations(),params);
+							boundNames = addBinder(buildContexts(clazz, overridden, params, overridden.getParameterAnnotations()));
 						}
 						catch(NoSuchMethodException e) {
 							continue;
@@ -287,70 +288,100 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		
 	}
 	
-	
-	List<QName> addBinder(Class<?> clazz,Annotation[][] annotationLists, Type parameters[]) {
+	static class ParameterContext {
+		final Class<?> clazz;
+		final Member member;
+		final Type type;
+		final Annotation[] annotations;
+		Bind bindingAnnotation;
+		Qualifier qualifier;
+		ParameterContext(Class<?> c, Member m, Type p, Annotation[] as) {
+			clazz=c; member=m; type=p; annotations=as;
+			for (Annotation a : as)
+				if (a instanceof Bind)
+					if (bindingAnnotation==null)
+						bindingAnnotation= (Bind) a;
+					else
+						throw new RuntimeException(format("mulitple binding annotations on %1s",member));
+				else
+					if (a instanceof Qualifier)
+						if (qualifier ==null)
+							qualifier = (Qualifier) a;
+						else
+							throw new RuntimeException(format("mulitple qualifiers on %1s",member));
+		}
+		boolean isBound() {
+			return bindingAnnotation!=null;
+		}
 		
-		List<QName> boundNames = new LinkedList<QName>();
+		QName boundName() {
+			return bindingAnnotation==null?UNBOUND_PARAM:new QName(bindingAnnotation.ns(),bindingAnnotation.value());
+		}
 		
-		boolean boundMethod=false;
-		for (int i =0; i<parameters.length;i++) {
-		
-			boolean boundParam=false;
-			for (Annotation annotation : annotationLists[i])
-			
-				if (annotation instanceof Bind) {
-					
-					Bind bindAnnotation = (Bind) annotation;
-					QName name = new QName(bindAnnotation.ns(),bindAnnotation.value());
-					
-					if (binders.containsKey(name))
-						throw new RuntimeException(format(DUPLICATE_NAME,name,clazz.getName()));
-					else {	
-						
-						boundNames.add(name);
-						
-						Key<?> key = get(parameters[i],qualifier(annotationLists[i]));
-						
-						TypeBinder<?> binder = env.binderFor(key);
-						
-						//set mode
-						if (bindAnnotation.mode()!=DEFAULT)
-							binder.setMode(bindAnnotation.mode());
-						
-						binders.put(name,binder);
-						boundParam=true;
-						boundMethod=true;
-					}
-					break; //ignore other annotations 
-				}
-		
-			if (!boundParam) {
-				Kind<?> kind = kindOf(parameters[i]);
-				Class<?> paramClass;
-				switch (kind.value()) {
-					case CLASS: paramClass=CLASS(kind);break;
-					case GENERIC:paramClass=(Class<?>)GENERIC(kind).getRawType();
-					default:
-						throw new RuntimeException("TODO");
-				}
-				if (paramClass.isPrimitive())
-					throw new RuntimeException("cannot bind constant to primitive type");
-				
-				boundNames.add(UNBOUND_PARAM);
-			}
+		Key<?> key() {
+			return qualifier==null?get(type):get(type,qualifier.annotationType());
 		}
 
-		if (!boundMethod) {
-			boundNames.clear();
+		static ParameterContext[] buildContexts(Class<?> clazz, Member m, Type[] types, Annotation[][] as) {
+			List<ParameterContext> contexts = new ArrayList<ParameterContext>();
+			for (int i=0; i<types.length;i++)
+				contexts.add(new ParameterContext(clazz, m, types[i], as[i]));
+			return contexts.toArray(new ParameterContext[0]);
 		}
+	}
+	
+	List<QName> addBinder(ParameterContext ... contexts) {
+		
+		List<QName> boundNames = new LinkedList<QName>();
+		List<ParameterContext> unbound = new LinkedList<ParameterContext>();
+		
+		for (ParameterContext context : contexts) {
+			
+			//bound type
+			if (context.isBound()) {
+				
+				QName name = context.boundName();
+				
+				//uniqueness check
+				if (boundNames.contains(name))
+					throw new RuntimeException(format(DUPLICATE_NAME,name,context.clazz.getName()));
+				
+				binders.put(name,binderFor(context));
+				boundNames.add(name);
+					
+			}
+			//bound type
+			else {
+				unbound.add(context);
+				boundNames.add(UNBOUND_PARAM);
+			}
+			
+		}
+		
+		//no parameters were bound
+		if (unbound.size()==boundNames.size())
+			return emptyList();
+		
+		//process unbound parameters
+		for (ParameterContext context : unbound) {
+			Class<?> clazz = kindOf(context.type).toClass();
+			if (clazz==null || clazz.isPrimitive())
+				throw new RuntimeException(format("cannot bind constant to %1s",clazz));
+		}
+		
 		return boundNames;
 	}
 	
-	Class<? extends Annotation> qualifier(Annotation[] annotations) {
-		for (Annotation a : annotations)
-			if (a.annotationType().isAnnotationPresent(Qualifier.class))
-				return a.annotationType();
-		return null;
+	TypeBinder<?> binderFor(ParameterContext context) {
+		
+		//recur to obtain binder for type
+		TypeBinder<?> binder = env.binderFor(context.key());
+		
+		//set mode
+		if (context.bindingAnnotation.mode()!=DEFAULT)
+			binder.setMode(context.bindingAnnotation.mode());	
+		
+		return binder;
 	}
 	
 	/**{@inheritDoc}*/

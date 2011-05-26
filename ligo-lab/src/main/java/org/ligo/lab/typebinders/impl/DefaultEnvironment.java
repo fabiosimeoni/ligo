@@ -27,6 +27,7 @@ import org.ligo.lab.typebinders.impl.PrimitiveBinders.BooleanBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.DoubleBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.FloatBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.IntBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinders.LongBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinders.StringBinder;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class DefaultEnvironment implements Environment {
 			new IteratorBinderProvider(),
 			new StringBinder().provider(),
 			new IntBinder().provider(),
+			new LongBinder().provider(),
 			new FloatBinder().provider(),
 			new DoubleBinder().provider(),
 			new BooleanBinder().provider()
