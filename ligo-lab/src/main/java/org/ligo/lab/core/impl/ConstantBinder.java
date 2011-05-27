@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
-import org.ligo.lab.core.Bind.Mode;
+import org.ligo.lab.core.annotations.Bind.Mode;
 import org.ligo.lab.core.data.Provided;
 
 /**

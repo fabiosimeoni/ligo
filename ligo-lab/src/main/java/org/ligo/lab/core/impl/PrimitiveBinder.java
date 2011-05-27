@@ -4,8 +4,8 @@
 package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
-import static org.ligo.lab.core.Bind.Mode.*;
 import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 

@@ -3,11 +3,11 @@
  */
 package org.ligo.lab.core.impl;
 
-import static org.ligo.lab.core.Bind.Mode.*;
+import static org.ligo.lab.core.annotations.Bind.Mode.*;
 
 import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
-import org.ligo.lab.core.Bind.Mode;
+import org.ligo.lab.core.annotations.Bind.Mode;
 
 /**
  * @author Fabio Simeoni

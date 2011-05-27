@@ -2,7 +2,6 @@ package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
 import static org.ligo.lab.core.Key.*;
-import static org.ligo.lab.core.impl.DefaultObjectBinder.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -13,31 +12,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Qualifier;
-import javax.xml.namespace.QName;
 
-import org.ligo.lab.core.Bind;
 import org.ligo.lab.core.Key;
+import org.ligo.lab.core.annotations.Bind;
+import org.ligo.lab.core.annotations.BindingAnnotation;
 
 
-class ParameterContext {
+public class ParameterContext {
 	
 	private static final String BINDMETHOD_ERROR= 
 		"@Bind is allowed only on single-type constructors/methods, this is not the case for %1s, annotate individual parameters instead";
 	
-	final Member member;
-	final Type type;
-	final Annotation[] annotations;
-	Bind bindingAnnotation;
-	Qualifier qualifier;
+	private final Member member;
+	private final Type type;
+	private final Annotation[] annotations;
+	private Annotation bindingAnnotation;
+	private Qualifier qualifier;
 	
-	ParameterContext(Member m, Type p, Annotation[] as) {
+	public ParameterContext(Member m, Type p, Annotation[] as) {
 		member=m; type=p; annotations=as;
 		for (Annotation a : as)
-			if (a instanceof Bind)
+			if (a.annotationType().isAnnotationPresent(BindingAnnotation.class)) {
 				if (bindingAnnotation==null)
-					bindingAnnotation= (Bind) a;
+					bindingAnnotation= a;
 				else
 					throw new RuntimeException(format("mulitple binding annotations on %1s",member));
+			}
 			else
 				if (a instanceof Qualifier)
 					if (qualifier ==null)
@@ -45,19 +45,51 @@ class ParameterContext {
 					else
 						throw new RuntimeException(format("mulitple qualifiers on %1s",member));
 	}
-	boolean isBound() {
+	
+	public boolean isBound() {
 		return bindingAnnotation!=null;
 	}
 	
-	QName boundName() {
-		return bindingAnnotation==null?UNBOUND_PARAM:new QName(bindingAnnotation.ns(),bindingAnnotation.value());
-	}
-	
-	Key<?> key() {
+	public Key<?> key() {
 		return qualifier==null?get(type):get(type,qualifier.annotationType());
 	}
 
-	static ParameterContext[] buildContexts(Constructor<?> c) {
+	/**
+	 * @return the qualifier
+	 */
+	public Qualifier qualifier() {
+		return qualifier;
+	}
+	
+	/**
+	 * @return the bindingAnnotation
+	 */
+	public Annotation bindingAnnotation() {
+		return bindingAnnotation;
+	}
+	
+	/**
+	 * @return the member
+	 */
+	public Member member() {
+		return member;
+	}
+	
+	/**
+	 * @return the annotations
+	 */
+	public Annotation[] annotations() {
+		return annotations;
+	}
+	
+	/**
+	 * @return the type
+	 */
+	public Type type() {
+		return type;
+	}
+	
+	public static ParameterContext[] buildContexts(Constructor<?> c) {
 		
 		Type[] params = c.getGenericParameterTypes();
 		

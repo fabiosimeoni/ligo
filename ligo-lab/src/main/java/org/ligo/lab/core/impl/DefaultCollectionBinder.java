@@ -3,10 +3,9 @@
  */
 package org.ligo.lab.core.impl;
 
-import static java.util.Arrays.*;
 import static java.util.Collections.*;
-import static org.ligo.lab.core.Bind.Mode.*;
 import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 
 import java.lang.reflect.ParameterizedType;
@@ -32,7 +31,7 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	
 	private final Environment env;
 	
-	private TypeBinder<?> binder;
+	private TypeBinder<TYPE> binder;
 	
 	DefaultCollectionBinder(Key<COLLTYPE> key, Environment e) {
 		
@@ -46,7 +45,11 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 				break;
 			case GENERIC: //extract raw type and store variable bindings in the environment
 				ParameterizedType pt = GENERIC(key.kind());
-				binder = env.binderFor(get(pt.getActualTypeArguments()[0]));
+				
+				@SuppressWarnings("unchecked")
+				TypeBinder<TYPE> elementBinder = (TypeBinder) env.binderFor(get(pt.getActualTypeArguments()[0]));
+				
+				binder = elementBinder;
 				break;
 			default:
 				throw new RuntimeException("unexpected kind "+key.kind());
@@ -62,7 +65,7 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	@Override
 	public COLLTYPE bind(List<Provided> provided) {
 		
-		List<Object> temp = new ArrayList<Object>();
+		List<TYPE> temp = new ArrayList<TYPE>();
 		
 		for (Provided p : provided)
 			try {
@@ -70,15 +73,20 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 			}
 			catch(RuntimeException e) {
 				switch(mode()) {
-					case STRICT: throw e;
-					case LAX: continue;
+					case STRICT: throw e; 
+					case LAX: 
+						logger.warn("skipping "+p+", which cannot be bound",e);
+						continue;
 				}
+				
 				
 			}
 		
-		COLLTYPE list = env.resolver().resolve(key(),asList(new Object[]{temp}));
+		COLLTYPE list = env.resolver().resolve(key(),emptyList());
 		
-		logger.trace("bound {} ",list);
+		list.addAll(temp);
+		
+		logger.trace("bound {} to {}",list,provided);
 		
 		return list;
 	}
