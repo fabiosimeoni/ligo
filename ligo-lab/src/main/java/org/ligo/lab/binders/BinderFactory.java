@@ -3,7 +3,7 @@
  */
 package org.ligo.lab.binders;
 
-import org.ligo.lab.typebinders.Key;
+import org.ligo.lab.core.Key;
 
 /**
  * A {@link Key}-driven factory of {@link Binder}s.
