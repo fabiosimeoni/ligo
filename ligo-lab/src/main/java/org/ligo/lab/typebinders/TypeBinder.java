@@ -6,8 +6,8 @@ package org.ligo.lab.typebinders;
 import java.util.List;
 
 import org.ligo.lab.binders.Binder;
-import org.ligo.lab.data.Provided;
 import org.ligo.lab.typebinders.Bind.Mode;
+import org.ligo.lab.typebinders.data.Provided;
 
 
 

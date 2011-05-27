@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
-import org.ligo.lab.data.Provided;
+import org.ligo.lab.typebinders.data.Provided;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
 
 /**

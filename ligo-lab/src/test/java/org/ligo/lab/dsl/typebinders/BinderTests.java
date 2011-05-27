@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.lab.data.Provided;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BadPlacement;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnManyParams;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnMethod;
@@ -35,6 +34,7 @@ import org.ligo.lab.dsl.typebinders.TestClassDefs.TooManyConstructors;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.ligo.lab.typebinders.data.Provided;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
 import org.ligo.lab.typebinders.impl.PrimitiveBinder;

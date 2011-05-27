@@ -11,12 +11,12 @@ import static org.ligo.lab.typebinders.utils.ReflectionUtils.*;
 
 import java.util.List;
 
-import org.ligo.lab.data.DataProvider;
-import org.ligo.lab.data.Provided;
-import org.ligo.lab.data.ValueProvider;
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.ligo.lab.typebinders.data.DataProvider;
+import org.ligo.lab.typebinders.data.Provided;
+import org.ligo.lab.typebinders.data.ValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

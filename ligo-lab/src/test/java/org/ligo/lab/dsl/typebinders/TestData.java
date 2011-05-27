@@ -11,10 +11,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.lab.data.DataProvider;
-import org.ligo.lab.data.Provided;
-import org.ligo.lab.data.StructureProvider;
-import org.ligo.lab.data.ValueProvider;
+import org.ligo.lab.typebinders.data.DataProvider;
+import org.ligo.lab.typebinders.data.Provided;
+import org.ligo.lab.typebinders.data.StructureProvider;
+import org.ligo.lab.typebinders.data.ValueProvider;
 
 
 /**

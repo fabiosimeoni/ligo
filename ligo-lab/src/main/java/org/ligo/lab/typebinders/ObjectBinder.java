@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.lab.data.Provided;
+import org.ligo.lab.typebinders.data.Provided;
 
 /**
  * A {@link TypeBinder} for an arbitrary bound type.
