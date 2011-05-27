@@ -217,62 +217,34 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		try {
 			
 			if (provided.size()!=1)
-				switch(mode()) {
-					case STRICT:
-						throw new RuntimeException(format(CARDINALITY_ERROR, mode(),this,provided));
-					case LAX:
-							return null;
-				}
+				if (mode()==STRICT)
+					throw new RuntimeException(format(CARDINALITY_ERROR, mode(),this,provided));
+				else
+					return null;
 			
 			
 			DataProvider dp = provided.get(0).provider();
 			
 			if (!(dp instanceof StructureProvider))
-				switch(mode()) {
-					case STRICT:
-						throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
-					case LAX:
-						return null;
-			}
+				if (mode()==STRICT)
+					throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
+				else
+					return null;
 			
 			StructureProvider provider = (StructureProvider) dp;
 			
-			List<Object> vals = new LinkedList<Object>();
-			
 			//pull constructor parameters and off-load creation to factory
-			List<NamedBinder> cbinders = constructorDef.binders();
-			for (NamedBinder named : cbinders)
-				if (named.name.equals(UNBOUND_PARAM))
-					vals.add(named.binder.bind(null));
-				else
-					try {
-						vals.add(named.binder.bind(provider.get(named.name)));
-					}
-					catch(Throwable t) {
-						if (mode()==STRICT)
-							throw t;
-						else
-							vals.add(null);
-					}
-				
-			TYPE object = env.resolver().resolve(key(),vals);
+			List<Object> values = extractvalues(constructorDef.binders(),provider);
+			TYPE object = env.resolver().resolve(key(),values);
 		
+			//pull method parameters and invoke
 			for (MethodDef m : methodDefs) {
-				vals.clear();
-				List<NamedBinder> mbinders = m.binders();
-				for (NamedBinder named : mbinders) {
-					if (named.name.equals(UNBOUND_PARAM))
-						vals.add(named.binder.bind(null));
-					else {
-						Object part = named.binder.bind(provider.get(named.name));
-						vals.add(part);
-					}
-				}
-				
-				m.method().invoke(object,vals.toArray(new Object[0]));				
+				values = extractvalues(m.binders(),provider);
+				m.method().invoke(object,values.toArray(new Object[0]));				
 			}
 			
 			logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,object});
+			
 			return object;
 		}
 		catch(Throwable e) {
@@ -280,7 +252,21 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		}
 	}
 	
-
+	List<Object> extractvalues(List<NamedBinder> binders, StructureProvider provider) {
+		
+		List<Object> values = new ArrayList<Object>();
+		
+		for (NamedBinder named : binders) {
+			if (named.name.equals(UNBOUND_PARAM))
+				values.add(named.binder.bind(null));
+			else {
+				Object part = named.binder.bind(provider.get(named.name));
+				values.add(part);
+			}
+		}
+		return values;
+	}
+	
 	List<NamedBinder> addBinders(ParameterContext ... contexts) {
 	
 		//add binders for each context, checking they are unambiguously annotated.
