@@ -23,6 +23,8 @@ import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnMethod;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnParam;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.DuplicateLabels;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Empty;
+import org.ligo.lab.dsl.typebinders.TestClassDefs.InterfaceImpl1;
+import org.ligo.lab.dsl.typebinders.TestClassDefs.InterfaceImpl2;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Lax1;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Lax2;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.MultiParams;
@@ -287,6 +289,27 @@ public class BinderTests {
 		assertTrue(r.invoked);
 	}
 	
+	@Test 
+	public void throughInterface1() throws Exception {
+	
+		TypeBinder<InterfaceImpl1> b = new DefaultObjectBinder<InterfaceImpl1>(get(InterfaceImpl1.class),factory);
+		
+		//a is wrongly typed
+		InterfaceImpl1 r = b.bind(s(p("a","hello")));
+		assertNotNull(r);
+		assertTrue(r.invoked);
+	}
+	
+	@Test 
+	public void throughInterface2() throws Exception {
+	
+		TypeBinder<InterfaceImpl2> b = new DefaultObjectBinder<InterfaceImpl2>(get(InterfaceImpl2.class),factory);
+		
+		//a is wrongly typed
+		InterfaceImpl2 r = b.bind(s(p("b","hello")));
+		assertNotNull(r);
+		assertTrue(r.invoked);
+	}
 
 
 	
