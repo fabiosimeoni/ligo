@@ -17,12 +17,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.ligo.lab.data.Provided;
-import org.ligo.lab.dsl.typebinders.TestClassDefs.BadPartial;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BadPlacement;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnManyParams;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnMethod;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnParam;
+import org.ligo.lab.dsl.typebinders.TestClassDefs.DuplicateLabels;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Empty;
+import org.ligo.lab.dsl.typebinders.TestClassDefs.Lax1;
+import org.ligo.lab.dsl.typebinders.TestClassDefs.Lax2;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.MultiParams;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Partial;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Primitive;
@@ -31,9 +33,9 @@ import org.ligo.lab.dsl.typebinders.TestClassDefs.TooManyConstructors;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.Resolver;
 import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinder;
 import org.ligo.lab.typebinders.impl.DefaultEnvironment;
 import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
+import org.ligo.lab.typebinders.impl.PrimitiveBinder;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -134,6 +136,7 @@ public class BinderTests {
 		
 		try {
 			sb.bind(v("hello"));
+			fail();
 		}
 		catch(RuntimeException e) {
 			System.out.println("caught expected:"+e.getMessage());
@@ -170,6 +173,7 @@ public class BinderTests {
 		//badly annotated constructor
 		try {
 			new DefaultObjectBinder<SomeInterface>(get(BadPlacement.class),factory);
+			fail();
 		}
 		catch(Exception e) {
 			System.out.println("caught expected:"+e.getMessage());
@@ -178,6 +182,7 @@ public class BinderTests {
 		//ambiguous constructors
 		try {
 			new DefaultObjectBinder<SomeInterface>(get(TooManyConstructors.class),factory);
+			fail();
 		}
 		catch(Exception e) {
 			System.out.println("caught expected:"+e.getMessage());
@@ -221,32 +226,65 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void object() throws Exception {
+	public void multiparams() throws Exception {
 	
+		TypeBinder<MultiParams> b = new DefaultObjectBinder<MultiParams>(get(MultiParams.class),factory);
 		
+		MultiParams r = b.bind(s(p("a","hello"),p("b","world")));
+		assertNotNull(r);
+		assertTrue(r.invoked);
+	}
+	
+	@Test 
+	public void duplicateLabels() throws Exception {
+	
+		//ambiguous constructors
+		try {
+			new DefaultObjectBinder<SomeInterface>(get(DuplicateLabels.class),factory);
+			fail();
+		}
+		catch(Exception e) {
+			System.out.println("caught expected:"+e.getMessage());
+		}
+	}
+	
+	@Test 
+	public void partialbinding() throws Exception {
+	
+		TypeBinder<Partial> b = new DefaultObjectBinder<Partial>(get(Partial.class),factory);
 		
-
+		Partial r = b.bind(s(p("a","hello"),p("b","world")));
+		assertNotNull(r);
+		assertTrue(r.invoked);
+	}
+	
+	@Test 
+	public void lax1() throws Exception {
+	
+		TypeBinder<Lax1> b = new DefaultObjectBinder<Lax1>(get(Lax1.class),factory);
 		
-
-
-		TypeBinder<MultiParams> mp = new DefaultObjectBinder<MultiParams>(get(MultiParams.class),factory);
+		//a is missing, b is wrongly typed
+		Lax1 r = b.bind(s(p("b","world")));
+		assertNotNull(r);
+		assertTrue(r.invoked1);
+		assertTrue(r.invoked2);
 		
-		MultiParams mpresult = mp.bind(s(p("a","hello"),p("b","world")));
-		assertNotNull(mpresult);
-		assertTrue(mpresult.invoked);
+		//all is missing
+		r = b.bind(s());
+		assertNotNull(r);
+		assertTrue(r.invoked1);
+		assertTrue(r.invoked2);
+	}
+	
+	@Test 
+	public void lax2() throws Exception {
+	
+		TypeBinder<Lax2> b = new DefaultObjectBinder<Lax2>(get(Lax2.class),factory);
 		
-		TypeBinder<Partial> pb = new DefaultObjectBinder<Partial>(get(Partial.class),factory);
-		
-		Partial pbresult = pb.bind(s(p("a","hello"),p("c","world")));
-		assertNotNull(pbresult);
-		assertTrue(pbresult.invoked);
-		
-		
-		TypeBinder<BadPartial> bpb = new DefaultObjectBinder<BadPartial>(get(BadPartial.class),factory);
-		
-		BadPartial bpbresult = bpb.bind(s(p("a","hello"),p("c","world")));
-		assertNotNull(bpbresult);
-		assertTrue(bpbresult.invoked);
+		//a is wrongly typed
+		Lax2 r = b.bind(s(p("a",3)));
+		assertNotNull(r);
+		assertTrue(r.invoked);
 	}
 	
 

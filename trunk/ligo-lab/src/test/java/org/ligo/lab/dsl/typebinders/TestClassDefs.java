@@ -4,6 +4,7 @@
 package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
+import static org.ligo.lab.typebinders.Bind.Mode.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +19,14 @@ public class TestClassDefs {
 
 	interface SomeInterface {}
 
-	//un-annotated class
 	static class Empty implements SomeInterface {}
 	
-	//standard class
 	static class BadPlacement implements SomeInterface {
 		
 		@Bind("a")
 		public BadPlacement() {}
 	}
 	
-	//standard class
 	static class TooManyConstructors implements SomeInterface {
 		
 		@Bind("a")
@@ -38,7 +36,6 @@ public class TestClassDefs {
 		public TooManyConstructors(String s) {}
 	}
 	
-	//standard class
 	static class BindOnMethod implements SomeInterface {
 		
 		boolean invoked;
@@ -47,7 +44,6 @@ public class TestClassDefs {
 		public void m(String s) {invoked=true;}
 	}
 	
-	//standard class
 	static class BindOnParam implements SomeInterface {
 		
 		boolean invoked;
@@ -57,7 +53,6 @@ public class TestClassDefs {
 		}
 	}
 	
-	//standard class
 	static class BindOnManyParams implements SomeInterface {
 		
 		boolean invoked;
@@ -67,7 +62,6 @@ public class TestClassDefs {
 		}
 	}
 	
-	//standard class
 	static class Primitive implements SomeInterface {
 		
 		List<Boolean> invoked = new ArrayList<Boolean>();
@@ -97,7 +91,6 @@ public class TestClassDefs {
 		public void m(boolean s) {invoked.add(true);}
 	}
 
-	//standard class
 	static class MultiParams implements SomeInterface {
 		
 		boolean invoked;
@@ -105,26 +98,55 @@ public class TestClassDefs {
 		public void m(@Bind("a") String s1, @Bind("b") String s2) {invoked=true;}
 	}
 	
-	//standard class
+	static class DuplicateLabels implements SomeInterface {
+		
+		@Bind("b")
+		public DuplicateLabels(int s) {}
+		
+		public void m(@Bind("a") String s1, @Bind("b") String s2) {}
+	}
+	
 	static class Partial implements SomeInterface {
 		
 		boolean invoked;
 		
-		public void m(@Bind("a") String s1, String s2, @Bind("c") String s3) {
+		public void m(@Bind("a") String s1, String s2, int s3, @Bind("b") String s4) {
 			assertNull(s2);
+			assertEquals(0,s3);
 			invoked=true;
 		}
 	}
 	
-	//standard class
-	static class BadPartial implements SomeInterface {
+	static class Lax1 implements SomeInterface {
+		
+		boolean invoked1;
+		boolean invoked2;
+	
+		@Bind(value="a",mode=LAX)
+		public void m(String s) {
+			assertNull(s);
+			invoked1=true;
+		}
+		
+		@Bind(value="b",mode=LAX)
+		public void m(int s) {
+			assertEquals(0,s);
+			invoked2=true;
+		}
+
+	}
+	
+	static class Lax2 implements SomeInterface {
 		
 		boolean invoked;
 		
-		public void m(@Bind("a") String s1, int s2, boolean s3, float s4, byte s5, short s6, char s7, Partial p, @Bind("c") String slast) {
-			assertFalse(s3);
-			assertEquals(0,s2);
+		@Bind(value="a",mode=LAX)
+		public void m(Inner s) {
+			assertNull(s);
 			invoked=true;
 		}
+
+		static class Inner {}
 	}
+	
 }

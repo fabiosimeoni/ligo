@@ -9,13 +9,10 @@ import static org.ligo.lab.typebinders.utils.ReflectionUtils.*;
 
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
@@ -43,10 +40,10 @@ public class DefaultEnvironment implements Environment {
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
 			new ObjectBinderProvider(),
 			DefaultCollectionBinder.provider(Collection.class),
-			DefaultCollectionBinder.provider(List.class),
-			DefaultCollectionBinder.provider(Set.class),
-			DefaultCollectionBinder.provider(Queue.class),
-			DefaultCollectionBinder.provider(Deque.class),
+//			DefaultCollectionBinder.provider(List.class),
+//			DefaultCollectionBinder.provider(Set.class),
+//			DefaultCollectionBinder.provider(Queue.class),
+//			DefaultCollectionBinder.provider(Deque.class),
 			PrimitiveBinder.provider(String.class),
 			PrimitiveBinder.provider(Byte.class),
 			PrimitiveBinder.provider(Short.class),

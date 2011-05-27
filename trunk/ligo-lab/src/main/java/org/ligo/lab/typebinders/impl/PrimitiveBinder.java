@@ -38,12 +38,17 @@ public class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	public TYPE bind(List<Provided> provided) {
 		
+		Class<?> clazz = CLASS(key().kind());
+		
+		@SuppressWarnings("unchecked")
+		TYPE defaultValue = (TYPE) defaultOf(clazz);
+		
 		if (provided.size()!=1)
 			if (mode()==STRICT)
 				throw new RuntimeException(format(CARDINALITY_ERROR,mode(),this,provided));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),provided,this,null});
-				return null;
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),provided,this,defaultValue});
+				return defaultValue;
 			}
 		
 		DataProvider dp = provided.get(0).provider();
@@ -52,25 +57,24 @@ public class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			if (mode()==STRICT)
 					throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,null});
-				return null;
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,defaultValue});
+				return defaultValue;
 			}
 	
 		ValueProvider vp = (ValueProvider) dp;
 		
 		Object input = vp.get();
 		
-		Class<?> clazz = CLASS(key().kind());
+		
 		Object output=null;
 		Throwable error=null;
 		
-		if (input!=null)
-			try{
-				output = clazz.isAssignableFrom(input.getClass())? clazz.cast(input) : valueOf(clazz,input.toString());
-			}
-			catch(Throwable t) {
-				error=t;
-			}
+		try{
+			output = clazz.isAssignableFrom(input.getClass())? clazz.cast(input) : valueOf(clazz,input.toString());
+		}
+		catch(Throwable t) {
+			error=t;
+		}
 		
 		if (output == null)
 			if (mode()==STRICT)
@@ -78,7 +82,7 @@ public class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 					new RuntimeException(format(BINDING_ERROR,mode(),input,this)):
 					new RuntimeException(format(BINDING_ERROR,mode(),input,this),error);
 			else
-				output = defaultOf(clazz);
+				output = defaultValue;
 			
 		@SuppressWarnings("unchecked")
 		TYPE result = (TYPE) output;
