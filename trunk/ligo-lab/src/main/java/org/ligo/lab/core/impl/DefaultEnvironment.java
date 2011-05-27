@@ -40,10 +40,6 @@ public class DefaultEnvironment implements Environment {
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
 			new ObjectBinderProvider(),
 			DefaultCollectionBinder.provider(Collection.class),
-//			DefaultCollectionBinder.provider(List.class),
-//			DefaultCollectionBinder.provider(Set.class),
-//			DefaultCollectionBinder.provider(Queue.class),
-//			DefaultCollectionBinder.provider(Deque.class),
 			PrimitiveBinder.provider(String.class),
 			PrimitiveBinder.provider(Byte.class),
 			PrimitiveBinder.provider(Short.class),
