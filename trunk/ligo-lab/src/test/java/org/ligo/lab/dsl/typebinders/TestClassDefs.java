@@ -149,4 +149,28 @@ public class TestClassDefs {
 		static class Inner {}
 	}
 	
+	static interface BindingInterface {
+		
+		@Bind("a")
+		void m(String s);
+	}
+	
+	static class InterfaceImpl1 implements BindingInterface {
+		
+		boolean invoked;
+		public void m(String s) {
+			invoked=true;
+		};
+	}
+	
+	static class InterfaceImpl2 implements BindingInterface {
+		
+		boolean invoked;
+		
+		@Bind("b")
+		public void m(String s) {
+			invoked=true;
+		};
+	}
+	
 }
