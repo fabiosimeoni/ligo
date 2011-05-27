@@ -146,7 +146,7 @@ public class DefaultEnvironment implements Environment {
 				provider=providers.get(get(Iterator.class));
 			
 			if (provider==null && clazz.isPrimitive())
-				provider = providers.get(get(wrapperOf(clazz),key.qualifier()));	
+				provider = providers.get(get(wrapperOf(clazz)));	
 					
 			//defaults to object
 			if (provider==null)
