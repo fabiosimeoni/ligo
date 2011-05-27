@@ -12,6 +12,7 @@ public class ReflectionUtils {
 	public static <T> T valueOf(Class<T> c, String val) {
 		
 		Object value;
+		
 		if (c==Character.class) {
 			if (val.length()==1)
 				value= val.charAt(0);
@@ -76,35 +77,40 @@ public class ReflectionUtils {
 			return Character.class;	
 	}
 	
-	public static Object defaultOf(Class<?> c) {
+	public static <T> T defaultOf(Class<T> c) {
 		
+		Object value;
 		 if (c==Boolean.TYPE || c==Boolean.class)
-		      return Boolean.FALSE;
+		      value= Boolean.FALSE;
 		 else 
 			 if (c==Character.TYPE || c==Character.class)
-		       return '\u0000';
+				 value= '\u0000';
 		 else 
 			if (c==Long.TYPE || c==Long.class)
-				return 0L;
+				value= 0L;
 		else 
 			if (c==Integer.TYPE || c==Integer.class)
-				return 0;	
+				value= 0;	
 		else 
 			if(c==Short.TYPE || c==Short.class)
-				return (short) 0;
+				value= (short) 0;
 		else 
 			if (c==Byte.TYPE || c==Byte.class)
-				return (byte) 0;
+				value= (byte) 0;
 		else 
 			if(c==Float.TYPE || c==Float.class)
-				return 0f;
+				value= 0f;
 		else 
 			if(c==Double.TYPE || c==Double.class)
-				return 0d;
+				value= 0d;
 		else
 			if (c==Byte.TYPE || c==Byte.class)
-				return (byte) 0;
+				value= (byte) 0;
 		 else
-			 return null;
+			 value= null;
+		 
+		 @SuppressWarnings("unchecked")
+		 T output = (T) value;
+		 return output;
 	}
 }
