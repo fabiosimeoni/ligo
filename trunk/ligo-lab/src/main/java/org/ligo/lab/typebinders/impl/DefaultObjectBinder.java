@@ -24,13 +24,13 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.lab.data.DataProvider;
-import org.ligo.lab.data.Provided;
-import org.ligo.lab.data.StructureProvider;
 import org.ligo.lab.typebinders.Environment;
 import org.ligo.lab.typebinders.Key;
 import org.ligo.lab.typebinders.ObjectBinder;
 import org.ligo.lab.typebinders.TypeBinder;
+import org.ligo.lab.typebinders.data.DataProvider;
+import org.ligo.lab.typebinders.data.Provided;
+import org.ligo.lab.typebinders.data.StructureProvider;
 import org.ligo.lab.typebinders.impl.AbstractMethodDef.NamedBinder;
 import org.ligo.lab.typebinders.kinds.Kind;
 import org.slf4j.Logger;
