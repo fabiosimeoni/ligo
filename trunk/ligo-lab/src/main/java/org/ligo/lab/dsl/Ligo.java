@@ -1,10 +1,10 @@
 package org.ligo.lab.dsl;
 
-import static org.ligo.lab.typebinders.Key.*;
+import static org.ligo.lab.core.Key.*;
 
 import java.lang.annotation.Annotation;
 
-import org.ligo.lab.typebinders.Literal;
+import org.ligo.lab.core.Literal;
 
 public class Ligo {
 

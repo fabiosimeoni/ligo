@@ -4,10 +4,10 @@
 package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
+import static org.ligo.lab.core.Bind.Mode.*;
+import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.dsl.typebinders.TestData.*;
-import static org.ligo.lab.typebinders.Bind.Mode.*;
-import static org.ligo.lab.typebinders.Key.*;
-import static org.ligo.lab.typebinders.kinds.Kind.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -16,6 +16,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ligo.lab.core.Key;
+import org.ligo.lab.core.Resolver;
+import org.ligo.lab.core.TypeBinder;
+import org.ligo.lab.core.data.Provided;
+import org.ligo.lab.core.impl.DefaultEnvironment;
+import org.ligo.lab.core.impl.DefaultObjectBinder;
+import org.ligo.lab.core.impl.PrimitiveBinder;
+import org.ligo.lab.core.kinds.Kind;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BadPlacement;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnManyParams;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.BindOnMethod;
@@ -31,14 +39,6 @@ import org.ligo.lab.dsl.typebinders.TestClassDefs.Partial;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.Primitive;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.SomeInterface;
 import org.ligo.lab.dsl.typebinders.TestClassDefs.TooManyConstructors;
-import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.Resolver;
-import org.ligo.lab.typebinders.TypeBinder;
-import org.ligo.lab.typebinders.data.Provided;
-import org.ligo.lab.typebinders.impl.DefaultEnvironment;
-import org.ligo.lab.typebinders.impl.DefaultObjectBinder;
-import org.ligo.lab.typebinders.impl.PrimitiveBinder;
-import org.ligo.lab.typebinders.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

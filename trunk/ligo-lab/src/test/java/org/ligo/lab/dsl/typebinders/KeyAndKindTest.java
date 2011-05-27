@@ -4,16 +4,16 @@
 package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
-import static org.ligo.lab.typebinders.Key.*;
-import static org.ligo.lab.typebinders.kinds.Kind.*;
-import static org.ligo.lab.typebinders.kinds.Kind.KindValue.*;
+import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.kinds.Kind.*;
+import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 
 import java.util.List;
 
 import org.junit.Test;
-import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.Literal;
-import org.ligo.lab.typebinders.kinds.Kind;
+import org.ligo.lab.core.Key;
+import org.ligo.lab.core.Literal;
+import org.ligo.lab.core.kinds.Kind;
 
 /**
  * @author Fabio Simeoni

@@ -4,12 +4,12 @@
 package org.ligo.lab.dsl.typebinders;
 
 import static org.junit.Assert.*;
-import static org.ligo.lab.typebinders.Bind.Mode.*;
+import static org.ligo.lab.core.Bind.Mode.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ligo.lab.typebinders.Bind;
+import org.ligo.lab.core.Bind;
 
 /**
  * @author Fabio Simeoni

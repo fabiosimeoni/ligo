@@ -11,6 +11,7 @@ import java.io.StringReader;
 
 import org.junit.Test;
 import org.ligo.lab.binders.Binder;
+import org.ligo.lab.core.Literal;
 import org.ligo.lab.dsl.DummyLigoImpl.Data;
 import org.ligo.lab.dsl.DummyLigoImpl.DataBinder;
 import org.ligo.lab.dsl.DummyLigoImpl.DataBinderFactory;
@@ -22,7 +23,6 @@ import org.ligo.lab.dsl.DummyLigoImpl.TransformFactory;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedData;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinder;
 import org.ligo.lab.dsl.DummyLigoImpl.TransformedDataBinderFactory;
-import org.ligo.lab.typebinders.Literal;
 
 
 /**

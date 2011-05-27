@@ -7,8 +7,8 @@ import java.io.Reader;
 
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
-import org.ligo.lab.typebinders.Key;
-import org.ligo.lab.typebinders.Literal;
+import org.ligo.lab.core.Key;
+import org.ligo.lab.core.Literal;
 
 /**
  * @author Fabio Simeoni
