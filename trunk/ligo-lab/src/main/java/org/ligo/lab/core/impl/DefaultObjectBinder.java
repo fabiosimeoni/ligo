@@ -5,11 +5,12 @@ package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.lab.core.Bind.Mode.*;
 import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.impl.ParameterContext.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -28,6 +29,9 @@ import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.Key;
 import org.ligo.lab.core.ObjectBinder;
 import org.ligo.lab.core.TypeBinder;
+import org.ligo.lab.core.annotations.AnnotationProcessor;
+import org.ligo.lab.core.annotations.Bind;
+import org.ligo.lab.core.annotations.BindProcessor;
 import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
@@ -55,9 +59,18 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
 	private static String INPUT_ERROR = "[%1s] binder for %2s required a structure but found: %3s";
 	
-	static final QName UNBOUND_PARAM=new QName("__LIGO_UNBOUND__");
+	private static Map<Class<? extends Annotation>,AnnotationProcessor> processors =
+		new HashMap<Class<? extends Annotation>, AnnotationProcessor>();
+
 	
-		private final Environment env;
+	private static final QName UNBOUND_PARAM=new QName("__LIGO_UNBOUND__");
+	
+	
+	static {
+		processors.put(Bind.class, new BindProcessor());
+	}
+	
+	private final Environment env;
 	
 	private ConstructorDef constructorDef;
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
@@ -282,26 +295,28 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			
 			//bound context
 			if (context.isBound()) {
-			
-				QName name = context.boundName();
 				
-				//check uniqueness
-				if (boundNames.contains(name))
-					throw new RuntimeException(format(DUPLICATE_NAME,name,context.member.getDeclaringClass().getName()));	
+				if (context.bindingAnnotation() instanceof Bind) {
+
+					NamedBinder named = processors.get(Bind.class).binderFor(context,env);
+					
+					//check uniqueness
+					if (boundNames.contains(named.name))
+						throw new RuntimeException(format(DUPLICATE_NAME,named.name,context.member().getDeclaringClass().getName()));	
 				
 				//update state
-				boundNames.add(name);
-				TypeBinder<?> binder = binderFor(context);
-				bound.add(new NamedBinder(name,binder));
+				boundNames.add(named.name);
+				bound.add(new NamedBinder(named.name,named.binder));
 				
 				//only bound binders are exposed.
-				binders.put(name,binder);
+				binders.put(named.name,named.binder);
+				}
 			}
 			//unbound context
 			else {
 				ConstantBinder cbinder;
 				try {
-					cbinder = new ConstantBinder(context.type); 
+					cbinder = new ConstantBinder(context.type()); 
 				}
 				catch(final RuntimeException e) {
 					cbinder = new ConstantBinder(Object.class) {
@@ -326,18 +341,6 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			cbinder.bind(null);
 		
 		return bound;
-	}
-	
-	TypeBinder<?> binderFor(ParameterContext context) {
-		
-		//recur to obtain binder for type
-		TypeBinder<?> binder = env.binderFor(context.key());
-		
-		//set mode
-		if (context.bindingAnnotation.mode()!=DEFAULT)
-			binder.setMode(context.bindingAnnotation.mode());	
-		
-		return binder;
 	}
 	
 	/**{@inheritDoc}*/
