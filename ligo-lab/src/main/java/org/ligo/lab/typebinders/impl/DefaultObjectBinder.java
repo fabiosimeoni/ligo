@@ -16,9 +16,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -116,7 +118,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		//identify constructor
 		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
 			
-			cbinders = getBinders(buildContexts(c));
+			cbinders = addBinders(buildContexts(c));
 			
 			//remember and check uniqueness
 			if (cbinders.size()>0) {
@@ -158,7 +160,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 				if (m.isSynthetic())
 					continue;
 				
-				List<NamedBinder> mbinders = getBinders(buildContexts(m));
+				List<NamedBinder> mbinders = addBinders(buildContexts(m));
 				
 				//scan interfaces for possible annotations
 				if (mbinders.isEmpty())
@@ -167,7 +169,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 							//find methods by 'raw' type (interface could be parametric)
 							Method overridden = i.getMethod(m.getName(),m.getParameterTypes());
 							//but do use the resolved parameters
-							mbinders = getBinders(buildContexts(overridden,m.getGenericParameterTypes(), overridden.getParameterAnnotations()));
+							mbinders = addBinders(buildContexts(overridden,m.getGenericParameterTypes(), overridden.getParameterAnnotations()));
 						}
 						catch(NoSuchMethodException e) {
 							continue;
@@ -266,15 +268,13 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	}
 	
 
-	
-
-	
-	List<NamedBinder> getBinders(ParameterContext ... contexts) {
+	List<NamedBinder> addBinders(ParameterContext ... contexts) {
 	
 		//add binders for each context, checking they are unambiguously annotated.
 		//these include constant binders for un-annotated parameters in otherwise annotated method
 		
-		List<QName> boundNames = new ArrayList<QName>(); //used for uniqueness
+		Set<QName> boundNames = new HashSet<QName>(binders.keySet()); //bound so far, used for uniqueness
+		
 		List<NamedBinder> bound = new ArrayList<NamedBinder>(); //main output
 		List<ConstantBinder> constants = new LinkedList<ConstantBinder>(); //keep track of unbound one
 		
@@ -284,6 +284,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			if (context.isBound()) {
 			
 				QName name = context.boundName();
+				
 				//check uniqueness
 				if (boundNames.contains(name))
 					throw new RuntimeException(format(DUPLICATE_NAME,name,context.member.getDeclaringClass().getName()));	
