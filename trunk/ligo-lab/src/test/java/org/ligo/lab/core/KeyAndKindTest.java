@@ -4,15 +4,14 @@
 package org.ligo.lab.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 
 import java.util.List;
 
 import org.junit.Test;
-import org.ligo.lab.core.Key;
-import org.ligo.lab.core.Literal;
+import org.ligo.lab.core.keys.Key;
 import org.ligo.lab.core.kinds.Kind;
 
 /**
@@ -63,13 +62,13 @@ public class KeyAndKindTest {
 	@Test
 	public void keys() {
 		
-		Key<String> skey = get(String.class);
+		Key<String> skey = newKey(String.class);
 		Kind<?> kind = skey.kind();
 		assertEquals(CLASS, kind.value());
 		assertEquals(String.class, CLASS(kind));
 		
 		Literal<List<String>> lit = new Literal<List<String>>() {};
-		Key<List<String>> pkey = get(lit);
+		Key<List<String>> pkey = newKey(lit);
 		kind = pkey.kind();
 		assertEquals(GENERIC, kind.value());
 		assertEquals(lit.type(), GENERIC(kind));

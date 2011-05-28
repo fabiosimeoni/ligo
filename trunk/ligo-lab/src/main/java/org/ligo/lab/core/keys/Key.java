@@ -1,12 +1,9 @@
 /**
  * 
  */
-package org.ligo.lab.core;
-
-import static org.ligo.lab.core.kinds.Kind.*;
+package org.ligo.lab.core.keys;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import org.ligo.lab.core.kinds.Kind;
 
@@ -18,42 +15,12 @@ import org.ligo.lab.core.kinds.Kind;
  * @author Fabio Simeoni
  *
  */
-public final class Key<T> {
+public class Key<T> {
 
 	private Kind<?> kind;
 	private Class<? extends Annotation> qualifier;
 	
-	public static <T> Key<T> get(Class<? extends T> t) {
-		return get(t,null);
-	}
-	
-	public static <T> Key<T> get(Class<? extends T> t, Class<? extends Annotation> a) {
-		return new Key<T>(kindOf(t),a);
-	}
-	
-	public static <T> Key<T> get(Literal<T> t) {
-		return get(t,null);
-	}
-	
-	public static <T> Key<T> get(Literal<T> t, Class<? extends Annotation> a) {
-		return new Key<T>(kindOf(t.type()),a);
-	}
-	
-	public static Key<?> get(Type t) {
-		return get(t,null);
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	public static Key<?> get(Type t, Class<? extends Annotation> a) {
-		return new Key(kindOf(t),a);
-	}
-	
-	public Key(Kind<?> k) {
-		this(k,null);
-	}
-	
-	public Key(Kind<?> k,Class<? extends Annotation> a) {
+	Key(Kind<?> k,Class<? extends Annotation> a) {
 		kind=k;
 		qualifier=a;
 	}
@@ -64,6 +31,10 @@ public final class Key<T> {
 	
 	public Class<? extends Annotation> qualifier() {
 		return qualifier;
+	}
+	
+	public Key<?> unqualified() {
+		return new Key<Object>(kind,null);
 	}
 	
 	/**{@inheritDoc}*/
@@ -93,11 +64,6 @@ public final class Key<T> {
 		if (!(obj instanceof Key<?>))
 			return false;
 		Key<?> other = (Key<?>) obj;
-//		if (parameters == null) {
-//			if (other.parameters != null)
-//				return false;
-//		} else if (!parameters.equals(other.parameters))
-//			return false;
 		if (qualifier == null) {
 			if (other.qualifier != null)
 				return false;

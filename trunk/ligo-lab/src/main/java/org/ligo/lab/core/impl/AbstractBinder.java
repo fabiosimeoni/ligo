@@ -3,14 +3,12 @@
  */
 package org.ligo.lab.core.impl;
 
-import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
-import java.lang.annotation.Annotation;
-
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.annotations.Bind.Mode;
+import org.ligo.lab.core.keys.ClassKey;
 
 /**
  * @author Fabio Simeoni
@@ -24,20 +22,20 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	protected static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
 	
 	
-	private final Key<? extends TYPE> key;
+	private final ClassKey<? extends TYPE> key;
 	
 	private Mode mode = STRICT;
 	
 	protected AbstractBinder(Class<? extends TYPE> clazz) {
-		this.key=get(clazz,null);
+		this.key=newKey(clazz,null);
 	}
 	
-	protected AbstractBinder(Class<? extends TYPE> clazz, Class<? extends Annotation> qualifier) {
-		this.key=get(clazz,qualifier);
+	protected AbstractBinder(ClassKey<? extends TYPE> key) {
+		this.key=key;
 	}
 	
 	
-	public Key<? extends TYPE> key() {
+	public ClassKey<? extends TYPE> key() {
 		return key;
 	}
 	

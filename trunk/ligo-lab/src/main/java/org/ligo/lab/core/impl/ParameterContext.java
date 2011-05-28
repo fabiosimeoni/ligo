@@ -1,7 +1,7 @@
 package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
-import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -13,9 +13,9 @@ import java.util.List;
 
 import javax.inject.Qualifier;
 
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.annotations.Bind;
 import org.ligo.lab.core.annotations.BindingAnnotation;
+import org.ligo.lab.core.keys.Key;
 
 
 public class ParameterContext {
@@ -51,7 +51,7 @@ public class ParameterContext {
 	}
 	
 	public Key<?> key() {
-		return qualifier==null?get(type):get(type,qualifier.annotationType());
+		return qualifier==null?newKey(type):newKey(type,qualifier.annotationType());
 	}
 
 	/**

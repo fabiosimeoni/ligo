@@ -3,13 +3,15 @@
  */
 package org.ligo.lab.core.annotations;
 
+import static org.ligo.lab.core.keys.Keys.*;
+
 import java.util.List;
 
 import org.ligo.lab.core.Environment;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.impl.AbstractBinder;
 import org.ligo.lab.core.impl.BindingAdapter;
+import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ class AdaptedBinder<INTYPE,OUTTYPE> extends AbstractBinder<OUTTYPE> {
 		super((Class) a.outKind().toClass()); //raw bound type
 		env=e;
 		adapter=a;
-		inKey = new Key<INTYPE>(a.inKind());
+		inKey = (Key) newKey(a.inKind());
 		
 	}
 

@@ -4,19 +4,18 @@
 package org.ligo.lab.core.impl;
 
 import static java.util.Collections.*;
-import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.ligo.lab.core.CollectionBinder;
 import org.ligo.lab.core.Environment;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
+import org.ligo.lab.core.keys.ClassKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +32,18 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	private TypeBinder<TYPE> binder;
 	
 	DefaultCollectionBinder(Class<? extends COLLTYPE> clazz) {
-		this(clazz,null,new DefaultEnvironment());
+		this(newKey(clazz),new DefaultEnvironment());
 	}
 	
-	DefaultCollectionBinder(Class<? extends COLLTYPE> clazz,Class<? extends Annotation> qualifier, Environment e) {
-		super(clazz,qualifier);
+	DefaultCollectionBinder(ClassKey<? extends COLLTYPE> key, Environment e) {
+		super(key);
 		env=e;
 		
 		setMode(LAX);
 		
+		Class<?> clazz = key.kind().toClass();
 		@SuppressWarnings("unchecked")
-		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(get(clazz.getTypeParameters()[0]));
+		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(clazz.getTypeParameters()[0]));
 		binder = objectBinder;
 		
 		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
@@ -96,12 +96,12 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<COLLTYPE> binder(Class<COLLTYPE> clazz,Class<? extends Annotation> qualifier, Environment env) {
-			return new DefaultCollectionBinder<COLLTYPE,TYPE>(clazz, qualifier, env);
+		public TypeBinder<COLLTYPE> binder(ClassKey<COLLTYPE> key, Environment env) {
+			return new DefaultCollectionBinder<COLLTYPE,TYPE>(key, env);
 		}
 		
-		@Override public Key<COLLTYPE> matchingKey() {
-			return get(clazz);
+		@Override public ClassKey<COLLTYPE> matchingKey() {
+			return newKey(clazz);
 		}
 			
 		};

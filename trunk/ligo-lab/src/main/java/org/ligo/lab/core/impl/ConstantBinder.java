@@ -10,10 +10,10 @@ import static org.ligo.lab.core.utils.ReflectionUtils.*;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.annotations.Bind.Mode;
 import org.ligo.lab.core.data.Provided;
+import org.ligo.lab.core.keys.Key;
 
 /**
  * @author Fabio Simeoni
