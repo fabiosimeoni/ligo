@@ -9,6 +9,7 @@ import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.ligo.lab.core.Environment;
@@ -25,15 +26,20 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
+class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	private static Logger logger= LoggerFactory.getLogger(PrimitiveBinder.class);
 	
 	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
 	private static String INPUT_ERROR = "[%1s] binder for %2s required a scalar but found: %3s";
 	
-	public PrimitiveBinder(Class<TYPE> c) {
-		super(get(c));
+	public PrimitiveBinder(Class<TYPE> clazz) {
+		this(clazz,null);
+	}
+	
+	public PrimitiveBinder(Class<TYPE> clazz,Class<? extends Annotation> qualifier) {
+		super(clazz,qualifier);
+		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
 	}
 	
 	public TYPE bind(List<Provided> provided) {
@@ -103,8 +109,8 @@ public class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			}
 			
 			@Override
-			public TypeBinder<TYPE> binder(Key<TYPE> key, Environment factory) {
-				return new PrimitiveBinder<TYPE>(clazz); 
+			public TypeBinder<TYPE> binder(Class<TYPE> clazz,Class<? extends Annotation> qualifier, Environment factory) {
+				return new PrimitiveBinder<TYPE>(clazz,qualifier); 
 			}
 		};
 	}

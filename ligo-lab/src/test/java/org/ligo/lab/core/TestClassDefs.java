@@ -193,13 +193,8 @@ public class TestClassDefs {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public Integer bindIn(String i) {
+		public Integer bind(String i) {
 			return i.length();
-		}
-		/**{@inheritDoc}*/
-		@Override
-		public String bindOut(Integer i) {
-			return null;
 		}
 	}
 	
@@ -248,18 +243,11 @@ public class TestClassDefs {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public Map<String, Person> bindIn(ArrayList<Person> values) {
+		public Map<String, Person> bind(ArrayList<Person> values) {
 			Map<String,Person> map = new HashMap<String, Person>();
 			for (Person v: values)
 				map.put(v.getName(), v);
 			return map;
-		}
-		
-		/**{@inheritDoc}*/
-		@Override
-		public ArrayList<Person> bindOut(Map<String, Person> i) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 	}
 }
