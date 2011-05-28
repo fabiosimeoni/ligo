@@ -13,28 +13,31 @@ public class ReflectionUtils {
 		
 		Object value;
 		
-		if (c==Character.class) {
+		if (c==Character.class || c==Character.TYPE) {
 			if (val.length()==1)
 				value= val.charAt(0);
 			else throw new IllegalArgumentException();
 		}
 		else
-			if (c==Byte.class)
+			if (c==Boolean.class || c==Boolean.TYPE)
+					value=Boolean.valueOf(val);
+		else
+			if (c==Byte.class || c==Byte.TYPE)
 				value=Byte.valueOf(val);
 		else  
-			if (c==Short.class)
+			if (c==Short.class || c==Short.TYPE)
 				value=Short.valueOf(val);
 		else
-			if (c==Integer.class)
+			if (c==Integer.class || c==Integer.TYPE)
 				value=Integer.valueOf(val);
 		else
-			if (c==Long.class)
+			if (c==Long.class || c==Long.TYPE)
 				value=Long.valueOf(val);
 		else
-			if (c==Float.class)
+			if (c==Float.class || c==Float.TYPE)
 				value=Float.valueOf(val);
 		else 
-			if (c==Double.class)
+			if (c==Double.class || c==Double.TYPE)
 				value=Double.valueOf(val);
 		else
 			if (c==String.class)

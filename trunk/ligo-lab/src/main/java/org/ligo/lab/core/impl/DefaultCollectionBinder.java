@@ -6,9 +6,8 @@ package org.ligo.lab.core.impl;
 import static java.util.Collections.*;
 import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
-import static org.ligo.lab.core.kinds.Kind.*;
 
-import java.lang.reflect.ParameterizedType;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends AbstractBinder<COLLTYPE> implements CollectionBinder<COLLTYPE,TYPE> {
+class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends AbstractBinder<COLLTYPE> implements CollectionBinder<COLLTYPE,TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultCollectionBinder.class);
 	
@@ -33,28 +32,22 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	
 	private TypeBinder<TYPE> binder;
 	
-	DefaultCollectionBinder(Key<COLLTYPE> key, Environment e) {
-		
-		super(key);
+	DefaultCollectionBinder(Class<? extends COLLTYPE> clazz) {
+		this(clazz,null,new DefaultEnvironment());
+	}
+	
+	DefaultCollectionBinder(Class<? extends COLLTYPE> clazz,Class<? extends Annotation> qualifier, Environment e) {
+		super(clazz,qualifier);
 		env=e;
 		
 		setMode(LAX);
 		
-		switch (key.kind().value()) {
-			case CLASS: //simply type-extract class itself
-				break;
-			case GENERIC: //extract raw type and store variable bindings in the environment
-				ParameterizedType pt = GENERIC(key.kind());
-				
-				@SuppressWarnings("unchecked")
-				TypeBinder<TYPE> elementBinder = (TypeBinder) env.binderFor(get(pt.getActualTypeArguments()[0]));
-				
-				binder = elementBinder;
-				break;
-			default:
-				throw new RuntimeException("unexpected kind "+key.kind());
-		}
+		@SuppressWarnings("unchecked")
+		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(get(clazz.getTypeParameters()[0]));
+		binder = objectBinder;
 		
+		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
+			
 	}
 	
 	@Override
@@ -98,15 +91,18 @@ public class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> ext
 	}
 	
 	public static <COLLTYPE extends Collection<TYPE>, TYPE> BinderProvider<COLLTYPE> provider(final Class<COLLTYPE> clazz) {
+		
 		return new BinderProvider<COLLTYPE>() {
 
-			@Override public TypeBinder<COLLTYPE> binder(Key<COLLTYPE> key, Environment env) {
-				return new DefaultCollectionBinder<COLLTYPE,TYPE>(key, env);
-			}
-			
-			@Override public Key<COLLTYPE> matchingKey() {
-				return get(clazz);
-			}
+		/**{@inheritDoc}*/
+		@Override
+		public TypeBinder<COLLTYPE> binder(Class<COLLTYPE> clazz,Class<? extends Annotation> qualifier, Environment env) {
+			return new DefaultCollectionBinder<COLLTYPE,TYPE>(clazz, qualifier, env);
+		}
+		
+		@Override public Key<COLLTYPE> matchingKey() {
+			return get(clazz);
+		}
 			
 		};
 	}

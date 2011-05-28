@@ -4,7 +4,6 @@
 package org.ligo.lab.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.TestData.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.kinds.Kind.*;
@@ -35,8 +34,6 @@ import org.ligo.lab.core.TestClassDefs.SomeInterface;
 import org.ligo.lab.core.TestClassDefs.TooManyConstructors;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.impl.DefaultEnvironment;
-import org.ligo.lab.core.impl.DefaultObjectBinder;
-import org.ligo.lab.core.impl.PrimitiveBinder;
 import org.ligo.lab.core.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -47,16 +44,16 @@ import org.mockito.stubbing.Answer;
  */
 public class BinderTests {
 
-	DefaultEnvironment factory;
+	DefaultEnvironment env;
 	
 	@Before 
 	@SuppressWarnings("unchecked")
 	public void setup() {
 		
 		Resolver p = mock(Resolver.class);
-		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Kind<?>>() {
-			public Kind<?> answer(InvocationOnMock invocation) throws Throwable {
-				return ((Key)invocation.getArguments()[0]).kind();
+		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Class<?>>() {
+			public Class<?> answer(InvocationOnMock invocation) throws Throwable {
+				return ((Key)invocation.getArguments()[0]).kind().toClass();
 			}
 		});
 		when(p.resolve(any(Key.class),any(List.class))).thenAnswer(new Answer<Object>() {
@@ -76,13 +73,13 @@ public class BinderTests {
 			}
 		});
 		
-		factory = new DefaultEnvironment(p);
+		env = new DefaultEnvironment(p);
 	}
 
 	@Test
 	public void primitive() {
 		
-		TypeBinder<String> sb = new PrimitiveBinder<String>(String.class);
+		TypeBinder<String> sb = env.binderFor(String.class);
 		String bound = sb.bind(v("hello"));
 		
 		assertEquals("hello",bound);
@@ -127,7 +124,7 @@ public class BinderTests {
 	@Test
 	public void otherprimitive() {
 		
-		TypeBinder<Integer> sb = new PrimitiveBinder<Integer>(Integer.class);
+		TypeBinder<Integer> sb = env.binderFor(Integer.class);
 		
 		int bound = sb.bind(v(1));
 		assertEquals(1,bound);
@@ -154,7 +151,7 @@ public class BinderTests {
 	@Test
 	public void emptyObject() {
 		
-		TypeBinder<SomeInterface> b = new DefaultObjectBinder<SomeInterface>(get(Empty.class),factory);
+		TypeBinder<Empty> b = env.binderFor(Empty.class);
 		
 		try{
 			b.bind(v(5));
@@ -173,7 +170,7 @@ public class BinderTests {
 	
 		//badly annotated constructor
 		try {
-			new DefaultObjectBinder<SomeInterface>(get(BadPlacement.class),factory);
+			env.binderFor(BadPlacement.class);
 			fail();
 		}
 		catch(Exception e) {
@@ -182,7 +179,7 @@ public class BinderTests {
 		
 		//ambiguous constructors
 		try {
-			new DefaultObjectBinder<SomeInterface>(get(TooManyConstructors.class),factory);
+			env.binderFor(TooManyConstructors.class);
 			fail();
 		}
 		catch(Exception e) {
@@ -194,21 +191,21 @@ public class BinderTests {
 	public void bindplacement() throws Exception {
 		
 		//on method
-		TypeBinder<BindOnMethod> b1 = new DefaultObjectBinder<BindOnMethod>(get(BindOnMethod.class),factory);
+		TypeBinder<BindOnMethod> b1 = env.binderFor(BindOnMethod.class);
 		
 		BindOnMethod r1 = b1.bind(s(p("a","hello")));
 		assertNotNull(r1);
 		assertTrue(r1.invoked);
 		
 		//on param
-		TypeBinder<BindOnParam> b2 = new DefaultObjectBinder<BindOnParam>(get(BindOnParam.class),factory);
+		TypeBinder<BindOnParam> b2 = env.binderFor(BindOnParam.class);;
 		
 		BindOnParam r2 = b2.bind(s(p("a","hello")));
 		assertNotNull(r2);
 		assertTrue(r2.invoked);
 		
 		//on many param
-		TypeBinder<BindOnManyParams> b3 = new DefaultObjectBinder<BindOnManyParams>(get(BindOnManyParams.class),factory);
+		TypeBinder<BindOnManyParams> b3 = env.binderFor(BindOnManyParams.class);
 		
 		BindOnManyParams r3 = b3.bind(s(p("a","hello"),p("b","world")));
 		assertNotNull(r3);
@@ -219,7 +216,7 @@ public class BinderTests {
 	@Test 
 	public void primitiveField() throws Exception {
 		
-		TypeBinder<Primitive> b = new DefaultObjectBinder<Primitive>(get(Primitive.class),factory);
+		TypeBinder<Primitive> b = env.binderFor(Primitive.class);;
 		
 		Primitive r = b.bind(s(p("1",0),p("2",0),p("3",0),p("4",0),p("5",0),p("6",0),p("7",'c'),p("8",true)));
 		assertNotNull(r);
@@ -229,7 +226,7 @@ public class BinderTests {
 	@Test 
 	public void multiparams() throws Exception {
 	
-		TypeBinder<MultiParams> b = new DefaultObjectBinder<MultiParams>(get(MultiParams.class),factory);
+		TypeBinder<MultiParams> b = env.binderFor(MultiParams.class);
 		
 		MultiParams r = b.bind(s(p("a","hello"),p("b","world")));
 		assertNotNull(r);
@@ -241,7 +238,7 @@ public class BinderTests {
 	
 		//ambiguous constructors
 		try {
-			new DefaultObjectBinder<SomeInterface>(get(DuplicateLabels.class),factory);
+			env.binderFor(DuplicateLabels.class);
 			fail();
 		}
 		catch(Exception e) {
@@ -252,7 +249,7 @@ public class BinderTests {
 	@Test 
 	public void partialbinding() throws Exception {
 	
-		TypeBinder<Partial> b = new DefaultObjectBinder<Partial>(get(Partial.class),factory);
+		TypeBinder<Partial> b = env.binderFor(Partial.class);
 		
 		Partial r = b.bind(s(p("a","hello"),p("b","world")));
 		assertNotNull(r);
@@ -262,7 +259,7 @@ public class BinderTests {
 	@Test 
 	public void lax1() throws Exception {
 	
-		TypeBinder<Lax1> b = new DefaultObjectBinder<Lax1>(get(Lax1.class),factory);
+		TypeBinder<Lax1> b = env.binderFor(Lax1.class);
 		
 		//a is missing, b is wrongly typed
 		Lax1 r = b.bind(s(p("b","world")));
@@ -280,7 +277,7 @@ public class BinderTests {
 	@Test 
 	public void lax2() throws Exception {
 	
-		TypeBinder<Lax2> b = new DefaultObjectBinder<Lax2>(get(Lax2.class),factory);
+		TypeBinder<Lax2> b = env.binderFor(Lax2.class);
 		
 		//a is wrongly typed
 		Lax2 r = b.bind(s(p("a",3)));
@@ -291,7 +288,7 @@ public class BinderTests {
 	@Test 
 	public void throughInterface1() throws Exception {
 	
-		TypeBinder<InterfaceImpl1> b = new DefaultObjectBinder<InterfaceImpl1>(get(InterfaceImpl1.class),factory);
+		TypeBinder<InterfaceImpl1> b = env.binderFor(InterfaceImpl1.class);
 		
 		//a is wrongly typed
 		InterfaceImpl1 r = b.bind(s(p("a","hello")));
@@ -302,7 +299,7 @@ public class BinderTests {
 	@Test 
 	public void throughInterface2() throws Exception {
 	
-		TypeBinder<InterfaceImpl2> b = new DefaultObjectBinder<InterfaceImpl2>(get(InterfaceImpl2.class),factory);
+		TypeBinder<InterfaceImpl2> b = env.binderFor(InterfaceImpl2.class);
 		
 		//a is wrongly typed
 		InterfaceImpl2 r = b.bind(s(p("b","hello")));
@@ -314,7 +311,7 @@ public class BinderTests {
 	@Test 
 	public void adapted() throws Exception {
 	
-		TypeBinder<Adapted> b = new DefaultObjectBinder<Adapted>(get(Adapted.class),factory);
+		TypeBinder<Adapted> b = env.binderFor(Adapted.class);
 		
 		//a is wrongly typed
 		Adapted r = b.bind(s(p("a","hello")));
@@ -325,7 +322,7 @@ public class BinderTests {
 	@Test 
 	public void adapted2() throws Exception {
 	
-		TypeBinder<Adapted2> b = new DefaultObjectBinder<Adapted2>(get(Adapted2.class),factory);
+		TypeBinder<Adapted2> b = env.binderFor(Adapted2.class);
 		
 		//a is wrongly typed
 		Adapted2 r = b.bind(s(p("person",s(p("name","John"),p("age",20)))));

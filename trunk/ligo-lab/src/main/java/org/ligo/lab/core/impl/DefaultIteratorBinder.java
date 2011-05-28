@@ -4,10 +4,8 @@
 package org.ligo.lab.core.impl;
 
 import static org.ligo.lab.core.Key.*;
-import static org.ligo.lab.core.kinds.Kind.*;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,29 +22,26 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> implements IteratorBinder<TYPE> {
+class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> implements IteratorBinder<TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultIteratorBinder.class);
 	
 	private final Environment env;
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
+	DefaultIteratorBinder() {
+		this(null,new DefaultEnvironment());
+	}
+	
 	@SuppressWarnings("unchecked")
-	DefaultIteratorBinder(final Key<Iterator<TYPE>> key, Environment e) {
-		super(key);
+	DefaultIteratorBinder(Class<? extends Annotation> qualifier, Environment e) {
+		
+		super((Class)Iterator.class,qualifier);
 		env=e;
 		
-		//(note this synthetic type will not hit cache)
-		final ParameterizedType current = GENERIC(key.kind());
-		ParameterizedType pt = new ParameterizedType() {
-			@Override public Type getRawType() {return List.class;}
-			@Override public Type getOwnerType() {return current.getRawType();}
-			@Override public Type[] getActualTypeArguments() {return current.getActualTypeArguments();}
-		};
+		TypeBinder<List<TYPE>> binder = (TypeBinder) env.binderFor(get(List.class,qualifier));
 		
-		TypeBinder<List<TYPE>> binder = (TypeBinder) env.binderFor(get(pt,key.qualifier()));
-		
-		
+
 		if (!(binder instanceof CollectionBinder<?,?>))
 			throw new RuntimeException("Binding iterators requires binding collections, " +
 							"but no collection binder was registered");
@@ -75,14 +70,16 @@ public class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> 
 	
 	public static class IteratorBinderProvider implements BinderProvider<Iterator<Object>> {
 
-			@Override public TypeBinder<Iterator<Object>> binder(Key<Iterator<Object>> key, Environment env) {
-				return new DefaultIteratorBinder<Object>(key, env);
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override public Key<Iterator<Object>> matchingKey() {
-				return (Key) get(Iterator.class);
-			}
+		/**{@inheritDoc}*/
+		@Override
+		public TypeBinder<Iterator<Object>> binder(Class<Iterator<Object>> clazz,Class<? extends Annotation> qualifier, Environment env) {
+			return new DefaultIteratorBinder<Object>(qualifier,env);
+		}			
+		
+		@SuppressWarnings("unchecked")
+		@Override public Key<Iterator<Object>> matchingKey() {
+			return (Key) get(Iterator.class);
+		}
 			
 	};
 	

@@ -8,13 +8,11 @@ import static java.util.Collections.*;
 import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.impl.ParameterContext.*;
-import static org.ligo.lab.core.kinds.Kind.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +34,6 @@ import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
 import org.ligo.lab.core.impl.AbstractMethodDef.NamedBinder;
-import org.ligo.lab.core.kinds.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,16 +43,14 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBinder<TYPE> {
+class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBinder<TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
-	private static final String KIND_ERROR="unexpected type %1s";
 	private static final String INTERFACE_ERROR="unexpected interface %1s";
 	private static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
 	private static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
 	private static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
-	private static final String BOUND_CONSTRUCTOR_LOG="bound constructor {} for {}";
 	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
 	private static String INPUT_ERROR = "[%1s] binder for %2s required a structure but found: %3s";
 	
@@ -78,34 +73,15 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 	private Map<QName,TypeBinder<?>> binders = new HashMap<QName, TypeBinder<?>>();
 	
 	
-	public DefaultObjectBinder(Key<? extends TYPE> key) {
-		this(key,new DefaultEnvironment());
+	public DefaultObjectBinder(Class<? extends TYPE> clazz) {
+		this(clazz,null,new DefaultEnvironment());
 	}
 	
 	
-	public DefaultObjectBinder(Key<? extends TYPE> key,Environment e) {
+	public DefaultObjectBinder(Class<? extends TYPE> clazz,Class<? extends Annotation> qualifier, Environment e) {
 		
-		super(key);
+		super(clazz,qualifier);
 		env = e;
-		
-		//resolve key, as we need to analyse an implementation
-		Kind<?> resolved = env.resolver().resolve(key);
-		
-		//extract class from kind
-		Class<?> clazz;
-		switch (resolved.value()) {
-			case GENERIC:
-				clazz = resolved.toClass();
-				//bind type variables
-				TypeVariable<?>[] vars = clazz.getTypeParameters(); 
-				for (int i = 0; i<vars.length; i++)
-					env.bindVariable(vars[i], env.binderFor(get(GENERIC(resolved).getActualTypeArguments()[i])));
-			case CLASS: 
-				clazz = CLASS(resolved); 
-				break;
-			default: //not other kinds can be processed by this binder
-				throw new RuntimeException(format(KIND_ERROR,resolved));
-		}
 		
 		//we do need class to be implementation
 		if (clazz.isInterface()) 
@@ -115,7 +91,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		bindConstructor(clazz);
 		bindMethods(clazz);
 		
-		logger.trace(BUILT_LOG,this,mode());
+		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
 	}
 	
 	void bindConstructor(Class<?> clazz) {
@@ -155,7 +131,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 		//prep later access
 		constructor.setAccessible(true);
 		
-		logger.trace(BOUND_CONSTRUCTOR_LOG,clazz.getName(),constructor.getName());
+		//logger.trace(BOUND_CONSTRUCTOR_LOG,clazz.getName(),constructor.getName());
 		
 		//remember bound names
 		constructorDef = new ConstructorDef(constructor,cbinders);
@@ -233,7 +209,7 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 			
 			StructureProvider provider = (StructureProvider) dp;
 			
-			//pull constructor parameters and off-load creation to factory
+			//pull constructor parameters and off-load creation to env
 			List<Object> values = extractvalues(constructorDef.binders(),provider);
 			TYPE object = env.resolver().resolve(key(),values);
 		
@@ -340,14 +316,14 @@ public class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements O
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Object> binder(Key<Object> key, Environment env) {
-			return new DefaultObjectBinder<Object>(key, env);
-		}
-		
-		/**{@inheritDoc}*/
-		@Override
 		public Key<Object> matchingKey() {
 			return get(Object.class);
+		}
+
+		/**{@inheritDoc}*/
+		@Override
+		public TypeBinder<Object> binder(Class<Object> clazz,Class<? extends Annotation> qualifier, Environment env) {
+			return new DefaultObjectBinder<Object>(clazz,qualifier,env);
 		}
 		
 	}

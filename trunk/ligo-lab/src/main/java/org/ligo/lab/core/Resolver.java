@@ -8,7 +8,7 @@ import java.util.List;
 import org.ligo.lab.core.kinds.Kind;
 
 /**
- * Resolves {@link Key}s into {@link Kind}s or instances.
+ * Resolves {@link Key}s into {@link Kind}s or their instances.
  * 
  * @author Fabio Simeoni
  *
@@ -16,16 +16,16 @@ import org.ligo.lab.core.kinds.Kind;
 public interface Resolver {
 	
 	/**
-	 * Resolves a key into a kind that may refine the key's.
+	 * Resolves a key into one or more kinds, each of which may refine the key's.
 	 * <p>
-	 * Returns the key's kind if no refinement is possible.
+	 * Returns the key's kind (in a singleton list) if this has no refinements.
 	 * @param key the key.
-	 * @return the kind.
+	 * @return the key's kind refinements.
 	 */
-	Kind<?> resolve(Key<?> key);
+	<T> Class<T> resolve(Key<T> key);
 	
 	/**
-	 * Resolves a key into an instance the kind resolved by {@link #resolve(Key)},
+	 * Resolves a key into an instance of a kind resolved by {@link #resolve(Key)},
 	 * if this is a reifiable type.
 	 *  
 	 * @param <T> the key's type.

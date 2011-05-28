@@ -3,9 +3,6 @@
  */
 package org.ligo.lab.core.annotations;
 
-import static org.ligo.lab.core.Key.*;
-import static org.ligo.lab.core.kinds.Kind.*;
-
 import java.util.List;
 
 import org.ligo.lab.core.Environment;
@@ -20,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class AdaptedBinder<INTYPE,OUTTYPE> extends AbstractBinder<OUTTYPE> {
+class AdaptedBinder<INTYPE,OUTTYPE> extends AbstractBinder<OUTTYPE> {
 
 	private static Logger logger = LoggerFactory.getLogger(AdaptedBinder.class);
 	
@@ -33,19 +30,18 @@ public class AdaptedBinder<INTYPE,OUTTYPE> extends AbstractBinder<OUTTYPE> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AdaptedBinder(BindingAdapter<INTYPE,OUTTYPE> a, Environment e) {
-		super((Key)get(GENERIC(kindOf(a.getClass().getGenericSuperclass())).getActualTypeArguments()[1]));
+		super((Class) a.outKind().toClass()); //raw bound type
 		env=e;
 		adapter=a;
-		inKey = (Key) get(GENERIC(kindOf(a.getClass().getGenericSuperclass())).getActualTypeArguments()[0]);
+		inKey = new Key<INTYPE>(a.inKind());
 		
 	}
 
 	/**{@inheritDoc}*/
 	@Override
 	public OUTTYPE bind(List<Provided> i) {
-		System.out.println("binding intype "+inKey);
 		INTYPE bound = env.binderFor(inKey).bind(i);
-		OUTTYPE adapted = adapter.bindIn(bound);
+		OUTTYPE adapted = adapter.bind(bound);
 		logger.trace("bound {} to {}",bound,adapted);
 		return adapted;
 	}

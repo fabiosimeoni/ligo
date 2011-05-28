@@ -49,6 +49,10 @@ public final class Key<T> {
 		return new Key(kindOf(t),a);
 	}
 	
+	public Key(Kind<?> k) {
+		this(k,null);
+	}
+	
 	public Key(Kind<?> k,Class<? extends Annotation> a) {
 		kind=k;
 		qualifier=a;
