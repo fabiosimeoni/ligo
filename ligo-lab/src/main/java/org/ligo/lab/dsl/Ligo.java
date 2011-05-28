@@ -1,6 +1,6 @@
 package org.ligo.lab.dsl;
 
-import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 
@@ -13,7 +13,7 @@ public class Ligo {
 	}
 	
 	public static <TYPE> WithClause<TYPE> bind(Class<TYPE> type, Class<? extends Annotation> a) {
-		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(get(type,a)));
+		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(newKey(type,a)));
 	}
 	
 	public static <TYPE> WithClause<TYPE> bind(Literal<TYPE> type) {
@@ -21,6 +21,6 @@ public class Ligo {
 	}
 	
 	public static <TYPE> WithClause<TYPE> bind(Literal<TYPE> type, Class<? extends Annotation> a) {
-		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(get(type,a)));
+		return new WithClauseImpl<TYPE>(new ClauseContext<TYPE,Object>(newKey(type,a)));
 	}
 }

@@ -3,12 +3,14 @@
  */
 package org.ligo.lab.dsl;
 
+import static org.ligo.lab.core.keys.Keys.*;
+
 import java.io.Reader;
 
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.Literal;
+import org.ligo.lab.core.keys.Key;
 
 /**
  * @author Fabio Simeoni
@@ -32,10 +34,10 @@ public class DummyLigoImpl {
 			key=t;
 		}
 		public DataBinder(Literal<T> t) {
-			key=Key.get(t);
+			key=newKey(t);
 		}
 		public DataBinder(Class<T> t) {
-			key=Key.get(t);
+			key=newKey(t);
 		}
 		public T bind(Data in) {
 			System.out.println("binding "+in.getClass().getSimpleName()+" to "+key.kind());
@@ -83,7 +85,7 @@ public class DummyLigoImpl {
 			key=t;
 		}
 		public TransformedDataBinder(Class<T> t) {
-			key=Key.get(t);
+			key=newKey(t);
 		}
 		public T bind(TransformedData in) {
 			System.out.println("binding "+in.getClass().getSimpleName()+" to "+key.kind());

@@ -9,6 +9,7 @@ import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.impl.DefaultEnvironment;
+import org.ligo.lab.core.keys.Key;
 
 /**
  * A factory of {@link TypeBinder}s.

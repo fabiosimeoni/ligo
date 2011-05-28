@@ -3,8 +3,9 @@
  */
 package org.ligo.lab.core;
 
-import static org.ligo.lab.core.Key.*;
+import static java.util.Collections.*;
 import static org.ligo.lab.core.TestData.*;
+import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ligo.lab.core.TestGenericsClassDefs.GenericField;
 import org.ligo.lab.core.impl.DefaultEnvironment;
+import org.ligo.lab.core.keys.Key;
 import org.ligo.lab.core.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,9 +34,9 @@ public class BinderGenericsTests {
 	public void setup() {
 		
 		Resolver p = mock(Resolver.class);
-		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Class<?>>() {
-			public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-				return ((Key)invocation.getArguments()[0]).kind().toClass();
+		when(p.resolve(any(Key.class))).thenAnswer(new Answer<List<Class<?>>>() {
+			public List<Class<?>> answer(InvocationOnMock invocation) throws Throwable {
+				return (List)singletonList(((Key)invocation.getArguments()[0]).kind().toClass());
 			}
 		});
 		when(p.resolve(any(Key.class),any(List.class))).thenAnswer(new Answer<Object>() {
@@ -60,7 +62,7 @@ public class BinderGenericsTests {
 	@Test
 	public void genericField() {
 		
-		TypeBinder<GenericField> b1 = factory.binderFor(get(GenericField.class));	
+		TypeBinder<GenericField> b1 = factory.binderFor(newKey(GenericField.class));	
 		
 		b1.bind(s(p("a",
 					s(p("b","hello")))));

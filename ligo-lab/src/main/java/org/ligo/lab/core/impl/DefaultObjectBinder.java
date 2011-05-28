@@ -5,9 +5,9 @@ package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.impl.ParameterContext.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -24,7 +24,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.Environment;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.ObjectBinder;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.annotations.AnnotationProcessor;
@@ -34,6 +33,7 @@ import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
 import org.ligo.lab.core.impl.AbstractMethodDef.NamedBinder;
+import org.ligo.lab.core.keys.ClassKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,15 +74,16 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 	
 	
 	public DefaultObjectBinder(Class<? extends TYPE> clazz) {
-		this(clazz,null,new DefaultEnvironment());
+		this(newKey(clazz),new DefaultEnvironment());
 	}
 	
 	
-	public DefaultObjectBinder(Class<? extends TYPE> clazz,Class<? extends Annotation> qualifier, Environment e) {
+	public DefaultObjectBinder(ClassKey<? extends TYPE> key, Environment e) {
 		
-		super(clazz,qualifier);
+		super(key);
 		env = e;
 		
+		Class<?> clazz = key.kind().toClass();
 		//we do need class to be implementation
 		if (clazz.isInterface()) 
 			throw new RuntimeException(format(INTERFACE_ERROR,clazz));
@@ -316,14 +317,14 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 
 		/**{@inheritDoc}*/
 		@Override
-		public Key<Object> matchingKey() {
-			return get(Object.class);
+		public ClassKey<Object> matchingKey() {
+			return newKey(Object.class);
 		}
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Object> binder(Class<Object> clazz,Class<? extends Annotation> qualifier, Environment env) {
-			return new DefaultObjectBinder<Object>(clazz,qualifier,env);
+		public TypeBinder<Object> binder(ClassKey<Object> key, Environment env) {
+			return new DefaultObjectBinder<Object>(key,env);
 		}
 		
 	}

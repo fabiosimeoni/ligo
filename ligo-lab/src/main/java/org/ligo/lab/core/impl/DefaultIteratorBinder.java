@@ -3,7 +3,7 @@
  */
 package org.ligo.lab.core.impl;
 
-import static org.ligo.lab.core.Key.*;
+import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
@@ -12,9 +12,9 @@ import java.util.List;
 import org.ligo.lab.core.CollectionBinder;
 import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.IteratorBinder;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
+import org.ligo.lab.core.keys.ClassKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +36,10 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	@SuppressWarnings("unchecked")
 	DefaultIteratorBinder(Class<? extends Annotation> qualifier, Environment e) {
 		
-		super((Class)Iterator.class,qualifier);
+		super(newKey((Class)Iterator.class,qualifier));
 		env=e;
 		
-		TypeBinder<List<TYPE>> binder = (TypeBinder) env.binderFor(get(List.class,qualifier));
+		TypeBinder<List<TYPE>> binder = (TypeBinder) env.binderFor(newKey(List.class,qualifier));
 		
 
 		if (!(binder instanceof CollectionBinder<?,?>))
@@ -72,13 +72,13 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Iterator<Object>> binder(Class<Iterator<Object>> clazz,Class<? extends Annotation> qualifier, Environment env) {
-			return new DefaultIteratorBinder<Object>(qualifier,env);
+		public TypeBinder<Iterator<Object>> binder(ClassKey<Iterator<Object>> key, Environment env) {
+			return new DefaultIteratorBinder<Object>(key.qualifier(),env);
 		}			
 		
 		@SuppressWarnings("unchecked")
-		@Override public Key<Iterator<Object>> matchingKey() {
-			return (Key) get(Iterator.class);
+		@Override public ClassKey<Iterator<Object>> matchingKey() {
+			return (ClassKey) newKey(Iterator.class);
 		}
 			
 	};

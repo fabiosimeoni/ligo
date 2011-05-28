@@ -5,6 +5,7 @@ package org.ligo.lab.core;
 
 import java.util.List;
 
+import org.ligo.lab.core.keys.Key;
 import org.ligo.lab.core.kinds.Kind;
 
 /**
@@ -22,7 +23,7 @@ public interface Resolver {
 	 * @param key the key.
 	 * @return the key's kind refinements.
 	 */
-	<T> Class<T> resolve(Key<T> key);
+	<T> List<Class<T>> resolve(Key<T> key);
 	
 	/**
 	 * Resolves a key into an instance of a kind resolved by {@link #resolve(Key)},

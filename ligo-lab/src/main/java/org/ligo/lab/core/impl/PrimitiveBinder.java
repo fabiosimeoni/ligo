@@ -4,20 +4,19 @@
 package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
-import static org.ligo.lab.core.Key.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
+import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.ligo.lab.core.Environment;
-import org.ligo.lab.core.Key;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.ValueProvider;
+import org.ligo.lab.core.keys.ClassKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +33,12 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	private static String INPUT_ERROR = "[%1s] binder for %2s required a scalar but found: %3s";
 	
 	public PrimitiveBinder(Class<TYPE> clazz) {
-		this(clazz,null);
+		this(newKey(clazz));
 	}
 	
-	public PrimitiveBinder(Class<TYPE> clazz,Class<? extends Annotation> qualifier) {
-		super(clazz,qualifier);
-		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
+	public PrimitiveBinder(ClassKey<TYPE> key) {
+		super(key);
+		logger.trace(BUILT_LOG,new Object[]{this,key.kind().toClass(),mode()});
 	}
 	
 	public TYPE bind(List<Provided> provided) {
@@ -104,13 +103,13 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		//logger.trace(BUILT_LOG,PrimitiveBinder.this,mode());
 		return new BinderProvider<TYPE>() {
 			
-			@Override public Key<? extends TYPE> matchingKey() {
-				return get(clazz);
+			@Override public ClassKey<? extends TYPE> matchingKey() {
+				return newKey(clazz);
 			}
 			
 			@Override
-			public TypeBinder<TYPE> binder(Class<TYPE> clazz,Class<? extends Annotation> qualifier, Environment factory) {
-				return new PrimitiveBinder<TYPE>(clazz,qualifier); 
+			public TypeBinder<TYPE> binder(ClassKey<TYPE> key, Environment factory) {
+				return new PrimitiveBinder<TYPE>(key); 
 			}
 		};
 	}
@@ -118,6 +117,6 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return CLASS(key().kind()).getSimpleName().toLowerCase();
+		return key().kind().toClass().getSimpleName().toLowerCase();
 	}
 }

@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.core;
 
+import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.ligo.lab.core.TestData.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
@@ -34,6 +35,7 @@ import org.ligo.lab.core.TestClassDefs.SomeInterface;
 import org.ligo.lab.core.TestClassDefs.TooManyConstructors;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.impl.DefaultEnvironment;
+import org.ligo.lab.core.keys.Key;
 import org.ligo.lab.core.kinds.Kind;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -51,9 +53,9 @@ public class BinderTests {
 	public void setup() {
 		
 		Resolver p = mock(Resolver.class);
-		when(p.resolve(any(Key.class))).thenAnswer(new Answer<Class<?>>() {
-			public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-				return ((Key)invocation.getArguments()[0]).kind().toClass();
+		when(p.resolve(any(Key.class))).thenAnswer(new Answer<List<Class<?>>>() {
+			public List<Class<?>> answer(InvocationOnMock invocation) throws Throwable {
+				return (List)singletonList(((Key)invocation.getArguments()[0]).kind().toClass());
 			}
 		});
 		when(p.resolve(any(Key.class),any(List.class))).thenAnswer(new Answer<Object>() {
