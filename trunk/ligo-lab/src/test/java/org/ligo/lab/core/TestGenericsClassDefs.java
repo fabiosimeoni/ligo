@@ -12,56 +12,90 @@ import org.ligo.lab.core.annotations.Bind;
  */
 public class TestGenericsClassDefs {
 
-	static class GenericField {
-		boolean invokedm;
-		boolean invokedn;
-		@Bind("a")
-		void m(Generic<String> s) {invokedm=true;}
+	static class Generic<T> {
+		T t;
+		
 		@Bind("b")
-		void n(Generic<Integer> s) {invokedn=true;}
+		void m(T s) {t=s;}
+	}
+	
+	static class GenericField {
+		Generic<String> gs;
+		Generic<Integer> gi;
+		
+		@Bind("a")
+		void m(Generic<String> s) {gs=s;}
+		
+		@Bind("b")
+		void n(Generic<Integer> s) {gi=s;}
+
+	}
+	
+
+	
+	static class NestedGeneric<T> {
+		Generic<T> gt;
+		T t;
+		
+		@Bind("b")
+		void m(Generic<T> s) {gt=s;}
+		
 		@Bind("c")
-		void p(Generic<Dep> s) {}
+		void m(T s) {t=s;}
+	}
+
+	static class IndirectNestedGeneric {
+		Generic<Dep> gd;
+		
+		@Bind("a")
+		void p(Generic<Dep> s) {gd=s;}
 	}
 	
 	static class Dep {
-		@Bind("a")
-		void m(Generic<Integer> s) {}
-	}
-	
-	static class Generic<T> {
-		boolean invoked;
-		@Bind("b")
-		void m(T s) {invoked=true;}
-	}
-	
-	static class NestedGeneric<T> {
-		boolean invoked;
-		@Bind("b")
-		void m(Generic<T> s) {invoked=true;}
+		Generic<Integer> gi;
 		
-		@Bind("c")
-		void m(T s) {invoked=true;}
+		@Bind("a")
+		void m(Generic<Integer> s) {gi=s;}
 	}
 	
 	static class MyGenericSuperclass<T> {
-		boolean invoked;
+		T t;
+		Integer i;
+		
 		//used when inherited but ignored if overridden
 		@Bind("b")
-		void m(T s) {invoked=true;}
+		void m(T s) {t=s;}
+		
 		@Bind("c")
-		void m(Integer s) {invoked=true;}
+		void m(Integer s) {i=s;}
 	}
 	
-	static class MyGeneric extends MyGenericSuperclass<String> {}
+	static class MyGeneric extends MyGenericSuperclass<String> {
+		//inherits m() with its annotations
+	}
 	
 	static class MyAnnotatedGeneric extends MyGenericSuperclass<String> {
-		boolean invoked;
+		
+		String s;
+		
 		@Bind("a")
-		void m(String s) {invoked=true;}
+		void m(String s) {this.s=s;}  //overrides 
 	}
 	
-	public static void main(String[] args) {
+	
+	static class Top<T> {
 		
-		System.out.println(Generic.class.getTypeParameters()[0].equals(NestedGeneric.class.getTypeParameters()[0]));
+		@Bind("a")
+		void m(T t) {}
+	}
+	
+	static class Mid extends Top<String> {
+		
+	}
+	
+	static class Sub<S> extends Mid {
+		
+		@Bind("b")
+		void n(S t) {}
 	}
 }
