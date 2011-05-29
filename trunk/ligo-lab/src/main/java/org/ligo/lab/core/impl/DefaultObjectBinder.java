@@ -34,7 +34,6 @@ import org.ligo.lab.core.annotations.BindProcessor;
 import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
-import org.ligo.lab.core.impl.AbstractMethodDef.NamedBinder;
 import org.ligo.lab.core.keys.ClassKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,10 +236,10 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 		List<Object> values = new ArrayList<Object>();
 		
 		for (NamedBinder named : binders) {
-			if (named.name.equals(UNBOUND_PARAM))
-				values.add(named.binder.bind(null));
+			if (named.name().equals(UNBOUND_PARAM))
+				values.add(named.binder().bind(null));
 			else {
-				Object part = named.binder.bind(provider.get(named.name));
+				Object part = named.binder().bind(provider.get(named.name()));
 				values.add(part);
 			}
 		}
@@ -267,15 +266,15 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 					NamedBinder named = processors.get(Bind.class).binderFor(context,env);
 					
 					//check uniqueness
-					if (boundNames.contains(named.name))
-						throw new RuntimeException(format(DUPLICATE_NAME,named.name,context.member().getDeclaringClass().getName()));	
+					if (boundNames.contains(named.name()))
+						throw new RuntimeException(format(DUPLICATE_NAME,named.name(),context.member().getDeclaringClass().getName()));	
 				
 				//update state
-				boundNames.add(named.name);
-				bound.add(new NamedBinder(named.name,named.binder));
+				boundNames.add(named.name());
+				bound.add(new NamedBinder(named.name(),named.binder()));
 				
 				//only bound binders are exposed.
-				binders.put(named.name,named.binder);
+				binders.put(named.name(),named.binder());
 				}
 			}
 			//unbound context

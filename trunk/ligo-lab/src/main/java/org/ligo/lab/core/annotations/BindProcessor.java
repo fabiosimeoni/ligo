@@ -13,8 +13,8 @@ import javax.xml.namespace.QName;
 import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.impl.BindingAdapter;
+import org.ligo.lab.core.impl.NamedBinder;
 import org.ligo.lab.core.impl.ParameterContext;
-import org.ligo.lab.core.impl.AbstractMethodDef.NamedBinder;
 
 
 /**
