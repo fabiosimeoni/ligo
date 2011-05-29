@@ -33,6 +33,6 @@ public final class ClassKind extends Kind<Class<?>> {
 		/**{@inheritDoc}*/
 		@Override
 		public String toString() {
-			return type().getName();
+			return type().getSimpleName();
 		}
 }

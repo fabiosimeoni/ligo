@@ -38,7 +38,6 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	public PrimitiveBinder(ClassKey<TYPE> key) {
 		super(key);
-		logger.trace(BUILT_LOG,new Object[]{this,key.kind().toClass(),mode()});
 	}
 	
 	public TYPE bind(List<Provided> provided) {

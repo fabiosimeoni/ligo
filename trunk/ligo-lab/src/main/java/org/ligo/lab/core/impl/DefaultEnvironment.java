@@ -3,21 +3,23 @@
  */
 package org.ligo.lab.core.impl;
 
+import static java.lang.String.*;
 import static java.util.Arrays.*;
 import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.ligo.lab.core.Environment;
+import org.ligo.lab.core.Literal;
 import org.ligo.lab.core.Resolver;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.impl.DefaultObjectBinder.ObjectBinderProvider;
@@ -29,7 +31,10 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * A default, caching binding {@link Environment}.
+ * The default {@link Environment} implementation.
+ * <p>
+ * It caches {@link TypeBinder}s and resolves type variables. By default, it relies on a {@link DefaultResolver}
+ * and on a set of default {@link BinderProvider}s.
  * 
  * @author Fabio Simeoni
  *
@@ -41,13 +46,15 @@ public class DefaultEnvironment implements Environment {
 	
 	private static final String UNBOUND_VARIABLE_ERROR = "variable %1s is unbound";
 	private static final String NO_PROVIDER_ERROR = "no provider available for %1s";
-	private static final String RESOLVE_LOG = "resolving binder for {}";
-	private static final String CACHE_HIT_LOG = "resolved binder {} from cache";
+	private static final String INTERFACE_ERROR="%1s resolved into interface %2s, an implementation is required";
+	private static final String BUILD_LOG = "building binder for {}";
+	private static String BUILT_LOG = "built binder {} from {}";
+	private static final String CACHE_HIT_LOG = "resolved binder for {} from cache";
 	private static final String VAR_RESOLVE_LOG = "resolved {} to {}";
-	private static final String VAR_BIND_LOG = "binding {} to {}";
+	private static final String VAR_BIND_LOG = "bound {} to {}";
 
 	private static Map<Key<?>,TypeBinder<?>> cache = new HashMap<Key<?>,TypeBinder<?>>();
-	private static Map<TypeVariable<?>,Stack<TypeBinder<?>>> vars = new HashMap<TypeVariable<?>,Stack<TypeBinder<?>>>();
+	private static Map<TypeVariable<?>,Key<?>> vars = new HashMap<TypeVariable<?>,Key<?>>();
 	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
 	@SuppressWarnings("unchecked")
@@ -89,7 +96,9 @@ public class DefaultEnvironment implements Environment {
 	 * @param ps the providers.
 	 */
 	public DefaultEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
+		
 		resolver = r;
+		
 		//load providers
 		for (BinderProvider<?> provider : ps)
 			providers.put(provider.matchingKey(), provider);
@@ -100,22 +109,27 @@ public class DefaultEnvironment implements Environment {
 	public Resolver resolver() {
 		return resolver;
 	}
+
+	/**{@inheritDoc}*/
+	@Override
+	public <T> TypeBinder<T> binderFor(Literal<? extends T> lit) {
+		return binderFor(newKey(lit));
+	}
 	
 	/**{@inheritDoc}*/
+	@Override
 	public <T> TypeBinder<T> binderFor(Class<? extends T> clazz) {
 		return binderFor(newKey(clazz));
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
-	public <T> TypeBinder<T> binderFor(Key<T> qualifiedKey) {
+	public <T> TypeBinder<T> binderFor(Key<? extends T> qualifiedKey) {
 		
 		Kind<?> kind = qualifiedKey.kind();
 		
 		//get rid of qualifiers for lookup purposes (but keep parameters)
 		Key<?> unqualifiedKey =qualifiedKey.unqualified();
-		
-		logger.trace(RESOLVE_LOG,unqualifiedKey);
 		
 		//resolve variables
 		if (kind.value()==TYPEVAR) {
@@ -124,6 +138,7 @@ public class DefaultEnvironment implements Environment {
 			TypeBinder<T> binder = (TypeBinder) resolve(var);
 			if (binder==null)
 				throw new RuntimeException(String.format(UNBOUND_VARIABLE_ERROR,var));
+			logger.trace(VAR_RESOLVE_LOG,kind,binder);
 			return binder;
 		}
 		//hit cache
@@ -135,24 +150,29 @@ public class DefaultEnvironment implements Environment {
 			return binder;
 		}
 		
+		logger.trace(BUILD_LOG,unqualifiedKey);
+		
 		//find provider
 		BinderProvider<?> provider = provider(unqualifiedKey);
 		
 		if (provider==null)
 			throw new RuntimeException(String.format(NO_PROVIDER_ERROR,unqualifiedKey));
 		
-		//bind type variables, if parametric
-		if (kind.value()==GENERIC) {
-			TypeVariable<?>[] vars = kind.toClass().getTypeParameters(); 
-			for (int i = 0; i<vars.length; i++)
-				bind(vars[i], binderFor(newKey(GENERIC(kind).getActualTypeArguments()[i])));
-		}
+		
+		//bind variables
+		bindVariables(kind);
 		
 		//resolve to implementations (using parameters and annotations)
-		Class<T> resolvedClass = resolver.resolve(qualifiedKey).get(0);
+		Class<? extends T> resolvedClass = resolver.resolve(qualifiedKey).get(0);
+		
+		//we do need class to be implementation
+		if (resolvedClass.isInterface()) 
+			throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
 		
 		@SuppressWarnings("unchecked") //internally consistent
 		TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolvedClass,qualifiedKey.qualifier()),this); 
+		
+		logger.trace(BUILT_LOG,newBinder,qualifiedKey);
 		
 		//update cache
 		cache.put(unqualifiedKey,newBinder);
@@ -197,24 +217,39 @@ public class DefaultEnvironment implements Environment {
 		return provider;
 	}
 	
-	void bind(TypeVariable<?> var, TypeBinder<?> binder) {
-		logger.trace(VAR_BIND_LOG,var,binder);
-		Stack<TypeBinder<?>> binders = vars.get(var);
-		if (binders==null) {
-			binders = new Stack<TypeBinder<?>>();
-			vars.put(var,binders);
+	void bindVariables(Kind<?> kind) {
+		
+		Class<?> clazz = kind.toClass();
+		
+		if (clazz==Object.class)
+			return;
+		
+		if (kind.value()==GENERIC) {
+			TypeVariable<?>[] typevars = clazz.getTypeParameters(); 
+			for (int i = 0; i<typevars.length; i++) { 
+				Key<?> key = newKey(GENERIC(kind).getActualTypeArguments()[i]);
+				vars.put(typevars[i],key);
+				logger.trace(VAR_BIND_LOG,kindOf(typevars[i]),key);
+			}
 		}
-		binders.push(binder);
+		
+		Type supertype = clazz.getGenericSuperclass();
+		if (supertype!=null)
+			bindVariables(kindOf(supertype));
 	}
 	
 	TypeBinder<?> resolve(TypeVariable<?> var) {
-		Stack<TypeBinder<?>> binders = vars.get(var);
-		TypeBinder<?> binder = null;
-		if (binders!=null) {
-			binder = binders.pop();
-			logger.trace(VAR_RESOLVE_LOG,var,binder);
-		}
-		return binder;
+		
+		Key<?> key = vars.get(var);
+		
+		if (key==null)
+			return null;
+		
+		//recurse over variable chains and return binder at end of chain
+		if (key.kind().value()==TYPEVAR)
+			return resolve(TYPEVAR(key.kind()));
+		else
+			return binderFor(key);
 	}
 
 }

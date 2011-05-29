@@ -13,7 +13,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,7 +49,6 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
-	private static final String INTERFACE_ERROR="unexpected interface %1s";
 	private static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
 	private static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
 	private static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
@@ -84,15 +85,11 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 		env = e;
 		
 		Class<?> clazz = key.kind().toClass();
-		//we do need class to be implementation
-		if (clazz.isInterface()) 
-			throw new RuntimeException(format(INTERFACE_ERROR,clazz));
 		
 		//analyse class
 		bindConstructor(clazz);
 		bindMethods(clazz);
 		
-		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
 	}
 	
 	void bindConstructor(Class<?> clazz) {
@@ -142,13 +139,19 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 	
 	void bindMethods(Class<?> clazz) {
 		
+		Map<String,Type[]> visitedMethods = new HashMap<String,Type[]>();
+		
 		do 
 		
 			for (Method m : clazz.getDeclaredMethods()) {
 				
-				//skip methods that do not occur in source
-				if (m.isSynthetic())
+				//exclude overridden method
+				if (Arrays.equals(m.getParameterTypes(),visitedMethods.get(m.getName())))
 					continue;
+				
+				//mark visited method with its raw parameter types so as to detect synthetic overrides of generic types.
+				visitedMethods.put(m.getName(),m.getParameterTypes());
+			
 				
 				List<NamedBinder> mbinders = addBinders(buildContexts(m));
 				
@@ -178,7 +181,7 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 			}
 		
 		while //repeat for inherited methods
-			((clazz=clazz.getSuperclass())!=null);
+			((clazz=clazz.getSuperclass())!=Object.class);
 		
 	}
 

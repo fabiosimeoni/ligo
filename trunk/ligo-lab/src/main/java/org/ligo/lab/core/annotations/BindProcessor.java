@@ -52,8 +52,7 @@ public class BindProcessor implements AnnotationProcessor {
 				throw new RuntimeException(format("could not instantiate adapter %1s",bindAnnotation.adapter()),e);
 			}
 		}
-		else 
-		//recur to obtain binder for type
+		else //recur to obtain binder for type
 			binder = env.binderFor(context.key());
 		
 		//set mode

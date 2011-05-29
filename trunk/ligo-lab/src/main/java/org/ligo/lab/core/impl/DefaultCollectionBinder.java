@@ -45,9 +45,6 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 		@SuppressWarnings("unchecked")
 		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(clazz.getTypeParameters()[0]));
 		binder = objectBinder;
-		
-		logger.trace(BUILT_LOG,new Object[]{this,clazz,mode()});
-			
 	}
 	
 	@Override
