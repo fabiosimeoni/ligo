@@ -86,12 +86,7 @@ public class BinderTests {
 		
 		assertEquals("hello",bound);
 		
-		try {
-			sb.bind(v(3));
-		}
-		catch(RuntimeException e) {
-			System.out.println("caught expected:"+e.getMessage());
-		}
+		sb.bind(v(3));
 		
 		try {
 			sb.bind(s(p("1",v("hello"))));

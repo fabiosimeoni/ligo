@@ -1,0 +1,63 @@
+/**
+ * 
+ */
+package org.ligo.lab.core.impl;
+
+import static java.lang.String.*;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.ligo.lab.core.Environment;
+import org.ligo.lab.core.TypeBinder;
+import org.ligo.lab.core.UnionBinder;
+import org.ligo.lab.core.data.Provided;
+import org.ligo.lab.core.keys.Key;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+/**
+ * @author Fabio Simeoni
+ *
+ */
+public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBinder<T> {
+
+	private static final String ALL_BINDINGS_ERROR = "[%1s] could not bind any of %2s to %3s";
+
+	private static Logger logger = LoggerFactory.getLogger(DefaultUnionBinder.class);
+	
+	private final List<TypeBinder<T>> branches;
+	/**
+	 * 
+	 */
+	public DefaultUnionBinder(Key<? extends T> key,Environment env, List<TypeBinder<T>> binders) {
+		super(key);
+		branches = binders;
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public List<TypeBinder<T>> binders() {
+		return new LinkedList<TypeBinder<T>>(branches);
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public T bind(List<Provided> i) {
+		for (TypeBinder<T> branch : branches)
+			try {
+				branch.setMode(mode());		
+				return branch.bind(i);
+			}
+			catch(Throwable t) {
+				if (branches.size()>1)
+					logger.warn(format(BINDING_ERROR,mode(),branch,i));
+			}
+		
+			throw new RuntimeException(branches.size()>1?
+										format(ALL_BINDINGS_ERROR,mode(),branches,i):
+										format(BINDING_ERROR,mode(),branches.get(0),i));
+	}
+	
+}

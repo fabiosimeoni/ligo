@@ -15,6 +15,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -162,22 +163,27 @@ public class DefaultEnvironment implements Environment {
 		//bind variables
 		bindVariables(kind);
 		
-		//resolve to implementations (using parameters and annotations)
-		Class<? extends T> resolvedClass = resolver.resolve(qualifiedKey).get(0);
 		
-		//we do need class to be implementation
-		if (resolvedClass.isInterface()) 
-			throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
+		List<TypeBinder<T>> binders = new LinkedList<TypeBinder<T>>();
 		
-		@SuppressWarnings("unchecked") //internally consistent
-		TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolvedClass,qualifiedKey.qualifier()),this); 
+		for (Class<? extends T> resolvedClass : resolver.resolve(qualifiedKey)) {
+			
+			//we do need class to be implementation
+			if (resolvedClass.isInterface()) 
+				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
+			
+			@SuppressWarnings("unchecked") //internally consistent
+			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolvedClass,qualifiedKey.qualifier()),this); 
+			
+			logger.trace(BUILT_LOG,newBinder,qualifiedKey);
+			
+			//update cache
+			cache.put(unqualifiedKey,newBinder);
+			
+			binders.add(newBinder);
+		}
 		
-		logger.trace(BUILT_LOG,newBinder,qualifiedKey);
-		
-		//update cache
-		cache.put(unqualifiedKey,newBinder);
-		
-		return newBinder;
+		return new DefaultUnionBinder<T>(qualifiedKey,this, binders);
 		
 	}
 

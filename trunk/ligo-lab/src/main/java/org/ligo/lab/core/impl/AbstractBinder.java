@@ -8,7 +8,7 @@ import static org.ligo.lab.core.keys.Keys.*;
 
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.annotations.Bind.Mode;
-import org.ligo.lab.core.keys.ClassKey;
+import org.ligo.lab.core.keys.Key;
 
 /**
  * @author Fabio Simeoni
@@ -21,7 +21,7 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	protected static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
 	
 	
-	private final ClassKey<? extends TYPE> key;
+	private final Key<? extends TYPE> key;
 	
 	private Mode mode = STRICT;
 	
@@ -29,12 +29,12 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 		this.key=newKey(clazz,null);
 	}
 	
-	protected AbstractBinder(ClassKey<? extends TYPE> key) {
+	protected AbstractBinder(Key<? extends TYPE> key) {
 		this.key=key;
 	}
 	
 	
-	public ClassKey<? extends TYPE> key() {
+	public Key<? extends TYPE> key() {
 		return key;
 	}
 	
