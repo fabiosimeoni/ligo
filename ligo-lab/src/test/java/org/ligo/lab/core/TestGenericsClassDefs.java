@@ -76,10 +76,8 @@ public class TestGenericsClassDefs {
 	
 	static class MyAnnotatedGeneric extends MyGenericSuperclass<String> {
 		
-		String s;
-		
 		@Bind("a")
-		void m(String s) {this.s=s;}  //overrides 
+		void m(String s) {super.m(s);}  //overrides 
 	}
 	
 	

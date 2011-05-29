@@ -18,16 +18,16 @@ import org.ligo.lab.core.keys.Key;
  * 
  * @author Fabio Simeoni
  * 
- * @param <TYPE> <em>the bound type</em>, i.e. the type of the bound instances.
+ * @param <T> <em>the bound type</em>, i.e. the type of the bound instances.
  *
  */
-public interface TypeBinder<TYPE> extends Binder<List<Provided>,TYPE> {
+public interface TypeBinder<T> extends Binder<List<Provided>,T> {
 
 	/**
 	 * Returns the key of the bound type.
 	 * @return the key
 	 */
-	Key<? extends TYPE> key();
+	Key<? extends T> key();
 	
 	/**
 	 * Sets the binding {@link Mode} on the binder.
