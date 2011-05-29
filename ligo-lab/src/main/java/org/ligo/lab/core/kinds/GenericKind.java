@@ -34,7 +34,7 @@ public final class GenericKind extends Kind<ParameterizedType> {
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append(kindOf(type().getRawType())).append("<");
+			builder.append(kindOf(toClass())).append("<");
 			Type[] types = type().getActualTypeArguments();
 			for (int i=0;i<types.length;i++) {
 				if (i>0)

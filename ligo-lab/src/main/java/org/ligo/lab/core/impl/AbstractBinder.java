@@ -17,7 +17,6 @@ import org.ligo.lab.core.keys.ClassKey;
 public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 
 	protected static final String KIND_ERROR="unexpected type %1s";
-	protected static String BUILT_LOG = "built binder for {} [{}]";
 	protected static String BINDING_ERROR = "[%1s] could not bind %2s to %3s";
 	protected static String BINDING_SUCCESS_LOG = "[{}] bound {} to {} as {}";
 	

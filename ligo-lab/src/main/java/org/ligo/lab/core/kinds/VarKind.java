@@ -32,6 +32,6 @@ public final class VarKind extends Kind<TypeVariable<?>> {
 		/**{@inheritDoc}*/
 		@Override
 		public String toString() {
-			return type().getName();
+			return type().getName()+"-of-"+((Class<?>)type().getGenericDeclaration()).getSimpleName();
 		}
 }

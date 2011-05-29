@@ -17,6 +17,14 @@ import org.ligo.lab.core.keys.Key;
 public interface Environment {
 
 	/**
+	 * Returns a binder for a given parametric type.
+	 * @param <T> the parametric type
+	 * @param lit a {@link Literal} of the parametric type
+	 * @return the binder
+	 */
+	<T> TypeBinder<T> binderFor(Literal<? extends T> lit);
+	
+	/**
 	 * Returns a binder for a given class.
 	 * @param <T> the class type
 	 * @param clazz the class
@@ -30,7 +38,7 @@ public interface Environment {
 	 * @param key the key
 	 * @return the binder
 	 */
-	<T> TypeBinder<T> binderFor(Key<T> key);
+	<T> TypeBinder<T> binderFor(Key<? extends T> key);
 
 	/**
 	 * Returns the {@link Resolver} used by the environment.
