@@ -10,6 +10,7 @@ import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -47,7 +48,7 @@ public class DefaultEnvironment implements Environment {
 	
 	private static final String UNBOUND_VARIABLE_ERROR = "variable %1s is unbound";
 	private static final String NO_PROVIDER_ERROR = "no provider available for %1s";
-	private static final String INTERFACE_ERROR="%1s resolved into interface %2s, an implementation is required";
+	private static final String INTERFACE_ERROR="%1s resolved into interface or abstract class %2s, a concrete implementation is required";
 	private static final String BUILD_LOG = "building binder for {}";
 	private static String BUILT_LOG = "built {} for {}";
 	private static final String CACHE_HIT_LOG = "resolved {} for {} from cache";
@@ -129,6 +130,7 @@ public class DefaultEnvironment implements Environment {
 	@Override
 	public <T> TypeBinder<T> binderFor(Key<? extends T> qualifiedKey) {
 		
+		
 		Kind<?> kind = qualifiedKey.kind();
 		
 		//get rid of qualifiers for lookup purposes (but keep parameters)
@@ -168,9 +170,10 @@ public class DefaultEnvironment implements Environment {
 		
 		for (final Class<?> resolved : resolvedClasses) {
 			
-			//sanity check: we do need class to be implementation
-			if (resolved.isInterface()) 
+			//sanity check: we do need resolved class to be a concrete implementation
+			if (resolved.isInterface() || Modifier.isAbstract(resolved.getModifiers())) 
 				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolved));
+			
 			
 			//for correct variable resolution we build a generic 
 			//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
@@ -205,7 +208,7 @@ public class DefaultEnvironment implements Environment {
 		return binders.size()==1?binders.get(0):new DefaultUnionBinder<T>(qualifiedKey,this, binders);
 		
 	}
-
+	
 	/**
 	 * Used internally to resolve {@link BinderProvider}s from {@link Key}s.
 	 * @param key the key.

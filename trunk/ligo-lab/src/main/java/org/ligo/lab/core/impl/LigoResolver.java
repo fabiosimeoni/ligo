@@ -8,6 +8,7 @@ import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,8 +95,9 @@ public class LigoResolver implements ConfigurableResolver {
 	/**{@inheritDoc}*/
 	public synchronized <T> void bind(Key<T> key, Class<? extends T> boundClass) {
 		
-		if (boundClass.isInterface())
-			throw new RuntimeException(format("cannot bind to interfaces, such as %1s", boundClass));
+		if (boundClass.isInterface() || Modifier.isAbstract(boundClass.getModifiers()))
+			throw new RuntimeException(format("cannot bind to interfaces or abstract classes, such as %1s", boundClass));
+		
 			
 		List<Class<?>> classes = bindings.get(key);
 		if (classes==null) {
