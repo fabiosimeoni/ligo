@@ -23,7 +23,7 @@ public interface Resolver {
 	 * @param key the key.
 	 * @return the key's kind refinements.
 	 */
-	List<Class<?>> resolve(Key<?> key);
+	<T> List<Class<? extends T>> resolve(Key<T> key);
 	
 	/**
 	 * Instantiates into a class with given parameters.
