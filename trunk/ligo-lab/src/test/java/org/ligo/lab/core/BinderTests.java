@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 import static org.ligo.lab.core.TestData.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -68,8 +67,7 @@ public class BinderTests {
 			System.out.println("caught expected:"+e.getMessage());
 		}
 		
-		List<Provided> ps = new ArrayList<Provided>(v("hello"));
-		ps.add(v("world").get(0));
+		List<Provided> ps = list(v("hello"),v("world"));
 		try {
 			sb.bind(ps);
 			fail();

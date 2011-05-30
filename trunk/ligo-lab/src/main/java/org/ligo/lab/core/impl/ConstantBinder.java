@@ -23,6 +23,7 @@ public class ConstantBinder implements TypeBinder<Object>  {
 
 	private Object constant;
 	private Class<?> clazz;
+	private Mode mode;
 	/**
 	 * 
 	 */
@@ -45,6 +46,7 @@ public class ConstantBinder implements TypeBinder<Object>  {
 		constant=co;
 	}
 	
+	
 	void setClass(Type t) {
 		
 		clazz = kindOf(t).toClass();
@@ -61,6 +63,12 @@ public class ConstantBinder implements TypeBinder<Object>  {
 	
 	/**{@inheritDoc}*/
 	@Override
+	public Object bind(Provided provided) {
+		return constant;
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
 	public Key<? extends Object> key() {
 		return null;
 	}
@@ -68,7 +76,12 @@ public class ConstantBinder implements TypeBinder<Object>  {
 	/**{@inheritDoc}*/
 	@Override
 	public void setMode(Mode m) {
-		// TODO Auto-generated method stub
-		
+		mode=m;
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public Mode mode() {
+		return mode;
 	}
 }

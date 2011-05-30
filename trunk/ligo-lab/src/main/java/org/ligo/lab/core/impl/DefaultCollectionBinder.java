@@ -17,6 +17,7 @@ import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.keys.ClassKey;
+import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,8 +99,8 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<COLLTYPE> binder(ClassKey<COLLTYPE> key, Environment env) {
-			return new DefaultCollectionBinder<COLLTYPE,TYPE>(key, env);
+		public TypeBinder<COLLTYPE> binder(ClassKey<COLLTYPE> classKey, Key<COLLTYPE> key, Environment env) {
+			return new DefaultCollectionBinder<COLLTYPE,TYPE>(classKey, env);
 		}
 		
 		@Override public ClassKey<COLLTYPE> matchingKey() {

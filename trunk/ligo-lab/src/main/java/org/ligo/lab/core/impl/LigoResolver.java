@@ -9,10 +9,14 @@ import static org.ligo.lab.core.keys.Keys.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ligo.lab.core.ConfigurableResolver;
 import org.ligo.lab.core.Literal;
@@ -27,11 +31,10 @@ public class LigoResolver implements ConfigurableResolver {
 
 	private Map<Key<?>, List<Class<?>>> bindings = new HashMap<Key<?>, List<Class<?>>>();
 	
-	/**
-	 * 
-	 */
 	public LigoResolver() {
-		bind(List.class,ArrayList.class);
+		bind(List.class,LinkedList.class);
+		bind(Set.class,HashSet.class);
+		bind(Iterator.class,Collections.emptyList().iterator().getClass());
 	}
 	
 	/**{@inheritDoc}*/

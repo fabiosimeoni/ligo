@@ -34,6 +34,7 @@ import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
 import org.ligo.lab.core.keys.ClassKey;
+import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +52,8 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
 	static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
 	static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
-	static String CARDINALITY_ERROR = "binder for %2s required one value but found: %3s";
-	static String INPUT_ERROR = "binder for %2s required a structure but found: %3s";
+	static String CARDINALITY_ERROR = "%1s required one value but found: %2s";
+	static String INPUT_ERROR = "%1s required a structure but found: %2s";
 	
 	private static Map<Class<? extends Annotation>,AnnotationProcessor> processors =
 		new HashMap<Class<? extends Annotation>, AnnotationProcessor>();
@@ -239,13 +240,13 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		
 		for (NamedBinder named : binders) {
 			
-			//set mode
+			//set mode, lazily on potentially cached binders
 			Bind bindAnnotation = (Bind) named.parameterContext().bindingAnnotation(); 
 			if (bindAnnotation!=null && bindAnnotation.mode()!=DEFAULT)
 				named.binder().setMode(bindAnnotation.mode());
 			
 			if (named.name().equals(UNBOUND_PARAM))
-				values.add(named.binder().bind(null));
+				values.add(named.binder().bind((Provided)null));
 			else {
 				Object part = named.binder().bind(provider.get(named.name()));
 				values.add(part);
@@ -311,7 +312,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		
 		//test costant binders for early feedback
 		for (ConstantBinder cbinder : constants)
-			cbinder.bind(null);
+			cbinder.bind((Provided)null);
 		
 		return bound;
 	}
@@ -333,8 +334,8 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Object> binder(ClassKey<Object> key, Environment env) {
-			return new DefaultObjectBinder<Object>(key,env);
+		public TypeBinder<Object> binder(ClassKey<Object> classKey, Key<Object> key, Environment env) {
+			return new DefaultObjectBinder<Object>(classKey,env);
 		}
 		
 	}

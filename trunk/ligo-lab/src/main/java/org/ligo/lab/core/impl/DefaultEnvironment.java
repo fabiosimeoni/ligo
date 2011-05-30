@@ -63,6 +63,7 @@ public class DefaultEnvironment implements Environment {
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
 			new ObjectBinderProvider(),
 			DefaultCollectionBinder.provider(Collection.class),
+			new DefaultIteratorBinder.IteratorBinderProvider(),
 			PrimitiveBinder.provider(String.class),
 			PrimitiveBinder.provider(Byte.class),
 			PrimitiveBinder.provider(Short.class),
@@ -155,7 +156,7 @@ public class DefaultEnvironment implements Environment {
 		logger.trace(BUILD_LOG,unqualifiedKey);
 		
 		//find provider
-		BinderProvider<?> provider = provider(unqualifiedKey);
+		BinderProvider<?> provider = providerFor(unqualifiedKey);
 		
 		if (provider==null)
 			throw new RuntimeException(String.format(NO_PROVIDER_ERROR,unqualifiedKey));
@@ -181,11 +182,13 @@ public class DefaultEnvironment implements Environment {
 					};
 				kind=kindOf(type);
 			}
+			
 			//bind variables
 			bindVariables(kind);
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolved,qualifiedKey.qualifier()),this); 
+			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolved,qualifiedKey.qualifier()),
+																	(Key)qualifiedKey,this); 
 			
 			logger.trace(BUILT_LOG,newBinder,qualifiedKey);
 			
@@ -195,7 +198,8 @@ public class DefaultEnvironment implements Environment {
 			binders.add(newBinder);
 		}
 		
-		return new DefaultUnionBinder<T>(qualifiedKey,this, binders);
+		
+		return binders.size()==1?binders.get(0):new DefaultUnionBinder<T>(qualifiedKey,this, binders);
 		
 	}
 
@@ -204,7 +208,7 @@ public class DefaultEnvironment implements Environment {
 	 * @param key the key.
 	 * @return the provider.
 	 */
-	BinderProvider<?> provider(Key<?> key) {
+	BinderProvider<?> providerFor(Key<?> key) {
 		
 		BinderProvider<?> provider = providers.get(key);
 		

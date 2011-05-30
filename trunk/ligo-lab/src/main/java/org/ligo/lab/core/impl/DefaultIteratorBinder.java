@@ -4,8 +4,10 @@
 package org.ligo.lab.core.impl;
 
 import static org.ligo.lab.core.keys.Keys.*;
+import static org.ligo.lab.core.kinds.Kind.*;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,8 +17,10 @@ import org.ligo.lab.core.IteratorBinder;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.keys.ClassKey;
+import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Fabio Simeoni
@@ -26,27 +30,28 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultIteratorBinder.class);
 	
-	private final Environment env;
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
-	DefaultIteratorBinder() {
-		this(null,new DefaultEnvironment());
-	}
-	
 	@SuppressWarnings("unchecked")
-	DefaultIteratorBinder(Class<? extends Annotation> qualifier, Environment e) {
+	DefaultIteratorBinder(final Key<? extends Iterator<TYPE>> key, Environment e) {
 		
-		super(newKey((Class)Iterator.class,qualifier));
-		env=e;
+		super(key);
 		
-		TypeBinder<List<TYPE>> binder = (TypeBinder) env.binderFor(newKey(List.class,qualifier));
+		ParameterizedType type = new ParameterizedType() {
+			@Override public Type getRawType() {return List.class;}
+			@Override public Type getOwnerType() {return null;}
+			@Override public Type[] getActualTypeArguments() {return new Type[]{GENERIC(key.kind()).getActualTypeArguments()[0]};}
+		};
 		
-
+		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type));
+		
 		if (!(binder instanceof CollectionBinder<?,?>))
 			throw new RuntimeException("Binding iterators requires binding collections, " +
 							"but no collection binder was registered");
 		
 		backing= (CollectionBinder) binder;
+		
+		 e.binderFor(newKey(List.class));
 		
 	}
 	
@@ -72,8 +77,8 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Iterator<Object>> binder(ClassKey<Iterator<Object>> key, Environment env) {
-			return new DefaultIteratorBinder<Object>(key.qualifier(),env);
+		public TypeBinder<Iterator<Object>> binder(ClassKey<Iterator<Object>> classKey, Key<Iterator<Object>> key, Environment env) {
+			return new DefaultIteratorBinder<Object>(key,env);
 		}			
 		
 		@SuppressWarnings("unchecked")

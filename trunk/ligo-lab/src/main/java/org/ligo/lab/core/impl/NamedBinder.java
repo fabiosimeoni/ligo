@@ -3,7 +3,6 @@ package org.ligo.lab.core.impl;
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.TypeBinder;
-import org.ligo.lab.core.annotations.Bind;
 
 public class NamedBinder {
 	private final QName name;

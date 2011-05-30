@@ -6,7 +6,7 @@ package org.ligo.lab.core;
 import static java.util.Arrays.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -24,11 +24,18 @@ import org.ligo.lab.core.data.ValueProvider;
 public class TestData {
 
 	
-
-	
-	public static List<Provided> s(final Pair ...ps) {
+	public static List<Provided> list(Provided ... ps) {
 		
-		return Collections.<Provided>singletonList(new Provided() {
+		List<Provided> result = new LinkedList<Provided>();
+		for (Provided p : ps)
+			result.add(p);
+		return result;
+		
+	}
+	
+	public static Provided s(final Pair ...ps) {
+		
+		return new Provided() {
 			
 			public DataProvider provider() {
 				return new StructureProvider() {
@@ -47,11 +54,11 @@ public class TestData {
 			public String toString() {
 				return asList(ps).toString();
 			}
-		});
+		};
 	}
 
-	public static List<Provided> v(final Object o) {
-		return Collections.<Provided>singletonList(new Provided() {
+	public static Provided v(final Object o) {
+		return new Provided() {
 			public DataProvider provider() {
 				return new ValueProvider() {
 					public Object get() {
@@ -67,15 +74,15 @@ public class TestData {
 			public String toString() {
 				return o.toString();
 			}
-		});
+		};
 		
 	}
 	
-	public static Pair p(String s,List<Provided> p) {
-		return new Pair(s,p.get(0));
+	public static Pair p(String s,Provided p) {
+		return new Pair(s,p);
 	}
 	public static Pair p(String s,Object o) {
-		return new Pair(s,v(o).get(0));
+		return new Pair(s,v(o));
 	}
 	
 	static class Pair {
