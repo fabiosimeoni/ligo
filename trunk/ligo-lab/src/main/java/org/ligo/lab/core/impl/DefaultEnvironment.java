@@ -162,7 +162,7 @@ public class DefaultEnvironment implements Environment {
 			throw new RuntimeException(String.format(NO_PROVIDER_ERROR,unqualifiedKey));
 		
 		
-		List<Class<?>> resolvedClasses = resolver.resolve(qualifiedKey);
+		List<? extends Class<?>> resolvedClasses = resolver.resolve(qualifiedKey);
 		
 		List<TypeBinder<T>> binders = new LinkedList<TypeBinder<T>>();
 		

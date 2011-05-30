@@ -38,17 +38,18 @@ public class LigoResolver implements ConfigurableResolver {
 	}
 	
 	/**{@inheritDoc}*/
-	public synchronized List<Class<?>> resolve(Key<?> key) {
+	@SuppressWarnings("unchecked")
+	public synchronized <T> List<Class<? extends T>> resolve(Key<T> key) {
 	
-		List<Class<?>> bound = bindings.get(key);
+		List<Class<? extends T>> bound = (List) bindings.get(key);
 		
 		if (bound==null)
-			bound = bindings.get(newKey(key.kind().toClass(),key.qualifier()));
+			bound = (List) bindings.get(newKey(key.kind().toClass(),key.qualifier()));
 		
 		if (bound==null) {
 			List<Class<?>> singleton = new ArrayList<Class<?>>();
 			singleton.add(key.kind().toClass());
-			bound = singleton;
+			bound = (List) singleton;
 		}
 		
 		return bound; //internally consistent
