@@ -30,8 +30,8 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	private static Logger logger= LoggerFactory.getLogger(PrimitiveBinder.class);
 	
 	static final String TO_STRING= "%1s-%2s";
-	private static String CARDINALITY_ERROR = "binder for %1s required one value but found: %2s";
-	private static String INPUT_ERROR = "binder for %1s required a scalar but found: %2s";
+	private static String CARDINALITY_ERROR = "%1s required one value but found: %2s";
+	private static String INPUT_ERROR = "%1s required a scalar but found: %2s";
 	
 	public PrimitiveBinder(Class<TYPE> clazz) {
 		this(newKey(clazz));
@@ -52,7 +52,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			if (mode()==STRICT)
 				throw new RuntimeException(format(CARDINALITY_ERROR,this,provided));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),provided,this,defaultValue});
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,defaultValue});
 				return defaultValue;
 			}
 		
@@ -62,7 +62,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			if (mode()==STRICT)
 					throw new RuntimeException(format(INPUT_ERROR,this,provided));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,defaultValue});
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,defaultValue});
 				return defaultValue;
 			}
 	

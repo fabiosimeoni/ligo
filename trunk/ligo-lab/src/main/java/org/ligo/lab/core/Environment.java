@@ -46,5 +46,4 @@ public interface Environment {
 	 */
 	Resolver resolver();
 	
-	
 }

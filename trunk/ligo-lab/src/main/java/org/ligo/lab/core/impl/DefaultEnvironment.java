@@ -50,8 +50,8 @@ public class DefaultEnvironment implements Environment {
 	private static final String NO_PROVIDER_ERROR = "no provider available for %1s";
 	private static final String INTERFACE_ERROR="%1s resolved into interface %2s, an implementation is required";
 	private static final String BUILD_LOG = "building binder for {}";
-	private static String BUILT_LOG = "built binder {} from {}";
-	private static final String CACHE_HIT_LOG = "resolved binder for {} from cache";
+	private static String BUILT_LOG = "built {} for {}";
+	private static final String CACHE_HIT_LOG = "resolved {} for {} from cache";
 	private static final String VAR_RESOLVE_LOG = "resolved {} to {}";
 	private static final String VAR_BIND_LOG = "bound {} to {}";
 
@@ -148,7 +148,7 @@ public class DefaultEnvironment implements Environment {
 		TypeBinder<T> binder = (TypeBinder) cache.get(unqualifiedKey);
 		
 		if (binder!=null) {
-			logger.trace(CACHE_HIT_LOG,unqualifiedKey);
+			logger.trace(CACHE_HIT_LOG,binder,unqualifiedKey);
 			return binder;
 		}
 		

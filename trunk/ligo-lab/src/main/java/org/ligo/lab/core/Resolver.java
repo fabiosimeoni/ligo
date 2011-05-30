@@ -3,7 +3,6 @@
  */
 package org.ligo.lab.core;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.ligo.lab.core.keys.Key;
@@ -37,37 +36,4 @@ public interface Resolver {
 	 */
 	<T> T resolve(Class<T> key, List<? extends Object> args) throws RuntimeException;
 	
-	/**
-	 * Binds a class to a concrete implementation.
-	 * @param <T> the class type
-	 * @param clazz the class
-	 * @param boundClass the bound implementation
-	 */
-	<T> void bind(Class<T> clazz,Class<? extends T> boundClass);
-	
-	/**
-	 * Binds a class and an annotation class to a concrete implementation.
-	 * @param <T> the class type.
-	 * @param clazz the class
-	 * @param qualifier the annotation class
-	 * @param boundClass the concrete implementation
-	 */
-	<T> void bind(Class<T> clazz,Class<? extends Annotation> qualifier,Class<? extends T> boundClass);
-	
-	/**
-	 * Binds a parametric type to a concrete implementation.
-	 * @param <T> the parametric type
-	 * @param lit the {@link Literal} of the parametric type
-	 * @param boundClass the concrete implementation
-	 */
-	<T> void bind(Literal<T> lit,Class<? extends T> boundClass);
-	
-	/**
-	 * Binds a parametric type to a concrete implementation.
-	 * @param <T> the parametric type
-	 * @param lit the {@link Literal} of the parametric type
-	 * @param qualifier the annotation class
-	 * @param boundClass the concrete implementation
-	 */
-	<T> void bind(Literal<T> lit,Class<? extends Annotation> qualifier,Class<? extends T> boundClass);
 }

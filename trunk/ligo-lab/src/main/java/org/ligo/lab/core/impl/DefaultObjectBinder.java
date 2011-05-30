@@ -238,6 +238,12 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		List<Object> values = new ArrayList<Object>();
 		
 		for (NamedBinder named : binders) {
+			
+			//set mode
+			Bind bindAnnotation = (Bind) named.parameterContext().bindingAnnotation(); 
+			if (bindAnnotation!=null && bindAnnotation.mode()!=DEFAULT)
+				named.binder().setMode(bindAnnotation.mode());
+			
 			if (named.name().equals(UNBOUND_PARAM))
 				values.add(named.binder().bind(null));
 			else {
@@ -273,7 +279,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 				
 				//update state
 				boundNames.add(named.name());
-				bound.add(new NamedBinder(named.name(),named.binder()));
+				bound.add(new NamedBinder(named.name(),named.binder(),context));
 				
 				//only bound binders are exposed.
 				binders.put(named.name(),named.binder());
@@ -294,7 +300,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 				}
 				
 				constants.add(cbinder);
-				bound.add(new NamedBinder(UNBOUND_PARAM,cbinder));
+				bound.add(new NamedBinder(UNBOUND_PARAM,cbinder,context));
 			}
 			
 		}
