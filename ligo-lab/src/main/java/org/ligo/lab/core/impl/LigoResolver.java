@@ -14,8 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.ligo.lab.core.ConfigurableResolver;
 import org.ligo.lab.core.Literal;
-import org.ligo.lab.core.Resolver;
 import org.ligo.lab.core.annotations.Bind;
 import org.ligo.lab.core.keys.Key;
 
@@ -23,7 +23,7 @@ import org.ligo.lab.core.keys.Key;
  * @author Fabio Simeoni
  *
  */
-public class LigoResolver implements Resolver {
+public class LigoResolver implements ConfigurableResolver {
 
 	private Map<Key<?>, List<Class<?>>> bindings = new HashMap<Key<?>, List<Class<?>>>();
 	

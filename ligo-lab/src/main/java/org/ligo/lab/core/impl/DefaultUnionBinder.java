@@ -51,9 +51,10 @@ public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBin
 				branch.setMode(mode());		
 				return branch.bind(i);
 			}
-			catch(Throwable t) {
+			catch(RuntimeException e) {
 				if (branches.size()>1)
 					logger.warn(format(BINDING_ERROR,branch,i));
+				else throw e;
 			}
 		
 			throw new RuntimeException(branches.size()>1?

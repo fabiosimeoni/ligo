@@ -3,13 +3,17 @@ package org.ligo.lab.core.impl;
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.TypeBinder;
+import org.ligo.lab.core.annotations.Bind;
 
 public class NamedBinder {
-	private QName name;
-	private TypeBinder<?> binder;
+	private final QName name;
+	private final TypeBinder<?> binder;
+	private final ParameterContext context;
 	
-	public NamedBinder(QName n,TypeBinder<?> b) {
-		name=n;binder=b;
+	public NamedBinder(QName n,TypeBinder<?> b,ParameterContext c) {
+		name=n;
+		binder=b;
+		context=c;
 	}
 	
 	/**
@@ -24,5 +28,12 @@ public class NamedBinder {
 	 */
 	public TypeBinder<?> binder() {
 		return binder;
+	}
+	
+	/**
+	 * @return the bindingAnnotation
+	 */
+	public ParameterContext parameterContext() {
+		return context;
 	}
 }

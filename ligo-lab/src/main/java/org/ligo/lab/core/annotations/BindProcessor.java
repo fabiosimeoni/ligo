@@ -4,9 +4,7 @@
 package org.ligo.lab.core.annotations;
 
 import static java.lang.String.*;
-import static org.ligo.lab.core.annotations.Bind.Mode.*;
-
-import java.lang.reflect.Constructor;
+import static java.util.Collections.*;
 
 import javax.xml.namespace.QName;
 
@@ -23,6 +21,8 @@ import org.ligo.lab.core.impl.ParameterContext;
  */
 public class BindProcessor implements AnnotationProcessor {
 	
+	private static final String INSTANTIATION_ERROR = "could not instantiate adapter %1s";
+
 	public NamedBinder binderFor(ParameterContext context, Environment env) {
 		
 		Bind bindAnnotation = (Bind) context.bindingAnnotation();
@@ -37,11 +37,8 @@ public class BindProcessor implements AnnotationProcessor {
 				@SuppressWarnings("unchecked")
 				Class<? extends BindingAdapter> adapterClass = bindAnnotation.adapter();
 				
-				Constructor<?> c = adapterClass.getDeclaredConstructor();
-				c.setAccessible(true);
-				
-				BindingAdapter<?,?> adapter = (BindingAdapter<?,?>) c.newInstance();
-				
+				BindingAdapter<?,?> adapter =  env.resolver().resolve(adapterClass, emptyList());
+
 				@SuppressWarnings("unchecked")
 				AdaptedBinder<?,?> bindingAdapter = (AdaptedBinder<?,?>) new AdaptedBinder(adapter,env);
 				
@@ -49,18 +46,13 @@ public class BindProcessor implements AnnotationProcessor {
 				
 			}
 			catch(Exception e) {
-				throw new RuntimeException(format("could not instantiate adapter %1s",bindAnnotation.adapter()),e);
+				throw new RuntimeException(format(INSTANTIATION_ERROR,bindAnnotation.adapter()),e);
 			}
 		}
 		else //recur to obtain binder for type
 			binder = env.binderFor(context.key());
 		
-		//set mode
-		if (bindAnnotation.mode()!=DEFAULT)
-			binder.setMode(bindAnnotation.mode());	
-		
-		return new NamedBinder(name,binder);
-		
-	
+		return new NamedBinder(name,binder,context);
+			
 	};
 }
