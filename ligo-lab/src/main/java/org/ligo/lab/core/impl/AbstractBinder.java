@@ -3,11 +3,13 @@
  */
 package org.ligo.lab.core.impl;
 
+import static java.util.Collections.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.keys.Keys.*;
 
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.annotations.Bind.Mode;
+import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.keys.Key;
 
 /**
@@ -16,9 +18,8 @@ import org.ligo.lab.core.keys.Key;
  */
 public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 
-	protected static final String KIND_ERROR="unexpected type %1s";
-	protected static String BINDING_ERROR = "could not bind %1s to %2s";
-	protected static String BINDING_SUCCESS_LOG = "bound {} to {} as {}";
+	static String BINDING_ERROR = "could not bind %1s to %2s";
+	static String BINDING_SUCCESS_LOG = "bound {} to {} as {}";
 	
 	
 	private final Key<? extends TYPE> key;
@@ -34,6 +35,11 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	}
 	
 	
+	/**{@inheritDoc}*/
+	@Override
+	public TYPE bind(Provided provided) {
+		return bind(singletonList(provided));
+	}
 	public Key<? extends TYPE> key() {
 		return key;
 	}
@@ -44,7 +50,7 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 		mode=m;
 	}
 	
-	Mode mode() {
+	public Mode mode() {
 		return mode;
 	}
 	

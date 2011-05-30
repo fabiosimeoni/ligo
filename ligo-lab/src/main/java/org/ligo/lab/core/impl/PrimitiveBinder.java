@@ -17,6 +17,7 @@ import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.ValueProvider;
 import org.ligo.lab.core.keys.ClassKey;
+import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +109,8 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			}
 			
 			@Override
-			public TypeBinder<TYPE> binder(ClassKey<TYPE> key, Environment factory) {
-				return new PrimitiveBinder<TYPE>(key); 
+			public TypeBinder<TYPE> binder(ClassKey<TYPE> classKey, Key<TYPE> key, Environment factory) {
+				return new PrimitiveBinder<TYPE>(classKey); 
 			}
 		};
 	}

@@ -29,10 +29,15 @@ public interface TypeBinder<T> extends Binder<List<Provided>,T> {
 	 */
 	Key<? extends T> key();
 	
+	/**{@inheritDoc}*/
+	public T bind(Provided provided);
+	
 	/**
 	 * Sets the binding {@link Mode} on the binder.
 	 * @param m the mode.
 	 */
 	void setMode(Mode m);
+	
+	Mode mode();
 
 }
