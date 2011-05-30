@@ -16,7 +16,6 @@ import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.IteratorBinder;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
-import org.ligo.lab.core.keys.ClassKey;
 import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +42,13 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 			@Override public Type[] getActualTypeArguments() {return new Type[]{GENERIC(key.kind()).getActualTypeArguments()[0]};}
 		};
 		
-		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type));
+		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
 		
 		if (!(binder instanceof CollectionBinder<?,?>))
 			throw new RuntimeException("Binding iterators requires binding collections, " +
 							"but no collection binder was registered");
 		
 		backing= (CollectionBinder) binder;
-		
-		 e.binderFor(newKey(List.class));
 		
 	}
 	
@@ -77,13 +74,13 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Iterator<Object>> binder(ClassKey<Iterator<Object>> classKey, Key<Iterator<Object>> key, Environment env) {
+		public TypeBinder<Iterator<Object>> binder(Key<Iterator<Object>> key, Environment env) {
 			return new DefaultIteratorBinder<Object>(key,env);
 		}			
 		
 		@SuppressWarnings("unchecked")
-		@Override public ClassKey<Iterator<Object>> matchingKey() {
-			return (ClassKey) newKey(Iterator.class);
+		@Override public Key<Iterator<Object>> matchingKey() {
+			return (Key) newKey(Iterator.class);
 		}
 			
 	};

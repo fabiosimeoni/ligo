@@ -18,12 +18,12 @@ import org.ligo.lab.core.kinds.Kind;
 public class Keys {
 
 	
-	public static <T> ClassKey<T> newKey(Class<? extends T> clazz) {
-		return new ClassKey<T>(clazz);
+	public static <T> Key<T> newKey(Class<? extends T> clazz) {
+		return newKey(clazz,null);
 	}
 	
-	public static <T> ClassKey<T> newKey(Class<? extends T> clazz, Class<? extends Annotation> qualifier) {
-		return new ClassKey<T>(clazz,qualifier);
+	public static <T> Key<T> newKey(Class<? extends T> clazz, Class<? extends Annotation> qualifier) {
+		return new Key<T>(kindOf(clazz),qualifier);
 	}
 	
 	public static <T> Key<T> newKey(Literal<T> t) {
@@ -39,10 +39,14 @@ public class Keys {
 	}
 	
 	public static Key<?> newKey(Type t, Class<? extends Annotation> a) {
-		return new Key<Object>(kindOf(t),a);
+		return newKey(kindOf(t),a);
 	}
 	
 	public static Key<?> newKey(Kind<?> k) {
+		return newKey(k,null);
+	}
+	
+	public static Key<?> newKey(Kind<?> k, Class<? extends Annotation> a) {
 		return new Key<Object>(k,null);
 	}
 }

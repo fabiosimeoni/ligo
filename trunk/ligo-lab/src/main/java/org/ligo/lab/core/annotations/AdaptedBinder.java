@@ -36,7 +36,7 @@ class AdaptedBinder<INTYPE,OUTTYPE> extends AbstractBinder<OUTTYPE> {
 		super((Class) a.outKind().toClass()); //raw bound type
 		env=e;
 		adapter=a;
-		inBinder = env.binderFor((Key)newKey(a.inKind()));
+		inBinder = env.binderFor((Key)newKey(a.inKind().type()));
 		
 	}
 
