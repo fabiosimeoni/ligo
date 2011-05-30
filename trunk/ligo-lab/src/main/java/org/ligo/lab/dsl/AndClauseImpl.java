@@ -1,8 +1,9 @@
 package org.ligo.lab.dsl;
 
+import static org.ligo.lab.dsl.Ligo.*;
+
 import org.ligo.lab.binders.Binder;
 import org.ligo.lab.binders.BinderFactory;
-import org.ligo.lab.binders.CompositeBinder;
 
 class AndClauseImpl<TYPE,IN> implements AndClause<TYPE, IN> {
 	
@@ -18,8 +19,7 @@ class AndClauseImpl<TYPE,IN> implements AndClause<TYPE, IN> {
 	/**{@inheritDoc}*/
 	@Override
 	public <SOURCE> AndClause<TYPE,SOURCE> and(Binder<SOURCE, IN> transform) {
-		CompositeBinder<SOURCE, IN, TYPE> cb = new CompositeBinder<SOURCE, IN, TYPE>(transform, ctxt.binding()); 
-		return new AndClauseImpl<TYPE, SOURCE>(new ClauseContext<TYPE,SOURCE>(ctxt.key(),cb));
+		return new AndClauseImpl<TYPE, SOURCE>(new ClauseContext<TYPE,SOURCE>(ctxt.key(),compose(transform,ctxt.binding())));
 	}
 	
 	/**{@inheritDoc}*/

@@ -22,10 +22,10 @@ public class Test {
 		void overridden() {}
 		void own() {}
 	}
-	
+
 	public static void main(String[] args) {
 
-		System.out.println(B.class.getTypeParameters()[0].equals(A.class.getTypeParameters()[0]));
+		System.out.println(String[].class.isArray());
 		
 	}
 }
