@@ -5,6 +5,7 @@ package org.ligo.lab.core.kinds;
 
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 
 /**
@@ -26,12 +27,12 @@ public final class GenericArrayKind extends Kind<GenericArrayType> {
 		/**{@inheritDoc}*/
 		@Override
 		public Class<?> toClass() {
-			return kindOf(type().getGenericComponentType()).toClass();
+			return Array.newInstance(kindOf(type().getGenericComponentType()).toClass(),0).getClass();
 		}
 		
 		/**{@inheritDoc}*/
 		@Override
 		public String toString() {
-			return kindOf(type().getGenericComponentType()).toString();
+			return kindOf(type().getGenericComponentType()).toString()+"[]";
 		}
 }

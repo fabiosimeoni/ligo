@@ -6,6 +6,7 @@ package org.ligo.lab.core;
 
 
 
+
 /**
  * A {@link TypeBinder} for array types.
  * 
@@ -19,4 +20,5 @@ public interface ArrayBinder<TYPE> extends TypeBinder<TYPE[]>{
 	 * @return the binder.
 	 */
 	TypeBinder<?> binder();
+	
 }

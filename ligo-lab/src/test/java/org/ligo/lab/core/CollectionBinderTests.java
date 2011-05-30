@@ -52,5 +52,24 @@ public class CollectionBinderTests {
 			assertNotNull(r.next());
 		
 	}
+	
+	@Test
+	public void array() {
+	
+		TypeBinder<String[]> b= env.binderFor(new Literal<String[]>() {});
+		
+		String[] r = b.bind(list(v("hello"),v("world")));
+		assertNotNull(r);
+		
+		TypeBinder<List<String>[]> b1= env.binderFor(new Literal<List<String>[]>() {});
+		
+		List<String>[] r1 = b1.bind(list(v("hello"),v("world")));
+		assertNotNull(r1);
+		
+		TypeBinder<Integer[]> b2= env.binderFor(new Literal<Integer[]>() {});
+		
+		Integer[] r2 = b2.bind(list(v(3),v(5)));
+		assertNotNull(r2);
+	}
 }
 

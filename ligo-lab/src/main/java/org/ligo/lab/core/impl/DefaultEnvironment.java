@@ -63,6 +63,7 @@ public class DefaultEnvironment implements Environment {
 			new ObjectBinderProvider(),
 			DefaultCollectionBinder.provider(Collection.class),
 			new DefaultIteratorBinder.IteratorBinderProvider(),
+			new DefaultArrayBinder.ArrayBinderProvider(),
 			PrimitiveBinder.provider(String.class),
 			PrimitiveBinder.provider(Byte.class),
 			PrimitiveBinder.provider(Short.class),
@@ -216,6 +217,7 @@ public class DefaultEnvironment implements Environment {
 		
 		if (provider==null) {
 			
+				
 			//reduce search space to 'raw' types
 			Class<?> clazz = key.kind().toClass();
 			if (clazz==null)
@@ -223,6 +225,10 @@ public class DefaultEnvironment implements Environment {
 		
 			//lookup raw type
 			provider = providers.get(newKey(clazz));
+			
+			if (clazz.isArray()) {
+				provider=providers.get(newKey(Object[].class));
+			}
 			
 			if (provider==null && Collection.class.isAssignableFrom(clazz))
 				provider=providers.get(newKey(Collection.class));
