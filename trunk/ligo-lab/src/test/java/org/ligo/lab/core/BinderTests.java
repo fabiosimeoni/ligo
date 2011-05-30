@@ -3,13 +3,9 @@
  */
 package org.ligo.lab.core;
 
-import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.ligo.lab.core.TestData.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
-import static org.ligo.lab.core.kinds.Kind.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +15,7 @@ import org.junit.Test;
 import org.ligo.lab.core.TestClassDefs.Adapted;
 import org.ligo.lab.core.TestClassDefs.Adapted2;
 import org.ligo.lab.core.TestClassDefs.BadPlacement;
+import org.ligo.lab.core.TestClassDefs.BindOnConstructor;
 import org.ligo.lab.core.TestClassDefs.BindOnManyParams;
 import org.ligo.lab.core.TestClassDefs.BindOnMethod;
 import org.ligo.lab.core.TestClassDefs.BindOnParam;
@@ -35,10 +32,7 @@ import org.ligo.lab.core.TestClassDefs.SomeInterface;
 import org.ligo.lab.core.TestClassDefs.TooManyConstructors;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.impl.DefaultEnvironment;
-import org.ligo.lab.core.keys.Key;
-import org.ligo.lab.core.kinds.Kind;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.ligo.lab.core.impl.LigoResolver;
 
 /**
  * @author Fabio Simeoni
@@ -46,38 +40,16 @@ import org.mockito.stubbing.Answer;
  */
 public class BinderTests {
 
-	DefaultEnvironment env;
+	LigoResolver resolver;
+	Environment env;
 	
-	@Before 
-	@SuppressWarnings("unchecked")
+	@Before
 	public void setup() {
-		
-		Resolver p = mock(Resolver.class);
-		when(p.resolve(any(Key.class))).thenAnswer(new Answer<List<Class<?>>>() {
-			public List<Class<?>> answer(InvocationOnMock invocation) throws Throwable {
-				return (List)singletonList(((Key)invocation.getArguments()[0]).kind().toClass());
-			}
-		});
-		when(p.resolve(any(Key.class),any(List.class))).thenAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				Kind<?> kind = ((Key)invocation.getArguments()[0]).kind();
-				Object instance = null;
-				try {
-					switch(kind.value()) {
-						case CLASS: instance = CLASS(kind).newInstance();break;
-						case GENERIC: instance = ((Class<?>) GENERIC(kind).getRawType()).newInstance();
-					}
-				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
-				return instance;
-			}
-		});
-		
-		env = new DefaultEnvironment(p);
-	}
 
+		resolver = new LigoResolver();
+		env = new DefaultEnvironment(resolver);
+	}
+	
 	@Test
 	public void primitive() {
 		
@@ -163,7 +135,7 @@ public class BinderTests {
 	}
 
 	@Test 
-	public void badConstructors() throws Exception {
+	public void badConstructors() {
 	
 		//badly annotated constructor
 		try {
@@ -185,7 +157,13 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void bindplacement() throws Exception {
+	public void bindplacement() {
+		
+		//on constructor
+		TypeBinder<BindOnConstructor> b0 = env.binderFor(BindOnConstructor.class);
+		
+		BindOnConstructor r0 = b0.bind(s(p("a","hello")));
+		assertNotNull(r0);
 		
 		//on method
 		TypeBinder<BindOnMethod> b1 = env.binderFor(BindOnMethod.class);
@@ -211,7 +189,7 @@ public class BinderTests {
 	}
 
 	@Test 
-	public void primitiveField() throws Exception {
+	public void primitiveField() {
 		
 		TypeBinder<Primitive> b = env.binderFor(Primitive.class);;
 		
@@ -221,7 +199,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void multiparams() throws Exception {
+	public void multiparams() {
 	
 		TypeBinder<MultiParams> b = env.binderFor(MultiParams.class);
 		
@@ -231,7 +209,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void duplicateLabels() throws Exception {
+	public void duplicateLabels() {
 	
 		//ambiguous constructors
 		try {
@@ -244,7 +222,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void partialbinding() throws Exception {
+	public void partialbinding() {
 	
 		TypeBinder<Partial> b = env.binderFor(Partial.class);
 		
@@ -254,7 +232,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void lax1() throws Exception {
+	public void lax1() {
 	
 		TypeBinder<Lax1> b = env.binderFor(Lax1.class);
 		
@@ -272,7 +250,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void lax2() throws Exception {
+	public void lax2() {
 	
 		TypeBinder<Lax2> b = env.binderFor(Lax2.class);
 		
@@ -283,7 +261,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void throughInterface1() throws Exception {
+	public void throughInterface1() {
 	
 		TypeBinder<InterfaceImpl1> b = env.binderFor(InterfaceImpl1.class);
 		
@@ -294,7 +272,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void throughInterface2() throws Exception {
+	public void throughInterface2() {
 	
 		TypeBinder<InterfaceImpl2> b = env.binderFor(InterfaceImpl2.class);
 		
@@ -306,7 +284,7 @@ public class BinderTests {
 	
 	
 	@Test 
-	public void adapted() throws Exception {
+	public void adapted() {
 	
 		TypeBinder<Adapted> b = env.binderFor(Adapted.class);
 		
@@ -317,7 +295,7 @@ public class BinderTests {
 	}
 	
 	@Test 
-	public void adapted2() throws Exception {
+	public void adapted2() {
 	
 		TypeBinder<Adapted2> b = env.binderFor(Adapted2.class);
 		
@@ -326,17 +304,19 @@ public class BinderTests {
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
-
-
 	
-	public static void main(String[] args) {
+	@Test
+	public void interfaceBinding() {
+
+		resolver.bind(SomeInterface.class, BindOnManyParams.class);
+		resolver.bind(SomeInterface.class, Empty.class);
 		
-		System.out.println(s(p("person",s(p("name","John"),p("age",20)))));
+		TypeBinder<SomeInterface> b = env.binderFor(SomeInterface.class);
+		
+		SomeInterface r = b.bind(s(p("a","hello"),p("c","world")));
+		assertNotNull(r);
+		assertTrue(r instanceof Empty);
 	}
-	
-	
-	
-
 
 }
 

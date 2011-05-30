@@ -60,7 +60,7 @@ public class DSLUseCases {
 		//Clients that bind multiple types use multiple binders (which does not exclude 
 		//that they may have been configured to share state).
 		
-		// -) data parsing, if required, is dealt with upstream. the tool will offer a separate factory/ies
+		// -) data parsing, if required, is dealt with upstream. the tool will offer a separate env/ies
 		// appropriate to Data model.
 		
 		// -) data can be created programmatically and passed (or arrive somehow) to "binding code" without

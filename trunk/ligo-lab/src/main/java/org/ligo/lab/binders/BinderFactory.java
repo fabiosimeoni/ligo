@@ -6,7 +6,7 @@ package org.ligo.lab.binders;
 import org.ligo.lab.core.keys.Key;
 
 /**
- * A {@link Key}-driven factory of {@link Binder}s.
+ * A {@link Key}-driven env of {@link Binder}s.
  * 
  * @author Fabio Simeoni
  * 

@@ -29,8 +29,9 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	private static Logger logger= LoggerFactory.getLogger(PrimitiveBinder.class);
 	
-	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
-	private static String INPUT_ERROR = "[%1s] binder for %2s required a scalar but found: %3s";
+	static final String TO_STRING= "%1s-%2s";
+	private static String CARDINALITY_ERROR = "binder for %1s required one value but found: %2s";
+	private static String INPUT_ERROR = "binder for %1s required a scalar but found: %2s";
 	
 	public PrimitiveBinder(Class<TYPE> clazz) {
 		this(newKey(clazz));
@@ -49,7 +50,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		
 		if (provided.size()!=1)
 			if (mode()==STRICT)
-				throw new RuntimeException(format(CARDINALITY_ERROR,mode(),this,provided));
+				throw new RuntimeException(format(CARDINALITY_ERROR,this,provided));
 			else {
 				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),provided,this,defaultValue});
 				return defaultValue;
@@ -59,7 +60,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 		if (!(dp instanceof ValueProvider))
 			if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
+					throw new RuntimeException(format(INPUT_ERROR,this,provided));
 			else {
 				logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,defaultValue});
 				return defaultValue;
@@ -83,15 +84,15 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		if (output == null)
 			if (mode()==STRICT)
 				throw error==null?
-					new RuntimeException(format(BINDING_ERROR,mode(),input,this)):
-					new RuntimeException(format(BINDING_ERROR,mode(),input,this),error);
+					new RuntimeException(format(BINDING_ERROR,input,this)):
+					new RuntimeException(format(BINDING_ERROR,input,this),error);
 			else
 				output = defaultValue;
 			
 		@SuppressWarnings("unchecked")
 		TYPE result = (TYPE) output;
 		
-		logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,result});
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,result});
 		
 		return result;
 	};
@@ -112,10 +113,12 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 			}
 		};
 	}
+	
+
 
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return key().kind().toClass().getSimpleName().toLowerCase();
+		return format(TO_STRING,super.toString(),key());
 	}
 }

@@ -12,7 +12,6 @@ import static org.ligo.lab.core.keys.Keys.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,15 +43,16 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBinder<TYPE> {
+class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectBinder.class);
 	
-	private static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
-	private static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
-	private static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
-	private static String CARDINALITY_ERROR = "[%1s] binder for %2s required one value but found: %3s";
-	private static String INPUT_ERROR = "[%1s] binder for %2s required a structure but found: %3s";
+	static final String TO_STRING= "%1s-obj%2s";
+	static final String MULTICONSTRUCTOR_ERROR= "%1s has more than one bound constructor";
+	static final String DUPLICATE_NAME= "bound name '%1s' is duplicated in %2s";
+	static final String NO_CONSTRUCTOR_ERROR="%1s has no nullary or annotated constructors";
+	static String CARDINALITY_ERROR = "binder for %2s required one value but found: %3s";
+	static String INPUT_ERROR = "binder for %2s required a structure but found: %3s";
 	
 	private static Map<Class<? extends Annotation>,AnnotationProcessor> processors =
 		new HashMap<Class<? extends Annotation>, AnnotationProcessor>();
@@ -73,12 +73,12 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 	private Map<QName,TypeBinder<?>> binders = new HashMap<QName, TypeBinder<?>>();
 	
 	
-	public DefaultObjectBinder(Class<? extends TYPE> clazz) {
+	public DefaultObjectBinder(Class<? extends T> clazz) {
 		this(newKey(clazz),new DefaultEnvironment());
 	}
 	
 	
-	public DefaultObjectBinder(ClassKey<? extends TYPE> key, Environment e) {
+	public DefaultObjectBinder(ClassKey<? extends T> key, Environment e) {
 		
 		super(key);
 		env = e;
@@ -170,8 +170,8 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 				if (!mbinders.isEmpty()) {
 					
 					//no private methods
-					if (Modifier.isPrivate(m.getModifiers()))
-						throw new RuntimeException(format("cannot bind private method '%1s' in %2s",m.getName(),clazz.getName()));
+//					if (Modifier.isPrivate(m.getModifiers()))
+//						throw new RuntimeException(format("cannot bind private method '%1s' in %2s",m.getName(),clazz.getName()));
 					
 					m.setAccessible(true);
 					
@@ -186,18 +186,18 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 
 	/**{@inheritDoc}*/
 	public Map<QName,TypeBinder<?>> binders() {
-		return binders;
+		return new HashMap<QName, TypeBinder<?>>(binders);
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
-	public TYPE bind(List<Provided> provided) {
+	public T bind(List<Provided> provided) {
 		
 		try {
 			
 			if (provided.size()!=1)
 				if (mode()==STRICT)
-					throw new RuntimeException(format(CARDINALITY_ERROR, mode(),this,provided));
+					throw new RuntimeException(format(CARDINALITY_ERROR,this,provided));
 				else
 					return null;
 			
@@ -206,7 +206,7 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 			
 			if (!(dp instanceof StructureProvider))
 				if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,mode(),this,provided));
+					throw new RuntimeException(format(INPUT_ERROR,this,provided));
 				else
 					return null;
 			
@@ -214,7 +214,9 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 			
 			//pull constructor parameters and off-load creation to env
 			List<Object> values = extractvalues(constructorDef.binders(),provider);
-			TYPE object = env.resolver().resolve(key(),values);
+			
+			@SuppressWarnings("unchecked") //internally consistent
+			T object = env.resolver().resolve(((ClassKey<T>) key()).classKey(),values);
 		
 			//pull method parameters and invoke
 			for (MethodDef m : methodDefs) {
@@ -222,12 +224,12 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 				m.method().invoke(object,values.toArray(new Object[0]));				
 			}
 			
-			logger.trace(BINDING_SUCCESS_LOG,new Object[]{mode(),dp,this,object});
+			logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,object});
 			
 			return object;
 		}
 		catch(Throwable e) {
-			throw new RuntimeException(format(BINDING_ERROR,mode(),key(),provided),e);
+			throw new RuntimeException(format(BINDING_ERROR,key(),provided),e);
 		}
 	}
 	
@@ -311,7 +313,7 @@ class DefaultObjectBinder<TYPE> extends AbstractBinder<TYPE> implements ObjectBi
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return "obj"+binders;
+		return format(TO_STRING,super.toString(),binders);
 	}
 	
 	

@@ -10,6 +10,7 @@ import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The default {@link Environment} implementation.
  * <p>
- * It caches {@link TypeBinder}s and resolves type variables. By default, it relies on a {@link DefaultResolver}
+ * It caches {@link TypeBinder}s and resolves type variables. By default, it relies on a {@link LigoResolver}
  * and on a set of default {@link BinderProvider}s.
  * 
  * @author Fabio Simeoni
@@ -54,9 +55,9 @@ public class DefaultEnvironment implements Environment {
 	private static final String VAR_RESOLVE_LOG = "resolved {} to {}";
 	private static final String VAR_BIND_LOG = "bound {} to {}";
 
-	private static Map<Key<?>,TypeBinder<?>> cache = new HashMap<Key<?>,TypeBinder<?>>();
-	private static Map<TypeVariable<?>,Key<?>> vars = new HashMap<TypeVariable<?>,Key<?>>();
-	private static Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
+	private Map<Key<?>,TypeBinder<?>> cache = new HashMap<Key<?>,TypeBinder<?>>();
+	private Map<TypeVariable<?>,Key<?>> vars = new HashMap<TypeVariable<?>,Key<?>>();
+	private Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
 	@SuppressWarnings("unchecked")
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
@@ -80,7 +81,7 @@ public class DefaultEnvironment implements Environment {
 	 * Creates an instance with default dependencies.
 	 */
 	public DefaultEnvironment() {
-		this(new DefaultResolver());
+		this(new LigoResolver());
 	}
 	
 	/**
@@ -138,7 +139,7 @@ public class DefaultEnvironment implements Environment {
 			@SuppressWarnings("unchecked") //internally consistent
 			TypeBinder<T> binder = (TypeBinder) resolve(var);
 			if (binder==null)
-				throw new RuntimeException(String.format(UNBOUND_VARIABLE_ERROR,var));
+				throw new RuntimeException(String.format(UNBOUND_VARIABLE_ERROR,kind));
 			logger.trace(VAR_RESOLVE_LOG,kind,binder);
 			return binder;
 		}
@@ -160,20 +161,31 @@ public class DefaultEnvironment implements Environment {
 			throw new RuntimeException(String.format(NO_PROVIDER_ERROR,unqualifiedKey));
 		
 		
-		//bind variables
-		bindVariables(kind);
-		
+		List<Class<?>> resolvedClasses = resolver.resolve(qualifiedKey);
 		
 		List<TypeBinder<T>> binders = new LinkedList<TypeBinder<T>>();
-		
-		for (Class<? extends T> resolvedClass : resolver.resolve(qualifiedKey)) {
+		for (final Class<?> resolved : resolvedClasses) {
 			
-			//we do need class to be implementation
-			if (resolvedClass.isInterface()) 
-				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
+			//sanity check: we do need class to be implementation
+			if (resolved.isInterface()) 
+				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolved));
+			
+			//for correct variable resolution we build a generic built 
+			//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
+			if (kind.value()==GENERIC) {
+				final Kind<?> finalKind = kind;
+				ParameterizedType type = new ParameterizedType() {
+						@Override public Type getRawType() {return resolved;}
+						@Override public Type getOwnerType() {return null;}
+						@Override public Type[] getActualTypeArguments() {return GENERIC(finalKind).getActualTypeArguments();}
+					};
+				kind=kindOf(type);
+			}
+			//bind variables
+			bindVariables(kind);
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolvedClass,qualifiedKey.qualifier()),this); 
+			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolved,qualifiedKey.qualifier()),this); 
 			
 			logger.trace(BUILT_LOG,newBinder,qualifiedKey);
 			
@@ -240,6 +252,7 @@ public class DefaultEnvironment implements Environment {
 		}
 		
 		Type supertype = clazz.getGenericSuperclass();
+		
 		if (supertype!=null)
 			bindVariables(kindOf(supertype));
 	}

@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.core.impl;
 
+import static java.lang.String.*;
 import static java.util.Collections.*;
 import static org.ligo.lab.core.annotations.Bind.Mode.*;
 import static org.ligo.lab.core.keys.Keys.*;
@@ -26,6 +27,8 @@ import org.slf4j.LoggerFactory;
 class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends AbstractBinder<COLLTYPE> implements CollectionBinder<COLLTYPE,TYPE> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultCollectionBinder.class);
+	
+	static final String TO_STRING= "%1s-coll(%2s)";
 	
 	private final Environment env;
 	
@@ -72,11 +75,13 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 				
 			}
 		
-		COLLTYPE list = env.resolver().resolve(key(),emptyList());
+
+		@SuppressWarnings("unchecked") //internally consistent
+		COLLTYPE list = env.resolver().resolve(((ClassKey<COLLTYPE>) key()).classKey(),emptyList());
 		
 		list.addAll(temp);
 		
-		logger.trace("bound {} to {}",list,provided);
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,list});
 		
 		return list;
 	}
@@ -84,7 +89,7 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return "coll("+binder+")";
+		return format(TO_STRING,super.toString(),binder);
 	}
 	
 	public static <COLLTYPE extends Collection<TYPE>, TYPE> BinderProvider<COLLTYPE> provider(final Class<COLLTYPE> clazz) {
