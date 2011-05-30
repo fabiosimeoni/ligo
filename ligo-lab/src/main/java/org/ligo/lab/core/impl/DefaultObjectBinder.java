@@ -33,7 +33,6 @@ import org.ligo.lab.core.annotations.BindProcessor;
 import org.ligo.lab.core.data.DataProvider;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.data.StructureProvider;
-import org.ligo.lab.core.keys.ClassKey;
 import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,23 +71,16 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	private List<MethodDef> methodDefs = new LinkedList<MethodDef>();
 	
 	private Map<QName,TypeBinder<?>> binders = new HashMap<QName, TypeBinder<?>>();
+
 	
-	
-	public DefaultObjectBinder(Class<? extends T> clazz) {
-		this(newKey(clazz),new DefaultEnvironment());
-	}
-	
-	
-	public DefaultObjectBinder(ClassKey<? extends T> key, Environment e) {
+	public DefaultObjectBinder(Key<? extends T> key, Environment e) {
 		
 		super(key);
 		env = e;
 		
-		Class<?> clazz = key.kind().toClass();
-		
 		//analyse class
-		bindConstructor(clazz);
-		bindMethods(clazz);
+		bindConstructor(boundClass());
+		bindMethods(boundClass());
 		
 	}
 	
@@ -217,7 +209,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 			List<Object> values = extractvalues(constructorDef.binders(),provider);
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			T object = env.resolver().resolve(((ClassKey<T>) key()).classKey(),values);
+			T object = (T) env.resolver().resolve(key().kind().toClass(),values);
 		
 			//pull method parameters and invoke
 			for (MethodDef m : methodDefs) {
@@ -328,14 +320,14 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 
 		/**{@inheritDoc}*/
 		@Override
-		public ClassKey<Object> matchingKey() {
+		public Key<Object> matchingKey() {
 			return newKey(Object.class);
 		}
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Object> binder(ClassKey<Object> classKey, Key<Object> key, Environment env) {
-			return new DefaultObjectBinder<Object>(classKey,env);
+		public TypeBinder<Object> binder(Key<Object> key, Environment env) {
+			return new DefaultObjectBinder<Object>(key,env);
 		}
 		
 	}

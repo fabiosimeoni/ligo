@@ -25,7 +25,6 @@ import org.ligo.lab.core.Literal;
 import org.ligo.lab.core.Resolver;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.impl.DefaultObjectBinder.ObjectBinderProvider;
-import org.ligo.lab.core.keys.ClassKey;
 import org.ligo.lab.core.keys.Key;
 import org.ligo.lab.core.kinds.Kind;
 import org.slf4j.Logger;
@@ -165,13 +164,14 @@ public class DefaultEnvironment implements Environment {
 		List<Class<?>> resolvedClasses = resolver.resolve(qualifiedKey);
 		
 		List<TypeBinder<T>> binders = new LinkedList<TypeBinder<T>>();
+		
 		for (final Class<?> resolved : resolvedClasses) {
 			
 			//sanity check: we do need class to be implementation
 			if (resolved.isInterface()) 
 				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolved));
 			
-			//for correct variable resolution we build a generic built 
+			//for correct variable resolution we build a generic 
 			//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
 			if (kind.value()==GENERIC) {
 				final Kind<?> finalKind = kind;
@@ -181,14 +181,16 @@ public class DefaultEnvironment implements Environment {
 						@Override public Type[] getActualTypeArguments() {return GENERIC(finalKind).getActualTypeArguments();}
 					};
 				kind=kindOf(type);
+				
 			}
 			
 			//bind variables
 			bindVariables(kind);
 			
+			Key<?> key = newKey(kind,qualifiedKey.qualifier());
+			
 			@SuppressWarnings("unchecked") //internally consistent
-			TypeBinder<T> newBinder = (TypeBinder) provider.binder((ClassKey)newKey(resolved,qualifiedKey.qualifier()),
-																	(Key)qualifiedKey,this); 
+			TypeBinder<T> newBinder = (TypeBinder) provider.binder((Key)key,this); 
 			
 			logger.trace(BUILT_LOG,newBinder,qualifiedKey);
 			

@@ -16,7 +16,6 @@ import org.ligo.lab.core.CollectionBinder;
 import org.ligo.lab.core.Environment;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
-import org.ligo.lab.core.keys.ClassKey;
 import org.ligo.lab.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +34,14 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	
 	private TypeBinder<TYPE> binder;
 	
-	DefaultCollectionBinder(Class<? extends COLLTYPE> clazz) {
-		this(newKey(clazz),new DefaultEnvironment());
-	}
-	
-	DefaultCollectionBinder(ClassKey<? extends COLLTYPE> key, Environment e) {
+	DefaultCollectionBinder(Key<? extends COLLTYPE> key, Environment e) {
 		super(key);
 		env=e;
 		
 		setMode(LAX);
-		
-		Class<?> clazz = key.kind().toClass();
+	
 		@SuppressWarnings("unchecked")
-		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(clazz.getTypeParameters()[0]));
+		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(boundClass().getTypeParameters()[0]));
 		binder = objectBinder;
 	}
 	
@@ -78,7 +72,7 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 		
 
 		@SuppressWarnings("unchecked") //internally consistent
-		COLLTYPE list = env.resolver().resolve(((ClassKey<COLLTYPE>) key()).classKey(),emptyList());
+		COLLTYPE list = (COLLTYPE) env.resolver().resolve(key().kind().toClass(),emptyList());
 		
 		list.addAll(temp);
 		
@@ -99,11 +93,11 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<COLLTYPE> binder(ClassKey<COLLTYPE> classKey, Key<COLLTYPE> key, Environment env) {
-			return new DefaultCollectionBinder<COLLTYPE,TYPE>(classKey, env);
+		public TypeBinder<COLLTYPE> binder(Key<COLLTYPE> key, Environment env) {
+			return new DefaultCollectionBinder<COLLTYPE,TYPE>(key, env);
 		}
 		
-		@Override public ClassKey<COLLTYPE> matchingKey() {
+		@Override public Key<COLLTYPE> matchingKey() {
 			return newKey(clazz);
 		}
 			
