@@ -6,14 +6,14 @@ package org.ligo.lab.core.impl;
 import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.List;
 
+import org.ligo.lab.core.ArrayBinder;
 import org.ligo.lab.core.CollectionBinder;
 import org.ligo.lab.core.Environment;
-import org.ligo.lab.core.IteratorBinder;
 import org.ligo.lab.core.TypeBinder;
 import org.ligo.lab.core.data.Provided;
 import org.ligo.lab.core.keys.Key;
@@ -25,21 +25,25 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> implements IteratorBinder<TYPE> {
+class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBinder<TYPE> {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultIteratorBinder.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultArrayBinder.class);
 	
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
 	@SuppressWarnings("unchecked")
-	DefaultIteratorBinder(final Key<? extends Iterator<TYPE>> key, Environment e) {
+	DefaultArrayBinder(final Key<? extends TYPE[]> key, Environment e) {
 		
 		super(key);
 		
 		ParameterizedType type = new ParameterizedType() {
 			@Override public Type getRawType() {return List.class;}
 			@Override public Type getOwnerType() {return null;}
-			@Override public Type[] getActualTypeArguments() {return new Type[]{GENERIC(key.kind()).getActualTypeArguments()[0]};}
+			@Override public Type[] getActualTypeArguments() {
+				return new Type[]{
+						GENERICARRAY(key.kind()).getGenericComponentType()
+				};
+			}
 		};
 		
 		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
@@ -58,10 +62,21 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	}
 	
 	@Override
-	public Iterator<TYPE> bind(List<Provided> provided) {
-		Iterator<TYPE> iterator = backing.bind(provided).iterator();
-		logger.trace("bound iterator {}",iterator);
-		return iterator;
+	public TYPE[] bind(List<Provided> provided) {
+		
+		List<TYPE> list = backing.bind(provided);
+		
+		
+		Class<?> componentClass = boundClass().getComponentType();
+		
+		
+		@SuppressWarnings("unchecked")
+		TYPE[] array = (TYPE[]) Array.newInstance(componentClass,list.size());
+		
+		array = list.toArray(array);
+			
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{this,provided,array});
+		return array;
 	}
 
 	/**{@inheritDoc}*/
@@ -70,17 +85,17 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 		return binder().toString();
 	}
 	
-	public static class IteratorBinderProvider implements BinderProvider<Iterator<Object>> {
+	public static class ArrayBinderProvider implements BinderProvider<Object[]> {
 
 		/**{@inheritDoc}*/
 		@Override
-		public TypeBinder<Iterator<Object>> binder(Key<Iterator<Object>> key, Environment env) {
-			return new DefaultIteratorBinder<Object>(key,env);
+		public TypeBinder<Object[]> binder(Key<Object[]> key, Environment env) {
+			return new DefaultArrayBinder<Object>(key,env);
 		}			
 		
 		@SuppressWarnings("unchecked")
-		@Override public Key<Iterator<Object>> matchingKey() {
-			return (Key) newKey(Iterator.class);
+		@Override public Key<Object[]> matchingKey() {
+			return (Key) newKey(Object[].class);
 		}
 			
 	};
