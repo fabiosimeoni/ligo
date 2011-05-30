@@ -12,33 +12,37 @@ import org.ligo.lab.core.impl.DefaultEnvironment;
 import org.ligo.lab.core.keys.Key;
 
 /**
- * A factory of {@link TypeBinder}s.
+ * A env of {@link TypeBinder}s.
  * 
  * @author Fabio Simeoni
  * 
  * @param <TYPE> the bound type of the binders.
  */
-public class Factory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
+public class LigoFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
 
-	private final Environment context;
+	private final Environment env;
 	
 	/**
 	 * Creates an instance with defaults dependencies.
 	 */
-	public Factory() {
+	public LigoFactory() {
 		this(new DefaultEnvironment());
 	}
 	
 	/**
 	 * Creates an instance with for a given binding {@link Environment}.
 	 */
-	public Factory(Environment ctxt) {
-		context = ctxt;
+	public LigoFactory(Environment environment) {
+		env = environment;
+	}
+	
+	public Resolver getResolver() {
+		return env.resolver();
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
 	public Binder<List<Provided>,TYPE> binderFor(Key<TYPE> key) {
-		return context.binderFor(key);
+		return env.binderFor(key);
 	}
 }

@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.core;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.ligo.lab.core.keys.Key;
@@ -17,24 +18,56 @@ import org.ligo.lab.core.kinds.Kind;
 public interface Resolver {
 	
 	/**
-	 * Resolves a key into one or more kinds, each of which may refine the key's.
+	 * Resolves a key into one or more classes, each of which may refine the key's kind.
 	 * <p>
-	 * Returns the key's kind (in a singleton list) if this has no refinements.
+	 * Returns the key's class (in a singleton list) if this has no refinements.
 	 * @param key the key.
 	 * @return the key's kind refinements.
 	 */
-	<T> List<Class<T>> resolve(Key<T> key);
+	List<Class<?>> resolve(Key<?> key);
 	
 	/**
-	 * Resolves a key into an instance of a kind resolved by {@link #resolve(Key)},
-	 * if this is a reifiable type.
+	 * Instantiates into a class with given parameters.
 	 *  
-	 * @param <T> the key's type.
-	 * @param key the key.
-	 * @param args the arguments of a constructor of the kind.
+	 * @param <T> the class type
+	 * @param clazz the class
+	 * @param args the arguments of a constructor of the class
 	 * @return the instance
-	 * @throws RuntimeException if the key's kind could not be refined into a reifiable type,
-	 * or if the reifiable type could not be reified.
+	 * @throws RuntimeException if the class could not be instantiated from the parameters.
 	 */
-	<T> T resolve(Key<T> key, List<Object> args) throws RuntimeException;
+	<T> T resolve(Class<T> key, List<? extends Object> args) throws RuntimeException;
+	
+	/**
+	 * Binds a class to a concrete implementation.
+	 * @param <T> the class type
+	 * @param clazz the class
+	 * @param boundClass the bound implementation
+	 */
+	<T> void bind(Class<T> clazz,Class<? extends T> boundClass);
+	
+	/**
+	 * Binds a class and an annotation class to a concrete implementation.
+	 * @param <T> the class type.
+	 * @param clazz the class
+	 * @param qualifier the annotation class
+	 * @param boundClass the concrete implementation
+	 */
+	<T> void bind(Class<T> clazz,Class<? extends Annotation> qualifier,Class<? extends T> boundClass);
+	
+	/**
+	 * Binds a parametric type to a concrete implementation.
+	 * @param <T> the parametric type
+	 * @param lit the {@link Literal} of the parametric type
+	 * @param boundClass the concrete implementation
+	 */
+	<T> void bind(Literal<T> lit,Class<? extends T> boundClass);
+	
+	/**
+	 * Binds a parametric type to a concrete implementation.
+	 * @param <T> the parametric type
+	 * @param lit the {@link Literal} of the parametric type
+	 * @param qualifier the annotation class
+	 * @param boundClass the concrete implementation
+	 */
+	<T> void bind(Literal<T> lit,Class<? extends Annotation> qualifier,Class<? extends T> boundClass);
 }

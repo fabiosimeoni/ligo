@@ -39,6 +39,12 @@ public class TestClassDefs {
 		@Bind("b")
 		public TooManyConstructors(String s) {}
 	}
+
+	static class BindOnConstructor implements SomeInterface {
+		
+		@Bind(value="a")
+		public BindOnConstructor(String s) {}
+	}
 	
 	static class BindOnMethod implements SomeInterface {
 		
@@ -239,11 +245,11 @@ public class TestClassDefs {
 		}
 	}
 	
-	static class MyAdapter2 extends BindingAdapter<ArrayList<Person>,Map<String,Person>> {
+	static class MyAdapter2 extends BindingAdapter<List<Person>,Map<String,Person>> {
 		
 		/**{@inheritDoc}*/
 		@Override
-		public Map<String, Person> bind(ArrayList<Person> values) {
+		public Map<String, Person> bind(List<Person> values) {
 			Map<String,Person> map = new HashMap<String, Person>();
 			for (Person v: values)
 				map.put(v.getName(), v);

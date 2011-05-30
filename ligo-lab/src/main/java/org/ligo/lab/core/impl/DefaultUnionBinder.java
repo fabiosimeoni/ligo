@@ -23,9 +23,10 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBinder<T> {
 
-	private static final String ALL_BINDINGS_ERROR = "[%1s] could not bind any of %2s to %3s";
-
 	private static Logger logger = LoggerFactory.getLogger(DefaultUnionBinder.class);
+	
+	static final String TO_STRING= "%1s-union(%2s)";
+	static final String ALL_BINDINGS_ERROR = "[%1s] could not bind any of %2s to %3s";
 	
 	private final List<TypeBinder<T>> branches;
 	/**
@@ -52,12 +53,17 @@ public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBin
 			}
 			catch(Throwable t) {
 				if (branches.size()>1)
-					logger.warn(format(BINDING_ERROR,mode(),branch,i));
+					logger.warn(format(BINDING_ERROR,branch,i));
 			}
 		
 			throw new RuntimeException(branches.size()>1?
-										format(ALL_BINDINGS_ERROR,mode(),branches,i):
-										format(BINDING_ERROR,mode(),branches.get(0),i));
+										format(ALL_BINDINGS_ERROR,branches,i):
+										format(BINDING_ERROR,branches.get(0),i));
 	}
 	
+	/**{@inheritDoc}*/
+	@Override
+	public String toString() {
+		return branches.size()>1?format(TO_STRING,super.toString(),branches):branches.get(0).toString();
+	}
 }

@@ -15,14 +15,15 @@ import org.ligo.lab.core.kinds.ClassKind;
  */
 public class ClassKey<T> extends Key<T> {
 
+	private final Class<? extends T> clazz;
 
-	
-	ClassKey(Class<?> clazz) {
+	public ClassKey(Class<? extends T> clazz) {
 		this(clazz,null);
 	}
 	
-	ClassKey(Class<?> clazz, Class<? extends Annotation> qualifier) {
+	public ClassKey(Class<? extends T> clazz, Class<? extends Annotation> qualifier) {
 		super(kindOf(clazz),qualifier);
+		this.clazz=clazz;
 	}
 	
 	/**{@inheritDoc}*/
@@ -31,7 +32,11 @@ public class ClassKey<T> extends Key<T> {
 		return (ClassKind)super.kind(); //internally consistent
 	}
 	
+	public Class<? extends T> classKey() {
+		return clazz;
+	}
+	
 	public ClassKey<T> unqualified() {
-		return new ClassKey<T>(kind().toClass());
+		return new ClassKey<T>(clazz);
 	}
 }
