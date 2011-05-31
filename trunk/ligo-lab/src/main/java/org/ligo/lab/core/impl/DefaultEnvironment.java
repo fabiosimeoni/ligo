@@ -4,13 +4,13 @@
 package org.ligo.lab.core.impl;
 
 import static java.lang.String.*;
+import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.*;
 import static org.ligo.lab.core.keys.Keys.*;
 import static org.ligo.lab.core.kinds.Kind.*;
 import static org.ligo.lab.core.kinds.Kind.KindValue.*;
 import static org.ligo.lab.core.utils.ReflectionUtils.*;
 
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -168,33 +168,37 @@ public class DefaultEnvironment implements Environment {
 		
 		List<TypeBinder<T>> binders = new LinkedList<TypeBinder<T>>();
 		
-		for (final Class<?> resolved : resolvedClasses) {
+		for (final Class<?> resolvedClass : resolvedClasses) {
 			
 			//sanity check: we do need resolved class to be a concrete implementation
-			if (resolved.isInterface() || Modifier.isAbstract(resolved.getModifiers())) 
-				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolved));
+			if (resolvedClass.isInterface() || (!resolvedClass.isPrimitive() && isAbstract(resolvedClass.getModifiers()))) 
+				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
 			
+			
+			Kind<?> resolvedKind;
 			
 			//for correct variable resolution we build a generic 
 			//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
 			if (kind.value()==GENERIC) {
 				final Kind<?> finalKind = kind;
-				ParameterizedType type = new ParameterizedType() {
-						@Override public Type getRawType() {return resolved;}
+				resolvedKind = kindOf(new ParameterizedType() {
+						@Override public Type getRawType() {return resolvedClass;}
 						@Override public Type getOwnerType() {return null;}
 						@Override public Type[] getActualTypeArguments() {return GENERIC(finalKind).getActualTypeArguments();}
-					};
-				kind=kindOf(type);
+					}
+				);
 				
 			}
+			else
+				resolvedKind = kindOf(resolvedClass);
 			
 			//bind variables
-			bindVariables(kind);
+			bindVariables(resolvedKind);
 			
-			Key<?> key = newKey(kind,qualifiedKey.qualifier());
+			Key<?> resolvedKey = newKey(resolvedKind,qualifiedKey.qualifier());
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			TypeBinder<T> newBinder = (TypeBinder) provider.binder((Key)key,this); 
+			TypeBinder<T> newBinder = (TypeBinder) provider.binder((Key)resolvedKey,this); 
 			
 			logger.trace(BUILT_LOG,newBinder,qualifiedKey);
 			

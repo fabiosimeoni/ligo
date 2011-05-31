@@ -1,15 +1,17 @@
 package org.ligo.lab.core.impl;
 
+import java.lang.reflect.Member;
+
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.TypeBinder;
 
-public class ParameterBinder {
+public class ParameterBinder<M extends Member> {
 	private final QName name;
 	private final TypeBinder<?> binder;
-	private final ParameterContext context;
+	private final ParameterContext<M> context;
 	
-	public ParameterBinder(QName n,TypeBinder<?> b,ParameterContext c) {
+	public ParameterBinder(QName n,TypeBinder<?> b,ParameterContext<M> c) {
 		name=n;
 		binder=b;
 		context=c;
@@ -32,7 +34,7 @@ public class ParameterBinder {
 	/**
 	 * @return the bindingAnnotation
 	 */
-	public ParameterContext parameterContext() {
+	public ParameterContext<M> parameterContext() {
 		return context;
 	}
 }
