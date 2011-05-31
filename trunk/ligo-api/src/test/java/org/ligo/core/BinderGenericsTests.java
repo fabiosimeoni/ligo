@@ -17,7 +17,7 @@ import org.ligo.core.TestGenericsClassDefs.MyAnnotatedGeneric;
 import org.ligo.core.TestGenericsClassDefs.MyGeneric;
 import org.ligo.core.TestGenericsClassDefs.NestedGeneric;
 import org.ligo.core.TestGenericsClassDefs.Sub;
-import org.ligo.core.impl.DefaultEnvironment;
+import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
 /**
@@ -27,7 +27,7 @@ import org.ligo.core.impl.LigoResolver;
 public class BinderGenericsTests {
 
 	LigoResolver resolver = new LigoResolver();
-	Environment env = new DefaultEnvironment(resolver);
+	Environment env = new LigoEnvironment(resolver);
 
 	
 	@Test

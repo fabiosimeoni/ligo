@@ -8,7 +8,7 @@ import java.util.List;
 import org.ligo.binders.Binder;
 import org.ligo.binders.BinderFactory;
 import org.ligo.core.data.Provided;
-import org.ligo.core.impl.DefaultEnvironment;
+import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.keys.Key;
 
 /**
@@ -26,7 +26,7 @@ public class LigoFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYP
 	 * Creates an instance with defaults dependencies.
 	 */
 	public LigoFactory() {
-		this(new DefaultEnvironment());
+		this(new LigoEnvironment());
 	}
 	
 	/**

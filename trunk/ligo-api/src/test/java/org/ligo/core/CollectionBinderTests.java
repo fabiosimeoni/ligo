@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.ligo.core.Environment;
 import org.ligo.core.Literal;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.impl.DefaultEnvironment;
+import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
 /**
@@ -30,7 +30,7 @@ public class CollectionBinderTests {
 	public void setup() {
 
 		resolver = new LigoResolver();
-		env = new DefaultEnvironment(resolver);
+		env = new LigoEnvironment(resolver);
 	}
 	
 	@Test
