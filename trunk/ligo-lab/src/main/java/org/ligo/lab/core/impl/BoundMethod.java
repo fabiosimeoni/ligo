@@ -10,12 +10,12 @@ import java.util.List;
  * @author Fabio Simeoni
  *
  */
-public class MethodDef extends AbstractMethodDef {
+public class BoundMethod extends AbstractBoundMember {
 
 	private Method method;
 	
-	public MethodDef(Method m, List<NamedBinder> names) {
-		super(names);
+	public BoundMethod(Method m, List<ParameterBinder> binders) {
+		super(binders);
 		method=m;
 	}
 	

@@ -4,12 +4,12 @@ import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.TypeBinder;
 
-public class NamedBinder {
+public class ParameterBinder {
 	private final QName name;
 	private final TypeBinder<?> binder;
 	private final ParameterContext context;
 	
-	public NamedBinder(QName n,TypeBinder<?> b,ParameterContext c) {
+	public ParameterBinder(QName n,TypeBinder<?> b,ParameterContext c) {
 		name=n;
 		binder=b;
 		context=c;
@@ -18,7 +18,7 @@ public class NamedBinder {
 	/**
 	 * @return the name
 	 */
-	public QName name() {
+	public QName boundName() {
 		return name;
 	}
 	
