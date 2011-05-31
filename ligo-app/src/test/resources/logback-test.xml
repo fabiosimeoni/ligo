@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+
+   <appender name="LIGO" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[LIGO] %-5p [%t,%C{1},%M:%L] %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="TRACE">
+    <appender-ref ref="LIGO"/>
+  </root>
+
+</configuration>

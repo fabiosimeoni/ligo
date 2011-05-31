@@ -3,7 +3,7 @@
  */
 package org.ligo.app;
 
-import org.ligo.api.Project;
+import org.ligo.core.annotations.Bind;
 
 /**
  * @author Fabio Simeoni
@@ -17,7 +17,7 @@ public class Managed {
 	/**
 	 * @param s the s to set
 	 */
-	public void setS(@Project("test") String s) {
+	public void setS(@Bind("test") String s) {
 		this.s = s;
 	}
 	
