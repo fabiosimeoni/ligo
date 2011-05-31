@@ -5,11 +5,10 @@ package org.ligo.core.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.core.annotations.Bind.Mode.*;
-import static org.ligo.core.keys.Keys.*;
+import static org.ligo.core.BindMode.*;
 
+import org.ligo.core.BindMode;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.annotations.Bind.Mode;
 import org.ligo.core.data.Provided;
 import org.ligo.core.keys.Key;
 
@@ -26,21 +25,13 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	
 	private final Key<? extends TYPE> key;
 	
-	private Class<TYPE> boundClass;
+	private BindMode mode = STRICT;
 	
-	private Mode mode = STRICT;
-	
-	protected AbstractBinder(Class<? extends TYPE> clazz) {
-		this.key=newKey(clazz,null);
-	}
-	
-	@SuppressWarnings("unchecked")
 	protected AbstractBinder(Key<? extends TYPE> key) {
+		
 		this.key=key;
 		
-		boundClass = (Class) key.kind().toClass();
-		
-		if (boundClass==null)
+		if (key.toClass()==null)
 			throw new RuntimeException(format(UNEXPECTED_TYPE_ERROR,key.kind()));
 	}
 	
@@ -54,17 +45,13 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 		return key;
 	}
 	
-	public Class<TYPE> boundClass() {
-		return boundClass;
-	}
-	
 	/**{@inheritDoc}*/
 	@Override
-	public void setMode(Mode m) {
+	public void setMode(BindMode m) {
 		mode=m;
 	}
 	
-	public Mode mode() {
+	public BindMode mode() {
 		return mode;
 	}
 	

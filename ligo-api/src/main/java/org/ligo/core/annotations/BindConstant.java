@@ -5,13 +5,10 @@ package org.ligo.core.annotations;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
-import static org.ligo.core.BindMode.*;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import org.ligo.core.BindMode;
 
 
 /**
@@ -26,12 +23,4 @@ import org.ligo.core.BindMode;
  * Identifies the data required for binding and the method and constructor parameters through which the 
  * data can be bound.
  */
-public @interface Bind {
-
-	String value();
-	
-	String ns() default "";
-	
-	BindMode mode() default DEFAULT;
-
-}
+public @interface BindConstant {}

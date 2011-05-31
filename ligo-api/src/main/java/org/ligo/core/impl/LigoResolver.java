@@ -45,11 +45,11 @@ public class LigoResolver implements ConfigurableResolver {
 		List<Class<? extends T>> bound = (List) bindings.get(key);
 		
 		if (bound==null)
-			bound = (List) bindings.get(newKey(key.kind().toClass(),key.qualifier()));
+			bound = (List) bindings.get(newKey(key.toClass(),key.qualifier()));
 		
 		if (bound==null) {
 			List<Class<?>> singleton = new ArrayList<Class<?>>();
-			singleton.add(key.kind().toClass());
+			singleton.add(key.toClass());
 			bound = (List) singleton;
 		}
 		

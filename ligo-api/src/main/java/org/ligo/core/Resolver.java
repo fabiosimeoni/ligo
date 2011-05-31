@@ -34,6 +34,6 @@ public interface Resolver {
 	 * @return the instance
 	 * @throws RuntimeException if the class could not be instantiated from the parameters.
 	 */
-	<T> T resolve(Class<T> key, List<? extends Object> args) throws RuntimeException;
+	<T> T resolve(Class<T> clazz, List<? extends Object> args) throws RuntimeException;
 	
 }

@@ -18,11 +18,14 @@ import org.ligo.core.kinds.Kind;
 public class Key<T> {
 
 	private Kind<?> kind;
+	private Class<T> clazz;
 	private Class<? extends Annotation> qualifier;
 	
+	@SuppressWarnings("unchecked")
 	Key(Kind<?> k,Class<? extends Annotation> a) {
 		kind=k;
 		qualifier=a;
+		clazz = (Class) kind.toClass();
 	}
 	
 	public Kind<?> kind() {
@@ -35,6 +38,10 @@ public class Key<T> {
 	
 	public Key<?> unqualified() {
 		return new Key<Object>(kind,null);
+	}
+	
+	public Class<T> toClass() {
+		return clazz;
 	}
 	
 	/**{@inheritDoc}*/

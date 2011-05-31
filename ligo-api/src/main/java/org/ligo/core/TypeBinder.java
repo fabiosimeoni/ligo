@@ -6,7 +6,6 @@ package org.ligo.core;
 import java.util.List;
 
 import org.ligo.binders.Binder;
-import org.ligo.core.annotations.Bind.Mode;
 import org.ligo.core.data.Provided;
 import org.ligo.core.keys.Key;
 
@@ -33,11 +32,11 @@ public interface TypeBinder<T> extends Binder<List<Provided>,T> {
 	public T bind(Provided provided);
 	
 	/**
-	 * Sets the binding {@link Mode} on the binder.
+	 * Sets the binding {@link BindMode} on the binder.
 	 * @param m the mode.
 	 */
-	void setMode(Mode m);
+	void setMode(BindMode m);
 	
-	Mode mode();
+	BindMode mode();
 
 }

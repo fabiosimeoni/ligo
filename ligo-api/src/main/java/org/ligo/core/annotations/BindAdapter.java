@@ -26,12 +26,15 @@ import org.ligo.core.BindMode;
  * Identifies the data required for binding and the method and constructor parameters through which the 
  * data can be bound.
  */
-public @interface Bind {
+public @interface BindAdapter {
 
 	String value();
 	
 	String ns() default "";
 	
 	BindMode mode() default DEFAULT;
+	
+	@SuppressWarnings("unchecked")
+	Class<? extends AbstractBindAdapter> adapter() default AbstractBindAdapter.class;
 
 }
