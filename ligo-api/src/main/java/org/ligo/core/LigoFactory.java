@@ -3,8 +3,6 @@
  */
 package org.ligo.core;
 
-import java.util.List;
-
 import org.ligo.binders.Binder;
 import org.ligo.binders.BinderFactory;
 import org.ligo.core.data.Provided;
@@ -18,7 +16,7 @@ import org.ligo.core.keys.Key;
  * 
  * @param <TYPE> the bound type of the binders.
  */
-public class LigoFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYPE> {
+public class LigoFactory<TYPE> implements BinderFactory<TYPE,Provided,TYPE> {
 
 	private final Environment env;
 	
@@ -42,7 +40,7 @@ public class LigoFactory<TYPE> implements BinderFactory<TYPE, List<Provided>,TYP
 	
 	/**{@inheritDoc}*/
 	@Override
-	public Binder<List<Provided>,TYPE> binderFor(Key<TYPE> key) {
+	public Binder<Provided,TYPE> binderFor(Key<TYPE> key) {
 		return env.binderFor(key);
 	}
 }

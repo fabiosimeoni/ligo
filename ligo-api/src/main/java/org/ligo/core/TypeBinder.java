@@ -20,7 +20,7 @@ import org.ligo.core.keys.Key;
  * @param <T> <em>the bound type</em>, i.e. the type of the bound instances.
  *
  */
-public interface TypeBinder<T> extends Binder<List<Provided>,T> {
+public interface TypeBinder<T> extends Binder<Provided,T> {
 
 	/**
 	 * Returns the key of the bound type.
@@ -30,6 +30,9 @@ public interface TypeBinder<T> extends Binder<List<Provided>,T> {
 	
 	/**{@inheritDoc}*/
 	public T bind(Provided provided);
+	
+	/**{@inheritDoc}*/
+	public T bind(List<Provided> provided);
 	
 	/**
 	 * Sets the binding {@link BindMode} on the binder.

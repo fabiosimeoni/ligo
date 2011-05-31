@@ -2,6 +2,9 @@ package org.ligo.dsl;
 
 import org.ligo.binders.Binder;
 import org.ligo.binders.BinderFactory;
+import org.ligo.core.Environment;
+import org.ligo.core.LigoFactory;
+import org.ligo.core.data.Provided;
 
 class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
@@ -21,6 +24,12 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	@Override
 	public <IN> AndClause<TYPE,IN> with(BinderFactory<TYPE,IN, TYPE> factory) {
 		return with(factory.binderFor(ctxt.key()));
+	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public <IN> AndClause<TYPE,Provided> with(Environment env) {
+		return with(new LigoFactory<TYPE>(env));
 	}
 	
 	/**{@inheritDoc}*/
