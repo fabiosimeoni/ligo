@@ -35,7 +35,7 @@ public class ManyEdges extends EdgePattern {
 		for (Edge e : edges)
 			try {
 				//dispatch to target predicate
-				target().extract(e.target());
+				target().bind(e.target());
 				matches.add(e);
 				
 			} catch(Exception tolerate){}

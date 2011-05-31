@@ -21,7 +21,7 @@ public abstract class LeafPattern<T, C extends Constraint<? super T>> extends No
 	
 	/**{@inheritDoc}*/
 	@Override
-	final public Node extract(Node n) {
+	final public Node bind(Node n) {
 		
 		boolean mismatch = false;
 		

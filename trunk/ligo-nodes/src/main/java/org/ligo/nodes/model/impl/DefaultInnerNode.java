@@ -14,8 +14,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.api.data.DataProvider;
-import org.ligo.api.data.StructureProvider;
+import org.ligo.core.data.DataProvider;
+import org.ligo.core.data.Provided;
+import org.ligo.core.data.StructureProvider;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;
@@ -288,11 +289,11 @@ public class DefaultInnerNode implements InnerNode {
 	@Override
 	public DataProvider provider() {
 		return new StructureProvider() {
-			public DataProvider[] get(QName name) {
-				List<DataProvider> providers = new ArrayList<DataProvider>();
+			public List<Provided> get(QName name) {
+				List<Provided> provided = new ArrayList<Provided>();
 				for (Node n: children(name))
-					providers.add(n.provider());
-				return providers.toArray(new DataProvider[0]);
+					provided.add(n);
+				return provided;
 			}
 			public String toString() {
 				return DefaultInnerNode.this.toString();

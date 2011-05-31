@@ -44,7 +44,7 @@ public class InnerNodePattern extends NodePattern {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public Node extract(Node n) {
+	public Node bind(Node n) {
 		
 		if (!InnerNode.class.isAssignableFrom(n.getClass()))
 			throw new RuntimeException(this+" does not match leaf "+n);

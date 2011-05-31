@@ -32,7 +32,7 @@ public class PatternTests {
 				one("b",node(
 						one("c",string)))); 
 		
-		Node match = pattern.extract(n);
+		Node match = pattern.bind(n);
 		
 		Node expected = n(
 						 e("a",3),

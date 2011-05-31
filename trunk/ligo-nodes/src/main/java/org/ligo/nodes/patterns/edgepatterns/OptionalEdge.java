@@ -40,7 +40,7 @@ public class OptionalEdge extends EdgePattern {
 			Edge edge = edges.get(0);
 			try {				
 				//dispatch to target predicate
-				target().extract(edge.target());
+				target().bind(edge.target());
 				matched.add(edge);
 
 			} catch(Exception tolerate) {}
