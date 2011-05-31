@@ -41,10 +41,10 @@ import org.slf4j.LoggerFactory;
  * @author Fabio Simeoni
  *
  */
-public class DefaultEnvironment implements Environment {
+public class LigoEnvironment implements Environment {
 
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
+	private static Logger logger = LoggerFactory.getLogger(LigoEnvironment.class);
 	
 	private static final String UNBOUND_VARIABLE_ERROR = "variable %1s is unbound";
 	private static final String NO_PROVIDER_ERROR = "no provider available for %1s";
@@ -82,7 +82,7 @@ public class DefaultEnvironment implements Environment {
 	/**
 	 * Creates an instance with default dependencies.
 	 */
-	public DefaultEnvironment() {
+	public LigoEnvironment() {
 		this(new LigoResolver());
 	}
 	
@@ -90,7 +90,7 @@ public class DefaultEnvironment implements Environment {
 	 * Creates an instance with a given {@link Resolver} and default {@link BinderProvider}s.
 	 * @param r the resolver.
 	 */
-	public DefaultEnvironment(Resolver r) {
+	public LigoEnvironment(Resolver r) {
 		this(r,DEFAULT_PROVIDERS);
 	}
 	
@@ -99,7 +99,7 @@ public class DefaultEnvironment implements Environment {
 	 * @param r the resolver.
 	 * @param ps the providers.
 	 */
-	public DefaultEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
+	public LigoEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
 		
 		resolver = r;
 		

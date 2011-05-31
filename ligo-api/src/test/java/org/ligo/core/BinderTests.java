@@ -32,7 +32,7 @@ import org.ligo.core.TestClassDefs.Primitive;
 import org.ligo.core.TestClassDefs.SomeInterface;
 import org.ligo.core.TestClassDefs.TooManyConstructors;
 import org.ligo.core.data.Provided;
-import org.ligo.core.impl.DefaultEnvironment;
+import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
 /**
@@ -48,7 +48,7 @@ public class BinderTests {
 	public void setup() {
 
 		resolver = new LigoResolver();
-		env = new DefaultEnvironment(resolver);
+		env = new LigoEnvironment(resolver);
 	}
 	
 	@Test
