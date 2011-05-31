@@ -7,10 +7,12 @@ import static junit.framework.Assert.*;
 import static org.ligo.dsl.Ligo.*;
 import static org.ligo.nodes.binders.XMLBinders.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
+import static org.ligo.nodes.binders.JSonBinders.*;
 
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.ligo.binders.Binder;
@@ -83,6 +85,27 @@ public class BindingTests {
 		
 		Managed m = binder.bind(new StringReader(xml));
 		assertNotNull(m);
+	}
+	
+	@Test
+	public void json() throws Exception {
+		
+		resolver.bind(ManagedDep.class, DepImpl.class);
+		
+		Binder<JSONObject,Managed> binder = bind(Managed.class).with(env).and(JSON_BINDER).build();
+
+		String json = "{ " +
+		"			p1 : hallo, " +
+		"			p2 : world, " +
+		"			p3 : { p1 : 10 }," +
+		"			p4 : [  hello, world ]," +
+		"			p5 : [  hello, world ]," +
+		"			p6 : { p1 : hello } " +			
+		"		}";
+
+		
+		Managed m = binder.bind(new JSONObject(json));
+		assertNotNull(m);		
 	}
 		
 }
