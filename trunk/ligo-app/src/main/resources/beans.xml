@@ -5,6 +5,6 @@
 
 	<bean class="org.ligo.app.Managed" />
 	
-	<bean class="org.ligo.nodes.LigoConfiguration" />
+	<bean class="org.ligo.core.impl.LigoEnvironment" />
 
 </beans>
