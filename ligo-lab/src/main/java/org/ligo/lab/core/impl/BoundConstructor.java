@@ -10,11 +10,11 @@ import java.util.List;
  * @author Fabio Simeoni
  *
  */
-public class ConstructorDef extends AbstractMethodDef {
+public class BoundConstructor extends AbstractBoundMember {
 
 	private Constructor<?> constructor;
 	
-	public ConstructorDef(Constructor<?> c, List<NamedBinder> names) {
+	public BoundConstructor(Constructor<?> c, List<ParameterBinder> names) {
 		super(names);
 		constructor=c;
 	}
