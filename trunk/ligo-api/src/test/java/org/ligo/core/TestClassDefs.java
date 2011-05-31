@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.annotations.Bind.Mode.*;
+import static org.ligo.core.BindMode.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.ligo.core.TestClassDefs.Adapted2.Person;
+import org.ligo.core.annotations.AbstractBindAdapter;
 import org.ligo.core.annotations.Bind;
-import org.ligo.core.impl.BindingAdapter;
+import org.ligo.core.annotations.BindAdapter;
+import org.ligo.core.annotations.BindConstant;
 
 /**
  * @author Fabio Simeoni
@@ -120,7 +122,7 @@ public class TestClassDefs {
 		
 		boolean invoked;
 		
-		public void m(@Bind("a") String s1, String s2, int s3, @Bind("b") String s4) {
+		public void m(@Bind("a") String s1, @BindConstant String s2, @BindConstant int s3, @Bind("b") String s4) {
 			assertNull(s2);
 			assertEquals(0,s3);
 			invoked=true;
@@ -188,14 +190,14 @@ public class TestClassDefs {
 		
 		boolean invoked;
 		
-		@Bind(value="a",adapter=MyAdapter.class)
+		@BindAdapter(value="a",adapter=MyAdapter.class)
 		public void m(Integer i) {
 			System.out.println(i);
 			invoked=true;
 		};
 	}
 	
-	static class MyAdapter extends BindingAdapter<String,Integer> {
+	static class MyAdapter extends AbstractBindAdapter<String,Integer> {
 		
 		/**{@inheritDoc}*/
 		@Override
@@ -208,7 +210,7 @@ public class TestClassDefs {
 		
 		boolean invoked;
 		
-		@Bind(value="person",adapter=MyAdapter2.class)
+		@BindAdapter(value="person",adapter=MyAdapter2.class)
 		public void m(Map<String,Person> map) {
 			System.out.println("invoked with "+map);
 			invoked=true;
@@ -245,7 +247,7 @@ public class TestClassDefs {
 		}
 	}
 	
-	static class MyAdapter2 extends BindingAdapter<List<Person>,Map<String,Person>> {
+	static class MyAdapter2 extends AbstractBindAdapter<List<Person>,Map<String,Person>> {
 		
 		/**{@inheritDoc}*/
 		@Override

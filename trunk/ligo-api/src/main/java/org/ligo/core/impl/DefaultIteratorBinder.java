@@ -3,6 +3,7 @@
  */
 package org.ligo.core.impl;
 
+import static java.lang.String.*;
 import static org.ligo.core.keys.Keys.*;
 import static org.ligo.core.kinds.Kind.*;
 
@@ -29,6 +30,8 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultIteratorBinder.class);
 	
+	static final String TO_STRING= "%1s-iter(%2s)";
+	
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
 	@SuppressWarnings("unchecked")
@@ -43,6 +46,8 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 		};
 		
 		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
+		
+		setMode(binder.mode());
 		
 		if (!(binder instanceof CollectionBinder<?,?>))
 			throw new RuntimeException("Binding iterators requires binding collections, " +
@@ -60,29 +65,29 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	@Override
 	public Iterator<TYPE> bind(List<Provided> provided) {
 		Iterator<TYPE> iterator = backing.bind(provided).iterator();
-		logger.trace("bound iterator {}",iterator);
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,iterator});
 		return iterator;
 	}
 
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return binder().toString();
+		return format(TO_STRING,super.toString(),binder());
 	}
 	
-	public static class IteratorBinderProvider implements BinderProvider<Iterator<Object>> {
-
-		/**{@inheritDoc}*/
-		@Override
-		public TypeBinder<Iterator<Object>> binder(Key<Iterator<Object>> key, Environment env) {
-			return new DefaultIteratorBinder<Object>(key,env);
-		}			
+	public static BinderProvider<Iterator<Object>> provider() {
 		
-		@SuppressWarnings("unchecked")
-		@Override public Key<Iterator<Object>> matchingKey() {
-			return (Key) newKey(Iterator.class);
-		}
+		return new BinderProvider<Iterator<Object>>() {
+			@Override
+			public TypeBinder<Iterator<Object>> binder(Key<Iterator<Object>> key, Environment env) {
+				return new DefaultIteratorBinder<Object>(key,env);
+			}			
 			
-	};
+			@SuppressWarnings("unchecked")
+			@Override public Key<Iterator<Object>> matchingKey() {
+				return (Key) newKey(Iterator.class);
+			}
+		};
+	}
 	
 }

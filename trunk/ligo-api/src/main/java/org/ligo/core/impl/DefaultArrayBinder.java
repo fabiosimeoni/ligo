@@ -3,8 +3,10 @@
  */
 package org.ligo.core.impl;
 
+import static java.lang.String.*;
 import static org.ligo.core.keys.Keys.*;
 import static org.ligo.core.kinds.Kind.*;
+import static org.ligo.core.kinds.Kind.KindValue.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
@@ -29,6 +31,8 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultArrayBinder.class);
 	
+	static final String TO_STRING= "%1s-array(%2s)";
+	
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
 	@SuppressWarnings("unchecked")
@@ -41,12 +45,16 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 			@Override public Type getOwnerType() {return null;}
 			@Override public Type[] getActualTypeArguments() {
 				return new Type[]{
-						GENERICARRAY(key.kind()).getGenericComponentType()
+						key.kind().value()==CLASS?
+							key.toClass().getComponentType(): 
+							GENERICARRAY(key.kind()).getGenericComponentType()
 				};
 			}
 		};
 		
 		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
+		
+		setMode(binder.mode());
 		
 		if (!(binder instanceof CollectionBinder<?,?>))
 			throw new RuntimeException("Binding iterators requires binding collections, " +
@@ -66,9 +74,7 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 		
 		List<TYPE> list = backing.bind(provided);
 		
-		
-		Class<?> componentClass = boundClass().getComponentType();
-		
+		Class<?> componentClass = key().toClass().getComponentType();
 		
 		@SuppressWarnings("unchecked")
 		TYPE[] array = (TYPE[]) Array.newInstance(componentClass,list.size());
@@ -76,28 +82,30 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 		array = list.toArray(array);
 			
 		logger.trace(BINDING_SUCCESS_LOG,new Object[]{this,provided,array});
+		
 		return array;
 	}
 
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		return binder().toString();
+		return format(TO_STRING,super.toString(),binder());
 	}
 	
-	public static class ArrayBinderProvider implements BinderProvider<Object[]> {
-
-		/**{@inheritDoc}*/
-		@Override
-		public TypeBinder<Object[]> binder(Key<Object[]> key, Environment env) {
-			return new DefaultArrayBinder<Object>(key,env);
-		}			
+	public static BinderProvider<Object[]> provider() {
 		
-		@SuppressWarnings("unchecked")
-		@Override public Key<Object[]> matchingKey() {
-			return (Key) newKey(Object[].class);
-		}
+		return new BinderProvider<Object[]>() {
+
+			@Override
+			public TypeBinder<Object[]> binder(Key<Object[]> key, Environment env) {
+				return new DefaultArrayBinder<Object>(key,env);
+			}			
 			
-	};
+			@SuppressWarnings("unchecked")
+			@Override public Key<Object[]> matchingKey() {
+				return (Key) newKey(Object[].class);
+			}
+		};
+	}
 	
 }

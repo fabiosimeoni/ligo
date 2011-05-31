@@ -5,7 +5,7 @@ package org.ligo.core.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.core.annotations.Bind.Mode.*;
+import static org.ligo.core.BindMode.*;
 import static org.ligo.core.keys.Keys.*;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 		setMode(LAX);
 	
 		@SuppressWarnings("unchecked")
-		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(boundClass().getTypeParameters()[0]));
+		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(key().toClass().getTypeParameters()[0]));
 		binder = objectBinder;
 	}
 	
@@ -70,13 +70,9 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 				
 			}
 		
-
-		@SuppressWarnings("unchecked") //internally consistent
-		COLLTYPE list = (COLLTYPE) env.resolver().resolve(key().kind().toClass(),emptyList());
+		COLLTYPE list = (COLLTYPE) env.resolver().resolve(key().toClass(),emptyList());
 		
 		list.addAll(temp);
-		
-		logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,list});
 		
 		return list;
 	}

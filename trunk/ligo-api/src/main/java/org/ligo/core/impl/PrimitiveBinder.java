@@ -4,7 +4,7 @@
 package org.ligo.core.impl;
 
 import static java.lang.String.*;
-import static org.ligo.core.annotations.Bind.Mode.*;
+import static org.ligo.core.BindMode.*;
 import static org.ligo.core.keys.Keys.*;
 import static org.ligo.core.utils.ReflectionUtils.*;
 
@@ -39,7 +39,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	
 	public TYPE bind(List<Provided> provided) {
 		
-		TYPE defaultValue = (TYPE) defaultOf(boundClass());
+		TYPE defaultValue = (TYPE) defaultOf(key().toClass());
 		
 		if (provided.size()!=1)
 			if (mode()==STRICT)
@@ -68,9 +68,9 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		Throwable error=null;
 		
 		try{
-			output = boundClass().isAssignableFrom(input.getClass())? 
-							boundClass().cast(input) : 
-							valueOf(boundClass(),input.toString());
+			output = key().toClass().isAssignableFrom(input.getClass())? 
+							key().toClass().cast(input) : 
+							valueOf(key().toClass(),input.toString());
 		}
 		catch(Throwable t) {
 			error=t;

@@ -4,13 +4,13 @@
 package org.ligo.core.impl;
 
 import static java.lang.String.*;
-import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.*;
 import static org.ligo.core.keys.Keys.*;
 import static org.ligo.core.kinds.Kind.*;
 import static org.ligo.core.kinds.Kind.KindValue.*;
 import static org.ligo.core.utils.ReflectionUtils.*;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -25,7 +25,6 @@ import org.ligo.core.Environment;
 import org.ligo.core.Literal;
 import org.ligo.core.Resolver;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.impl.DefaultObjectBinder.ObjectBinderProvider;
 import org.ligo.core.keys.Key;
 import org.ligo.core.kinds.Kind;
 import org.slf4j.Logger;
@@ -61,10 +60,10 @@ public class LigoEnvironment implements Environment {
 	
 	@SuppressWarnings("unchecked")
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
-			new ObjectBinderProvider(),
+			DefaultObjectBinder.provider(),
 			DefaultCollectionBinder.provider(Collection.class),
-			new DefaultIteratorBinder.IteratorBinderProvider(),
-			new DefaultArrayBinder.ArrayBinderProvider(),
+			DefaultIteratorBinder.provider(),
+			DefaultArrayBinder.provider(),
 			PrimitiveBinder.provider(String.class),
 			PrimitiveBinder.provider(Byte.class),
 			PrimitiveBinder.provider(Short.class),
@@ -170,32 +169,13 @@ public class LigoEnvironment implements Environment {
 		
 		for (final Class<?> resolvedClass : resolvedClasses) {
 			
-			//sanity check: we do need resolved class to be a concrete implementation
-			if (resolvedClass.isInterface() || (!resolvedClass.isPrimitive() && isAbstract(resolvedClass.getModifiers()))) 
+			if (isAbstract(resolvedClass))
 				throw new RuntimeException(format(INTERFACE_ERROR,qualifiedKey,resolvedClass));
 			
-			
-			Kind<?> resolvedKind;
-			
-			//for correct variable resolution we build a generic 
-			//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
-			if (kind.value()==GENERIC) {
-				final Kind<?> finalKind = kind;
-				resolvedKind = kindOf(new ParameterizedType() {
-						@Override public Type getRawType() {return resolvedClass;}
-						@Override public Type getOwnerType() {return null;}
-						@Override public Type[] getActualTypeArguments() {return GENERIC(finalKind).getActualTypeArguments();}
-					}
-				);
-				
-			}
-			else
-				resolvedKind = kindOf(resolvedClass);
+			Key<?> resolvedKey = resolveKey(qualifiedKey, resolvedClass);
 			
 			//bind variables
-			bindVariables(resolvedKind);
-			
-			Key<?> resolvedKey = newKey(resolvedKind,qualifiedKey.qualifier());
+			bindVariables(resolvedKey.kind());
 			
 			@SuppressWarnings("unchecked") //internally consistent
 			TypeBinder<T> newBinder = (TypeBinder) provider.binder((Key)resolvedKey,this); 
@@ -213,6 +193,38 @@ public class LigoEnvironment implements Environment {
 		
 	}
 	
+	Key<?> resolveKey(final Key<?> key, final Class<?> clazz) {
+		
+		Kind<?> resolvedKind;
+		
+		//for correct variable resolution we build a generic 
+		//out of the implementation and the original type params (e.g. ArrayList<E> from resolved List<E>)
+		switch(key.kind().value()) {
+			case GENERIC:
+				resolvedKind = kindOf(new ParameterizedType() {
+					@Override public Type getRawType() {return clazz;}
+					@Override public Type getOwnerType() {return null;}
+					@Override public Type[] getActualTypeArguments() {return GENERIC(key.kind()).getActualTypeArguments();}
+				});
+				break;
+			case GENERICARRAY:
+				resolvedKind=key.kind();
+				break;
+			default:
+				resolvedKind = kindOf(clazz);	
+		}
+		
+		return newKey(resolvedKind,key.qualifier());
+		
+	}
+	
+	boolean isAbstract(Class<?> clazz) {
+		
+		//sanity check: we do need resolved class to be a concrete implementation
+		return (clazz.isInterface() || (!clazz.isPrimitive() && !clazz.isArray() && Modifier.isAbstract(clazz.getModifiers()))); 
+			
+	}
+	
 	/**
 	 * Used internally to resolve {@link BinderProvider}s from {@link Key}s.
 	 * @param key the key.
@@ -226,7 +238,7 @@ public class LigoEnvironment implements Environment {
 			
 				
 			//reduce search space to 'raw' types
-			Class<?> clazz = key.kind().toClass();
+			Class<?> clazz = key.toClass();
 			if (clazz==null)
 				return null;
 		
@@ -289,5 +301,4 @@ public class LigoEnvironment implements Environment {
 		else
 			return binderFor(key);
 	}
-
 }

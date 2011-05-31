@@ -5,7 +5,7 @@ package org.ligo.core;
 
 import static org.junit.Assert.*;
 import static org.ligo.core.TestData.*;
-import static org.ligo.core.annotations.Bind.Mode.*;
+import static org.ligo.core.BindMode.*;
 
 import java.util.List;
 
