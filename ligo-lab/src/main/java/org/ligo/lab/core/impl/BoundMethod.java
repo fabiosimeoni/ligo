@@ -10,11 +10,11 @@ import java.util.List;
  * @author Fabio Simeoni
  *
  */
-public class BoundMethod extends AbstractBoundMember {
+public class BoundMethod extends AbstractBoundMember<Method> {
 
 	private Method method;
 	
-	public BoundMethod(Method m, List<ParameterBinder> binders) {
+	public BoundMethod(Method m, List<ParameterBinder<Method>> binders) {
 		super(binders);
 		method=m;
 	}

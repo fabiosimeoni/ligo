@@ -11,6 +11,7 @@ import static org.ligo.lab.core.keys.Keys.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -67,8 +68,8 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	private final Environment env;
 	
-	private BoundConstructor constructorDef;
-	private List<BoundMethod> methodDefs = new LinkedList<BoundMethod>();
+	private final BoundConstructor boundConstructor;
+	private final List<BoundMethod> boundMethods;
 	
 	private Map<QName,TypeBinder<?>> binders = new HashMap<QName, TypeBinder<?>>();
 
@@ -79,8 +80,8 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		env = e;
 		
 		//analyse class
-		bindConstructor(boundClass());
-		bindMethods(boundClass());
+		boundConstructor = getBoundConstructor(boundClass());
+		boundMethods = getBoundMethods(boundClass());
 		
 	}
 
@@ -113,13 +114,13 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 			StructureProvider provider = (StructureProvider) dp;
 			
 			//pull constructor parameters and off-load creation to env
-			List<Object> values = extractvalues(constructorDef.parameterBinders(),provider);
+			List<Object> values = extractvalues(boundConstructor.parameterBinders(),provider);
 			
 			@SuppressWarnings("unchecked") //internally consistent
 			T object = (T) env.resolver().resolve(key().kind().toClass(),values);
 		
 			//pull method parameters and invoke
-			for (BoundMethod m : methodDefs) {
+			for (BoundMethod m : boundMethods) {
 				values = extractvalues(m.parameterBinders(),provider);
 				m.method().invoke(object,values.toArray(new Object[0]));				
 			}
@@ -133,11 +134,11 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		}
 	}
 	
-	List<Object> extractvalues(List<ParameterBinder> binders, StructureProvider provider) {
+	List<Object> extractvalues(List<? extends ParameterBinder<?>> binders, StructureProvider provider) {
 		
 		List<Object> values = new ArrayList<Object>();
 		
-		for (ParameterBinder named : binders) {
+		for (ParameterBinder<?> named : binders) {
 			
 			//set mode, lazily on potentially cached binders
 			Bind bindAnnotation = (Bind) named.parameterContext().bindingAnnotation(); 
@@ -154,7 +155,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		return values;
 	}
 	
-	void bindConstructor(Class<?> clazz) {
+	BoundConstructor getBoundConstructor(Class<?> clazz) {
 		
 		//there must be only one annotated constructor
 		//if this takes one parameter, then annotations can go on the constructor itself.
@@ -162,7 +163,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		
 		Constructor<?> constructor=null;
 		
-		List<ParameterBinder> pbinders = new ArrayList<ParameterBinder>();
+		List<ParameterBinder<Constructor<?>>> pbinders = new ArrayList<ParameterBinder<Constructor<?>>>();
 		
 		//identify constructor
 		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
@@ -191,13 +192,13 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 		//prep later access
 		constructor.setAccessible(true);
 		
-		//remember bound names
-		constructorDef = new BoundConstructor(constructor,pbinders);
+		return new BoundConstructor(constructor,pbinders);
 		
 	}
 	
-	void bindMethods(Class<?> clazz) {
+	List<BoundMethod> getBoundMethods(Class<?> clazz) {
 		
+		List<BoundMethod> boundMethods = new ArrayList<BoundMethod>();
 		Map<String,Type[]> visitedMethods = new HashMap<String,Type[]>();
 		
 		do 
@@ -212,7 +213,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 				visitedMethods.put(m.getName(),m.getParameterTypes());
 			
 				
-				List<ParameterBinder> pbinders = addParameterBinders(buildContexts(m));
+				List<ParameterBinder<Method>> pbinders = addParameterBinders(buildContexts(m));
 				
 				//scan interfaces for possible annotations
 				if (pbinders.isEmpty())
@@ -235,33 +236,35 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 					
 					m.setAccessible(true);
 					
-					methodDefs.add(new BoundMethod(m,pbinders));
+					boundMethods.add(new BoundMethod(m,pbinders));
 				}
 			}
 		
 		while //repeat for inherited methods
 			((clazz=clazz.getSuperclass())!=Object.class);
 		
+		return boundMethods;
+		
 	}
 	
-	List<ParameterBinder> addParameterBinders(ParameterContext ... contexts) {
+	<M extends Member> List<ParameterBinder<M>> addParameterBinders(List<ParameterContext<M>> contexts) {
 	
 		//add binders for each context, checking they are unambiguously annotated.
 		//these include constant binders for un-annotated parameters in otherwise annotated method
 		
 		Set<QName> boundNames = new HashSet<QName>(binders.keySet()); //bound so far, used for uniqueness
 		
-		List<ParameterBinder> bound = new ArrayList<ParameterBinder>(); //main output
+		List<ParameterBinder<M>> bound = new ArrayList<ParameterBinder<M>>(); //main output
 		List<ConstantBinder> constants = new LinkedList<ConstantBinder>(); //keep track of unbound one
 		
-		for (ParameterContext context : contexts) {
+		for (ParameterContext<M> context : contexts) {
 			
 			//bound context
 			if (context.isBound()) {
 				
 				if (context.bindingAnnotation() instanceof Bind) {
 
-					ParameterBinder pbinder = processors.get(Bind.class).binderFor(context,env);
+					ParameterBinder<M> pbinder = processors.get(Bind.class).binderFor(context,env);
 					
 					//check uniqueness
 					if (boundNames.contains(pbinder.boundName()))
@@ -269,7 +272,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 				
 				//update state
 				boundNames.add(pbinder.boundName());
-				bound.add(new ParameterBinder(pbinder.boundName(),pbinder.binder(),context));
+				bound.add(new ParameterBinder<M>(pbinder.boundName(),pbinder.binder(),context));
 				
 				//only bound binders are exposed.
 				binders.put(pbinder.boundName(),pbinder.binder());
@@ -290,7 +293,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 				}
 				
 				constants.add(cbinder);
-				bound.add(new ParameterBinder(UNBOUND_PARAM,cbinder,context));
+				bound.add(new ParameterBinder<M>(UNBOUND_PARAM,cbinder,context));
 			}
 			
 		}

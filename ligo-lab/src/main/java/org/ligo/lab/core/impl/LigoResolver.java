@@ -39,7 +39,7 @@ public class LigoResolver implements ConfigurableResolver {
 	}
 	
 	/**{@inheritDoc}*/
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //internally consistent
 	public synchronized <T> List<Class<? extends T>> resolve(Key<T> key) {
 	
 		List<Class<? extends T>> bound = (List) bindings.get(key);
@@ -53,7 +53,7 @@ public class LigoResolver implements ConfigurableResolver {
 			bound = (List) singleton;
 		}
 		
-		return bound; //internally consistent
+		return bound; 
 	}
 	
 	/**{@inheritDoc}*/

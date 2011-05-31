@@ -6,6 +6,8 @@ package org.ligo.lab.core.annotations;
 import static java.lang.String.*;
 import static java.util.Collections.*;
 
+import java.lang.reflect.Member;
+
 import javax.xml.namespace.QName;
 
 import org.ligo.lab.core.Environment;
@@ -23,7 +25,7 @@ public class BindProcessor implements AnnotationProcessor {
 	
 	private static final String INSTANTIATION_ERROR = "could not instantiate adapter %1s";
 
-	public ParameterBinder binderFor(ParameterContext context, Environment env) {
+	public <M extends Member> ParameterBinder<M> binderFor(ParameterContext<M> context, Environment env) {
 		
 		Bind bindAnnotation = (Bind) context.bindingAnnotation();
 		
@@ -52,7 +54,7 @@ public class BindProcessor implements AnnotationProcessor {
 		else //recur to obtain binder for type
 			binder = env.binderFor(context.key());
 		
-		return new ParameterBinder(name,binder,context);
+		return new ParameterBinder<M>(name,binder,context);
 			
 	};
 }

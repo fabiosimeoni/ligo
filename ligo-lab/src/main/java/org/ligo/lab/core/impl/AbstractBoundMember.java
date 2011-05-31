@@ -3,6 +3,7 @@
  */
 package org.ligo.lab.core.impl;
 
+import java.lang.reflect.Member;
 import java.util.List;
 
 
@@ -10,18 +11,18 @@ import java.util.List;
  * @author Fabio Simeoni
  *
  */
-public abstract class AbstractBoundMember {
+public abstract class AbstractBoundMember<M extends Member> {
 
-private List<ParameterBinder> binders;
+private List<ParameterBinder<M>> binders;
 	
-	public AbstractBoundMember(List<ParameterBinder> binders) {
+	public AbstractBoundMember(List<ParameterBinder<M>> binders) {
 		this.binders = binders;
 	}
 	
 	/**
 	 * 
 	 */
-	public List<ParameterBinder> parameterBinders() {
+	public List<ParameterBinder<M>> parameterBinders() {
 		return binders;
 	}
 	
