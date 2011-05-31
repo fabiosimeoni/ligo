@@ -18,7 +18,7 @@ public class AnyNode extends NodePattern {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public Node extract(Node n) {
+	public Node bind(Node n) {
 		return n;
 	}
 	

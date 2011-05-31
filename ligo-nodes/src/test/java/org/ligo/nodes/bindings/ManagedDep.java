@@ -1,8 +1,8 @@
 package org.ligo.nodes.bindings;
 
-import org.ligo.api.Project;
+import org.ligo.core.annotations.Bind;
 
 interface ManagedDep {
 	
-	void setInteger(@Project("p1") Integer i);
+	void setInteger(@Bind("p1") Integer i);
 }

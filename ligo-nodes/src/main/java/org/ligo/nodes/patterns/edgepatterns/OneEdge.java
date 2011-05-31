@@ -37,7 +37,7 @@ public class OneEdge extends EdgePattern {
 		Edge match = edges.get(0);
 		
 		//dispatch to target predicate
-		target().extract(match.target());
+		target().bind(match.target());
 		
 		return singletonList(match);
 	}

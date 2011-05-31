@@ -7,9 +7,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.api.Pattern;
 import org.ligo.nodes.model.api.Edge;
-import org.ligo.nodes.model.api.Node;
 
 /**
  * @author Fabio Simeoni
@@ -17,14 +15,14 @@ import org.ligo.nodes.model.api.Node;
  */
 public abstract class EdgePattern {
 	
-	private Pattern<Node,Node> target;
+	private NodePattern target;
 	private QName label;
 	private boolean condition;
 	
 	/**
 	 * 
 	 */
-	public EdgePattern(QName l, Pattern<Node,Node> p) {
+	public EdgePattern(QName l, NodePattern p) {
 		label=l;
 		target=p;
 	}
@@ -39,7 +37,7 @@ public abstract class EdgePattern {
 	/**
 	 * @return the target
 	 */
-	public Pattern<Node,Node> target() {
+	public NodePattern target() {
 		return target;
 	}
 	
