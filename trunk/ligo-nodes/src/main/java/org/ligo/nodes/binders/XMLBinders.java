@@ -43,7 +43,19 @@ public class XMLBinders {
 		@Override
 		public Provided bind(Reader r) {
 			try {
-				return fromElementRec(factory.newDocumentBuilder().parse(new InputSource(r)).getDocumentElement());
+				return XMLSOURCE_BINDER.bind(new InputSource(r));
+			}
+			catch(Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	};
+	
+	public static final Binder<InputSource,Provided> XMLSOURCE_BINDER = new Binder<InputSource,Provided>() {
+		@Override
+		public Provided bind(InputSource s) {
+			try {
+				return fromElementRec(factory.newDocumentBuilder().parse(s).getDocumentElement());
 			}
 			catch(Exception e) {
 				throw new RuntimeException(e);
