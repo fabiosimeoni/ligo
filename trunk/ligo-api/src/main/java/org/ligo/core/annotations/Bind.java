@@ -6,6 +6,7 @@ package org.ligo.core.annotations;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 import static org.ligo.core.BindMode.*;
+import static org.ligo.core.Constants.*;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -28,7 +29,7 @@ import org.ligo.core.BindMode;
  */
 public @interface Bind {
 
-	String value();
+	String value() default NONAME;
 	
 	String ns() default "";
 	
