@@ -14,9 +14,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.Provided;
-import org.ligo.core.data.StructureProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoObject;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;
@@ -287,10 +287,10 @@ public class DefaultInnerNode implements InnerNode {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public DataProvider provider() {
-		return new StructureProvider() {
-			public List<Provided> get(QName name) {
-				List<Provided> provided = new ArrayList<Provided>();
+	public LigoData provide() {
+		return new LigoObject() {
+			public List<LigoProvider> get(QName name) {
+				List<LigoProvider> provided = new ArrayList<LigoProvider>();
 				for (Node n: children(name))
 					provided.add(n);
 				return provided;

@@ -3,8 +3,8 @@
  */
 package org.ligo.nodes.model.impl;
 
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.ValueProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoValue;
 import org.ligo.nodes.model.api.Leaf;
 
 /**
@@ -36,8 +36,8 @@ public class DefaultLeaf implements Leaf {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public DataProvider provider() {
-		return new ValueProvider() {
+	public LigoData provide() {
+		return new LigoValue() {
 			public Object get() {
 				return value();
 			}

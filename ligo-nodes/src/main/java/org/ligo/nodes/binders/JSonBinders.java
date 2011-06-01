@@ -3,7 +3,7 @@ package org.ligo.nodes.binders;
 import static org.codehaus.jackson.JsonToken.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
 
-import java.io.StringReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,23 +17,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ligo.binders.Binder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
 
 public class JSonBinders {
 	
-	public static final Binder<JSONObject,Provided> JSON_BINDER = new Binder<JSONObject,Provided>() {
+	public static final Binder<JSONObject,LigoProvider> JSON_OBJECT = new Binder<JSONObject,LigoProvider>() {
 		@Override
-		public Provided bind(JSONObject jso) {
+		public LigoProvider bind(JSONObject jso) {
 			return convert(jso);
 		}
 	};
 	
 	// to handle top-level json arrays
-	public static final Binder<JSONArray,Provided> JSON_ARRAYBINDER = new Binder<JSONArray,Provided>() {
+	public static final Binder<JSONArray,LigoProvider> JSON_ARRAY = new Binder<JSONArray,LigoProvider>() {
 		@Override
-		public Provided bind(JSONArray jsa) {
+		public LigoProvider bind(JSONArray jsa) {
 			return convert(jsa);
 		}		
 	};
@@ -93,9 +93,23 @@ public class JSonBinders {
 	
 	////////////////////JACKSON-BASED
 	
+	
+		public static final Binder<Reader,LigoProvider> JSON_READER = new Binder<Reader,LigoProvider>() {
+			@Override
+			public Node bind(Reader r) {
+				try {
+					return parse(jsonFactory.createJsonParser(r));
+				}
+				catch(Exception e) {
+					throw new RuntimeException(e);
+				}
+				
+			}
+		};
+	
 		private static final JsonFactory jsonFactory = new JsonFactory();
 		
-		private static Node parse(JsonParser parser)  {
+		public static Node parse(JsonParser parser)  {
 			
 			try {
 			     parser.nextToken();
@@ -132,29 +146,6 @@ public class JSonBinders {
 		
 		}
 
-		public static void main(String[] args) throws Exception {
-			
-			JsonParser parser = jsonFactory.createJsonParser(new StringReader("10"));
-			System.out.println("value=>"+parse(parser));
-			
-			parser = jsonFactory.createJsonParser(new StringReader("{}"));
-			System.out.println("empty object=>"+parse(parser));
-			
-			parser = jsonFactory.createJsonParser(new StringReader("[]"));
-			System.out.println("empty array=>"+parse(parser));
-			
-			parser = jsonFactory.createJsonParser(new StringReader("[1,2,3]"));
-			System.out.println("array=>"+ parse(parser));
-			
-			parser = jsonFactory.createJsonParser(new StringReader("{\"a\":{}}"));
-			System.out.println("empty object field=>"+parse(parser));
-			
-			parser = jsonFactory.createJsonParser(new StringReader("{\"a\":[]}"));
-			System.out.println("empty array field=>"+parse(parser));
-			
-			String json= "{\"id\":1125687077,\"foo\":\"hello\",\"boo\":{\"goo\":true}, \"array\":[3,5]}";
-			parser = jsonFactory.createJsonParser(new StringReader(json));
-			System.out.println("full object"+parse(parser));
-		}
+
 
 }
