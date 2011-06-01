@@ -3,8 +3,8 @@
  */
 package org.ligo.nodes.model.api;
 
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoProvider;
 
 
 /**
@@ -12,10 +12,10 @@ import org.ligo.core.data.Provided;
  * @author Fabio Simeoni
  *
  */
-public interface Node extends Provided {
+public interface Node extends LigoProvider {
 
 	
 	Node cloneNode();
-	DataProvider provider();
+	LigoData provide();
 	
 }

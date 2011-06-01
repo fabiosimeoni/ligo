@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.ligo.binders.Binder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
 import org.w3c.dom.Element;
@@ -32,18 +32,18 @@ public class XMLBinders {
 	static {
 		factory.setNamespaceAware(true);
 	}
-	public static final Binder<Element,Provided> ELEMENT_BINDER = new Binder<Element,Provided>() {
+	public static final Binder<Element,LigoProvider> DOM = new Binder<Element,LigoProvider>() {
 		@Override
-		public Provided bind(Element e) {
+		public LigoProvider bind(Element e) {
 			return fromElementRec(e);
 		}
 	};
 	
-	public static final Binder<Reader,Provided> XMLREADER_BINDER = new Binder<Reader,Provided>() {
+	public static final Binder<Reader,LigoProvider> XREADER = new Binder<Reader,LigoProvider>() {
 		@Override
-		public Provided bind(Reader r) {
+		public LigoProvider bind(Reader r) {
 			try {
-				return XMLSOURCE_BINDER.bind(new InputSource(r));
+				return XSOURCE.bind(new InputSource(r));
 			}
 			catch(Exception e) {
 				throw new RuntimeException(e);
@@ -51,9 +51,9 @@ public class XMLBinders {
 		}
 	};
 	
-	public static final Binder<InputSource,Provided> XMLSOURCE_BINDER = new Binder<InputSource,Provided>() {
+	public static final Binder<InputSource,LigoProvider> XSOURCE = new Binder<InputSource,LigoProvider>() {
 		@Override
-		public Provided bind(InputSource s) {
+		public LigoProvider bind(InputSource s) {
 			try {
 				return fromElementRec(factory.newDocumentBuilder().parse(s).getDocumentElement());
 			}
