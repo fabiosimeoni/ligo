@@ -9,7 +9,7 @@ import static org.ligo.core.BindMode.*;
 
 import org.ligo.core.BindMode;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 
 /**
@@ -38,7 +38,7 @@ public abstract class AbstractBinder<TYPE> implements TypeBinder<TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public TYPE bind(Provided provided) {
+	public TYPE bind(LigoProvider provided) {
 		return bind(singletonList(provided));
 	}
 	public Key<? extends TYPE> key() {

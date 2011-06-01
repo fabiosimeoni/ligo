@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.BindingAnnotation;
-import org.ligo.core.data.StructureProvider;
+import org.ligo.core.data.LigoObject;
 import org.ligo.core.keys.Key;
 
 /**
@@ -85,7 +85,7 @@ public class ConstructorBinder extends MemberBinder<Constructor<?>> {
 		
 	}
 	
-	public Object bind(StructureProvider sp) {
+	public Object bind(LigoObject sp) {
 		
 		List<Object> values = new ArrayList<Object>();
 		

@@ -31,7 +31,7 @@ import org.ligo.core.TestClassDefs.Partial;
 import org.ligo.core.TestClassDefs.Primitive;
 import org.ligo.core.TestClassDefs.SomeInterface;
 import org.ligo.core.TestClassDefs.TooManyConstructors;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
@@ -69,7 +69,7 @@ public class BinderTests {
 			System.out.println("caught expected:"+e.getMessage());
 		}
 		
-		List<Provided> ps = list(v("hello"),v("world"));
+		List<LigoProvider> ps = list(v("hello"),v("world"));
 		try {
 			sb.bind(ps);
 			fail();

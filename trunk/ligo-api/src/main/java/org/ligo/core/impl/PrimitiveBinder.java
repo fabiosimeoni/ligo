@@ -12,9 +12,9 @@ import java.util.List;
 
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.Provided;
-import org.ligo.core.data.ValueProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoValue;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		super(key);
 	}
 	
-	public TYPE bind(List<Provided> provided) {
+	public TYPE bind(List<LigoProvider> provided) {
 		
 		TYPE defaultValue = (TYPE) defaultOf(key().toClass());
 		
@@ -49,9 +49,9 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 				return defaultValue;
 			}
 		
-		DataProvider dp = provided.get(0).provider();
+		LigoData dp = provided.get(0).provide();
 	
-		if (!(dp instanceof ValueProvider))
+		if (!(dp instanceof LigoValue))
 			if (mode()==STRICT)
 					throw new RuntimeException(format(INPUT_ERROR,this,provided));
 			else {
@@ -59,7 +59,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 				return defaultValue;
 			}
 	
-		ValueProvider vp = (ValueProvider) dp;
+		LigoValue vp = (LigoValue) dp;
 		
 		Object input = vp.get();
 		

@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.Bind;
-import org.ligo.core.data.StructureProvider;
+import org.ligo.core.data.LigoObject;
 
 public class DefaultParameterBinder<M extends Member> extends AbstractParameterBinder<M> {
 	
@@ -27,7 +27,7 @@ public class DefaultParameterBinder<M extends Member> extends AbstractParameterB
 
 	}
 	
-	public Object bind(StructureProvider sp) {
+	public Object bind(LigoObject sp) {
 		
 		//set mode, lazily on potentially cached binders
 		if (annotation.mode()!=DEFAULT)

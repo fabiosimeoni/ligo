@@ -6,21 +6,21 @@ package org.ligo.core;
 import java.util.List;
 
 import org.ligo.binders.Binder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 
 
 
 /**
  * 
- * A {@link Binder}s of {@link Provided}s and typed instances.
+ * A {@link Binder}s of {@link LigoProvider}s and typed instances.
  * 
  * @author Fabio Simeoni
  * 
  * @param <T> <em>the bound type</em>, i.e. the type of the bound instances.
  *
  */
-public interface TypeBinder<T> extends Binder<Provided,T> {
+public interface TypeBinder<T> extends Binder<LigoProvider,T> {
 
 	/**
 	 * Returns the key of the bound type.
@@ -29,10 +29,10 @@ public interface TypeBinder<T> extends Binder<Provided,T> {
 	Key<? extends T> key();
 	
 	/**{@inheritDoc}*/
-	public T bind(Provided provided);
+	public T bind(LigoProvider provided);
 	
 	/**{@inheritDoc}*/
-	public T bind(List<Provided> provided);
+	public T bind(List<LigoProvider> provided);
 	
 	/**
 	 * Sets the binding {@link BindMode} on the binder.

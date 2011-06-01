@@ -14,8 +14,8 @@ import javax.xml.namespace.QName;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.BindConstant;
-import org.ligo.core.data.Provided;
-import org.ligo.core.data.StructureProvider;
+import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoObject;
 
 /**
  * @author Fabio Simeoni
@@ -45,7 +45,7 @@ public class ConstantParameterBinder<M extends Member> extends AbstractParameter
 		
 		setBinder(new AbstractBinder<Object>(param.key()) {
 
-			@Override public Object bind(List<Provided> i) {
+			@Override public Object bind(List<LigoProvider> i) {
 				return constant;
 			}
 			
@@ -59,8 +59,8 @@ public class ConstantParameterBinder<M extends Member> extends AbstractParameter
 	
 	/**{@inheritDoc}*/
 	@Override
-	public Object bind(StructureProvider sp) {
-		return binder().bind((Provided) null); //can pass anything, will be ignored
+	public Object bind(LigoObject sp) {
+		return binder().bind((LigoProvider) null); //can pass anything, will be ignored
 	}
 	
 	static ParameterBinderProvider provider () {

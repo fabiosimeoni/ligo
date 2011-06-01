@@ -61,7 +61,7 @@ public class DSLUseCases {
 		//that they may have been configured to share state).
 		
 		// -) data parsing, if required, is dealt with upstream. the tool will offer a separate env/ies
-		// appropriate to Data model.
+		// appropriate to LigoData model.
 		
 		// -) data can be created programmatically and passed (or arrive somehow) to "binding code" without
 		// the need of intermediate serialisation (as one would need to do with JAXB and XML). If
