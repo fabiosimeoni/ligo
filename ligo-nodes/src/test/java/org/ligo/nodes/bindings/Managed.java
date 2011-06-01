@@ -7,11 +7,17 @@ import org.ligo.core.annotations.Bind;
 
 public class Managed {
 	
+	static class Structure {
+		
+		public void set(@Bind("attr") String s, @Bind String value) {
+			System.out.println("invoked with "+s+" and "+value);
+		}
+	}
 	public Managed(@Bind("p1") String s){
 		System.out.println("invoked with "+s);
 	}
 	
-	public void setString(@Bind("p2") String s) {
+	public void setString(@Bind("p2") Structure s) {
 		System.out.println("invoked with "+s);
 	}
 	

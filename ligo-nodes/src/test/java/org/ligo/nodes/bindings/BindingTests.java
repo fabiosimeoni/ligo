@@ -4,6 +4,7 @@
 package org.ligo.nodes.bindings;
 
 import static junit.framework.Assert.*;
+import static org.ligo.core.Constants.*;
 import static org.ligo.dsl.Ligo.*;
 import static org.ligo.nodes.binders.JSonBinders.*;
 import static org.ligo.nodes.binders.XMLBinders.*;
@@ -50,7 +51,7 @@ public class BindingTests {
 		
 		Node n = n(
 				e("p1","hello"),
-				e("p2","world"),
+				e("p2",n(e("attr","whole wide"),e(NONAME,"world"))),
 				e("p3",n(e("p1",10))),
 				e("p4","hello"),
 				e("p4","world"),
@@ -72,7 +73,7 @@ public class BindingTests {
 		
 		String xml = "<doc>" +
 				"		<p1>hello</p1>" +
-				"		<p2>world</p2>" +
+				"		<p2  attr='whole wide'>world</p2>" +
 				"		<p3>" +
 				"			<p1>10</p1>" +
 				"		</p3>" +
@@ -98,7 +99,7 @@ public class BindingTests {
 
 		String json = "{ " +
 		"			p1 : hallo, " +
-		"			p2 : world, " +
+		"			p2 : {attr : \"whole wide\","+NONAME+" : world}, " +
 		"			p3 : { p1 : 10 }," +
 		"			p4 : [  hello, world ]," +
 		"			p5 : [  hello, world ]," +
@@ -149,7 +150,7 @@ public class BindingTests {
 
 		String json = "{ " +
 		"			\"p1\" : \"hallo\", " +
-		"			\"p2\" : \"world\", " +
+		"			\"p2\" : {\"attr\" : \"whole wide\",\""+NONAME+"\" : \"world\"}," +
 		"			\"p3\" : { \"p1\" : 10 }," +
 		"			\"p4\" : [  \"hello\", \"world\" ]," +
 		"			\"p5\" : [  \"hello\", \"world\" ]," +

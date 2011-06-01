@@ -1,6 +1,7 @@
 package org.ligo.nodes.binders;
 
 import static org.codehaus.jackson.JsonToken.*;
+import static org.ligo.core.Constants.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
 
 import java.io.Reader;
@@ -136,7 +137,7 @@ public class JSonBinders {
 					break;
 				case START_ARRAY: 
 					while (parser.nextToken()!=END_ARRAY)
-						edges.add(e(new QName("value"),parseRec(parser)));
+						edges.add(e(NONAME,parseRec(parser)));
 					break;
 				default:
 					return l(parser.getText());
