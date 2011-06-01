@@ -3,6 +3,7 @@
  */
 package org.ligo.nodes.binders;
 
+import static org.ligo.core.Constants.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
 
 import java.io.Reader;
@@ -89,7 +90,7 @@ public class XMLBinders {
 			if (edges.size()==0)
 				return l(children.item(0).getNodeValue());
 			else
-				edges.add(e("value",value));
+				edges.add(e(NONAME,value));
 		}		
 		else {
 			
