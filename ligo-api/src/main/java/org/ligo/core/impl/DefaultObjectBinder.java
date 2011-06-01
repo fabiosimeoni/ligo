@@ -18,9 +18,9 @@ import javax.xml.namespace.QName;
 import org.ligo.core.Environment;
 import org.ligo.core.ObjectBinder;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.Provided;
-import org.ligo.core.data.StructureProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoObject;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<Provided> provided) {
+	public T bind(List<LigoProvider> provided) {
 		
 		try {
 			
@@ -96,15 +96,15 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 					return null;
 			
 			
-			DataProvider dp = provided.get(0).provider();
+			LigoData dp = provided.get(0).provide();
 			
-			if (!(dp instanceof StructureProvider))
+			if (!(dp instanceof LigoObject))
 				if (mode()==STRICT)
 					throw new RuntimeException(format(INPUT_ERROR,this,provided));
 				else
 					return null;
 			
-			StructureProvider sp = (StructureProvider) dp;
+			LigoObject sp = (LigoObject) dp;
 			
 			@SuppressWarnings("unchecked") //internally consistent
 			T object = (T) cBinder.bind(sp);

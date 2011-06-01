@@ -7,13 +7,13 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 
 /**
  * A {@link TypeBinder} for an arbitrary bound type.
  * <P>
  * Analyses the bound type to identify binding requirements for its instances, i.e. named data properties 
- * to be provided by the input {@link Provided}s .
+ * to be provided by the input {@link LigoProvider}s .
  * 
  * @author Fabio Simeoni
  * 

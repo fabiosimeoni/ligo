@@ -16,7 +16,7 @@ import org.ligo.core.CollectionBinder;
 import org.ligo.core.Environment;
 import org.ligo.core.IteratorBinder;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	}
 	
 	@Override
-	public Iterator<TYPE> bind(List<Provided> provided) {
+	public Iterator<TYPE> bind(List<LigoProvider> provided) {
 		Iterator<TYPE> iterator = backing.bind(provided).iterator();
 		logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,iterator});
 		return iterator;

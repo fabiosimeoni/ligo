@@ -11,7 +11,7 @@ import java.util.List;
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.UnionBinder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBin
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<Provided> i) {
+	public T bind(List<LigoProvider> i) {
 		for (TypeBinder<T> branch : branches)
 			try {
 				branch.setMode(mode());		

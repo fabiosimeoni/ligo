@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-public interface StructureProvider extends DataProvider{
+public interface LigoObject extends LigoData{
 
-	List<Provided> get(QName name);
+	List<LigoProvider> get(QName name);
 }

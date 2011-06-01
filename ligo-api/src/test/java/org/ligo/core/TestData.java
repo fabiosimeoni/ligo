@@ -11,10 +11,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.DataProvider;
-import org.ligo.core.data.Provided;
-import org.ligo.core.data.StructureProvider;
-import org.ligo.core.data.ValueProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoValue;
 
 
 /**
@@ -24,23 +24,23 @@ import org.ligo.core.data.ValueProvider;
 public class TestData {
 
 	
-	public static List<Provided> list(Provided ... ps) {
+	public static List<LigoProvider> list(LigoProvider ... ps) {
 		
-		List<Provided> result = new LinkedList<Provided>();
-		for (Provided p : ps)
+		List<LigoProvider> result = new LinkedList<LigoProvider>();
+		for (LigoProvider p : ps)
 			result.add(p);
 		return result;
 		
 	}
 	
-	public static Provided s(final Pair ...ps) {
+	public static LigoProvider s(final Pair ...ps) {
 		
-		return new Provided() {
+		return new LigoProvider() {
 			
-			public DataProvider provider() {
-				return new StructureProvider() {
-					public List<Provided> get(QName name) {
-						List<Provided> result = new ArrayList<Provided>();
+			public LigoData provide() {
+				return new LigoObject() {
+					public List<LigoProvider> get(QName name) {
+						List<LigoProvider> result = new ArrayList<LigoProvider>();
 						for (Pair p : ps)
 							if (p.s.equals(name.getLocalPart()))
 								result.add(p.p);
@@ -57,10 +57,10 @@ public class TestData {
 		};
 	}
 
-	public static Provided v(final Object o) {
-		return new Provided() {
-			public DataProvider provider() {
-				return new ValueProvider() {
+	public static LigoProvider v(final Object o) {
+		return new LigoProvider() {
+			public LigoData provide() {
+				return new LigoValue() {
 					public Object get() {
 						return o;
 					}
@@ -78,7 +78,7 @@ public class TestData {
 		
 	}
 	
-	public static Pair p(String s,Provided p) {
+	public static Pair p(String s,LigoProvider p) {
 		return new Pair(s,p);
 	}
 	public static Pair p(String s,Object o) {
@@ -86,8 +86,8 @@ public class TestData {
 	}
 	
 	static class Pair {
-		String s; Provided p;
-		Pair(String s, Provided p) {
+		String s; LigoProvider p;
+		Pair(String s, LigoProvider p) {
 			this.s=s;this.p=p;
 		}
 		public String toString() {

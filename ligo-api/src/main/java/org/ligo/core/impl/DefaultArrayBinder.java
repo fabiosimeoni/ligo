@@ -17,7 +17,7 @@ import org.ligo.core.ArrayBinder;
 import org.ligo.core.CollectionBinder;
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 	}
 	
 	@Override
-	public TYPE[] bind(List<Provided> provided) {
+	public TYPE[] bind(List<LigoProvider> provided) {
 		
 		List<TYPE> list = backing.bind(provided);
 		

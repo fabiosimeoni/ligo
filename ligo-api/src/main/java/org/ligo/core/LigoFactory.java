@@ -5,7 +5,7 @@ package org.ligo.core;
 
 import org.ligo.binders.Binder;
 import org.ligo.binders.BinderFactory;
-import org.ligo.core.data.Provided;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.keys.Key;
 
@@ -16,7 +16,7 @@ import org.ligo.core.keys.Key;
  * 
  * @param <TYPE> the bound type of the binders.
  */
-public class LigoFactory<TYPE> implements BinderFactory<TYPE,Provided,TYPE> {
+public class LigoFactory<TYPE> implements BinderFactory<TYPE,LigoProvider,TYPE> {
 
 	private final Environment env;
 	
@@ -40,7 +40,7 @@ public class LigoFactory<TYPE> implements BinderFactory<TYPE,Provided,TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public Binder<Provided,TYPE> binderFor(Key<TYPE> key) {
+	public Binder<LigoProvider,TYPE> binderFor(Key<TYPE> key) {
 		return env.binderFor(key);
 	}
 }
