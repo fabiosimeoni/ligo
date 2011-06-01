@@ -1,13 +1,18 @@
 package org.ligo.nodes.binders;
 
+import static org.codehaus.jackson.JsonToken.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,4 +89,72 @@ public class JSonBinders {
 			
 		return n(edges.toArray(new Edge[0]));
 	}
+	
+	
+	////////////////////JACKSON-BASED
+	
+		private static final JsonFactory jsonFactory = new JsonFactory();
+		
+		private static Node parse(JsonParser parser)  {
+			
+			try {
+			     parser.nextToken();
+			     return parseRec(parser);
+			} 
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		private static Node parseRec(JsonParser parser) throws Exception  {
+		
+			JsonToken token = parser.getCurrentToken();
+				
+			if(token==null) 
+				return null;
+			
+			List<Edge> edges = new ArrayList<Edge>();
+			
+			switch(token) {
+				case START_OBJECT:
+					while (parser.nextValue()!=END_OBJECT) 
+						edges.add(e(parser.getCurrentName(),parseRec(parser)));
+					break;
+				case START_ARRAY: 
+					while (parser.nextToken()!=END_ARRAY)
+						edges.add(e(new QName("value"),parseRec(parser)));
+					break;
+				default:
+					return l(parser.getText());
+			 }
+			 return n(edges.toArray(new Edge[0]));
+			
+		
+		}
+
+		public static void main(String[] args) throws Exception {
+			
+			JsonParser parser = jsonFactory.createJsonParser(new StringReader("10"));
+			System.out.println("value=>"+parse(parser));
+			
+			parser = jsonFactory.createJsonParser(new StringReader("{}"));
+			System.out.println("empty object=>"+parse(parser));
+			
+			parser = jsonFactory.createJsonParser(new StringReader("[]"));
+			System.out.println("empty array=>"+parse(parser));
+			
+			parser = jsonFactory.createJsonParser(new StringReader("[1,2,3]"));
+			System.out.println("array=>"+ parse(parser));
+			
+			parser = jsonFactory.createJsonParser(new StringReader("{\"a\":{}}"));
+			System.out.println("empty object field=>"+parse(parser));
+			
+			parser = jsonFactory.createJsonParser(new StringReader("{\"a\":[]}"));
+			System.out.println("empty array field=>"+parse(parser));
+			
+			String json= "{\"id\":1125687077,\"foo\":\"hello\",\"boo\":{\"goo\":true}, \"array\":[3,5]}";
+			parser = jsonFactory.createJsonParser(new StringReader(json));
+			System.out.println("full object"+parse(parser));
+		}
+
 }
