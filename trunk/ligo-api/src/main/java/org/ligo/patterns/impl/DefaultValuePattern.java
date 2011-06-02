@@ -1,21 +1,22 @@
 /**
  * 
  */
-package org.ligo.patterns;
+package org.ligo.patterns.impl;
 
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoValue;
-import org.ligo.patterns.constraints.Constraint;
+import org.ligo.patterns.api.Constraint;
+import org.ligo.patterns.api.ValuePattern;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public abstract class ValuePattern<T, C extends Constraint<? super T>> extends LigoPattern {
+public abstract class DefaultValuePattern<T, C extends Constraint<? super T>> extends AbstractLigoPattern implements ValuePattern<T, C> {
 
 	C constraint;
 	
-	public ValuePattern(C c) {
+	public DefaultValuePattern(C c) {
 		constraint = c;
 	}
 	

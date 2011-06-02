@@ -1,16 +1,16 @@
 /**
  * 
  */
-package org.ligo.patterns.objectpatterns;
+package org.ligo.patterns.impl.objectpatterns;
 
 import org.ligo.data.LigoData;
-import org.ligo.patterns.LigoPattern;
+import org.ligo.patterns.impl.AbstractLigoPattern;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public class AnyData extends LigoPattern {
+public class AnyData extends AbstractLigoPattern {
 
 	public static AnyData INSTANCE = new AnyData();
 	

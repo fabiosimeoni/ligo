@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.patterns.edgepatterns;
+package org.ligo.patterns.impl.datapatterns;
 
 import static java.lang.String.*;
 
@@ -12,14 +12,14 @@ import javax.xml.namespace.QName;
 
 import org.ligo.data.LigoData;
 import org.ligo.data.impl.NamedData;
-import org.ligo.patterns.LigoPattern;
-import org.ligo.patterns.DataPattern;
+import org.ligo.patterns.api.LigoPattern;
+import org.ligo.patterns.impl.DefaultDataPattern;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public class OptionalData extends DataPattern {
+public class OptionalData extends DefaultDataPattern {
 
 	/**
 	 * 

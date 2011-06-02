@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.patterns;
+package org.ligo.patterns.impl;
 
 import static java.util.Arrays.*;
 
@@ -9,14 +9,15 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.patterns.constraints.AnyValue;
-import org.ligo.patterns.edgepatterns.OneData;
-import org.ligo.patterns.edgepatterns.OptionalData;
-import org.ligo.patterns.edgepatterns.RepeatedData;
-import org.ligo.patterns.objectpatterns.AnyData;
-import org.ligo.patterns.objectpatterns.IntegerPattern;
-import org.ligo.patterns.objectpatterns.ObjectPattern;
-import org.ligo.patterns.objectpatterns.StringPattern;
+import org.ligo.patterns.api.LigoPattern;
+import org.ligo.patterns.api.ObjectPattern;
+import org.ligo.patterns.impl.constraints.AnyValue;
+import org.ligo.patterns.impl.datapatterns.OneData;
+import org.ligo.patterns.impl.datapatterns.OptionalData;
+import org.ligo.patterns.impl.datapatterns.RepeatedData;
+import org.ligo.patterns.impl.objectpatterns.AnyData;
+import org.ligo.patterns.impl.objectpatterns.IntegerPattern;
+import org.ligo.patterns.impl.objectpatterns.StringPattern;
 
 /**
  * @author Fabio Simeoni
@@ -26,10 +27,10 @@ public class Patterns {
 
 	public static AnyData any = AnyData.INSTANCE;
 	
-	public static ObjectPattern object = new ObjectPattern(new LinkedList<DataPattern>());
+	public static ObjectPattern object = new DefaultObjectPattern(new LinkedList<DefaultDataPattern>());
 	
-	public static ObjectPattern object(DataPattern ... ps) {
-		return new ObjectPattern(asList(ps));
+	public static ObjectPattern object(DefaultDataPattern ... ps) {
+		return new DefaultObjectPattern(asList(ps));
 	}
 	
 	

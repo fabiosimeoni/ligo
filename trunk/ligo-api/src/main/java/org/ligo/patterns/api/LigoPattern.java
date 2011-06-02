@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.patterns;
+package org.ligo.patterns.api;
 
 import org.ligo.core.binders.api.Binder;
 import org.ligo.data.LigoData;
@@ -11,4 +11,4 @@ import org.ligo.data.LigoData;
  * @author Fabio Simeoni
  *
  */
-public abstract class LigoPattern implements Binder<LigoData,LigoData> {}
+public interface LigoPattern extends Binder<LigoData,LigoData> {}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.patterns.objectpatterns;
+package org.ligo.patterns.impl;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,22 +15,22 @@ import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;
 import org.ligo.data.impl.DefaultLigoObject;
 import org.ligo.data.impl.NamedData;
-import org.ligo.patterns.DataPattern;
-import org.ligo.patterns.LigoPattern;
+import org.ligo.patterns.api.DataPattern;
+import org.ligo.patterns.api.ObjectPattern;
 
 /**
  * @author Fabio Simeoni
  *
  */
-public class ObjectPattern extends LigoPattern {
+public class DefaultObjectPattern extends AbstractLigoPattern implements ObjectPattern {
 
-	Map<QName,DataPattern> patternMap = new HashMap<QName,DataPattern>();
+	Map<QName,DefaultDataPattern> patternMap = new HashMap<QName,DefaultDataPattern>();
 	
 	/**
 	 * 
 	 */
-	public ObjectPattern(List<DataPattern> patterns) {
-		for (DataPattern dp : patterns) {
+	public DefaultObjectPattern(List<DefaultDataPattern> patterns) {
+		for (DefaultDataPattern dp : patterns) {
 			if (patternMap.put(dp.name(),dp)!=null)
 				throw new IllegalArgumentException(dp.name()+" repeated in "+patterns);
 		}
@@ -39,8 +39,8 @@ public class ObjectPattern extends LigoPattern {
 	/**
 	 * @return the patternMap
 	 */
-	public List<DataPattern> patterns() {
-		return new LinkedList<DataPattern>(patternMap.values());
+	public List<DefaultDataPattern> patterns() {
+		return new LinkedList<DefaultDataPattern>(patternMap.values());
 	}
 	
 	/**{@inheritDoc}*/
@@ -105,9 +105,9 @@ public class ObjectPattern extends LigoPattern {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof ObjectPattern))
+		if (!(obj instanceof DefaultObjectPattern))
 			return false;
-		ObjectPattern other = (ObjectPattern) obj;
+		DefaultObjectPattern other = (DefaultObjectPattern) obj;
 		if (patternMap == null) {
 			if (other.patternMap != null)
 				return false;
