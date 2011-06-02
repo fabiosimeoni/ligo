@@ -1,11 +1,11 @@
 /**
  * 
  */
-package org.ligo.core.data.impl;
+package org.ligo.data.impl;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
+import org.ligo.data.LigoData;
 
 /**
  * @author Fabio Simeoni

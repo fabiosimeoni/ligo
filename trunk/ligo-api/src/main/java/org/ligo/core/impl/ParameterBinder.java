@@ -8,7 +8,7 @@ import java.lang.reflect.Member;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.LigoObject;
+import org.ligo.data.LigoObject;
 
 /**
  * @author Fabio Simeoni

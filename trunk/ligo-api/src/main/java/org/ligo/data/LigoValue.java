@@ -1,4 +1,4 @@
-package org.ligo.core.data;
+package org.ligo.data;
 
 public interface LigoValue extends LigoData{
 

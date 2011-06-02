@@ -10,8 +10,8 @@ import javax.xml.namespace.QName;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.Bind;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 
 public class DefaultParameterBinder<M extends Member> extends AbstractParameterBinder<M> {
 	

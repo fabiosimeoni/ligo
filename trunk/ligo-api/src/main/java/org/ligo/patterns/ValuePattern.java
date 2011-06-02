@@ -3,8 +3,8 @@
  */
 package org.ligo.patterns;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoValue;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoValue;
 import org.ligo.patterns.constraints.Constraint;
 
 /**

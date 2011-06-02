@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.impl.NamedData;
+import org.ligo.data.LigoData;
+import org.ligo.data.impl.NamedData;
 
 /**
  * @author Fabio Simeoni

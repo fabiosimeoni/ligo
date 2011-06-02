@@ -3,8 +3,8 @@
  */
 package org.ligo.patterns;
 
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
+import org.ligo.core.Binder;
+import org.ligo.data.LigoData;
 
 
 /**

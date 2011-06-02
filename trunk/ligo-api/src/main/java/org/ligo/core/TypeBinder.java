@@ -5,9 +5,8 @@ package org.ligo.core;
 
 import java.util.List;
 
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
 import org.ligo.core.keys.Key;
+import org.ligo.data.LigoData;
 
 
 

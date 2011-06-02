@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.data.impl.DataBuilders.*;
+import static org.ligo.data.impl.DataBuilders.*;
 
 import org.junit.Test;
 import org.ligo.core.TestGenericsClassDefs.Generic;

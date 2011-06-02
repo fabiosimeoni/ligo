@@ -13,8 +13,8 @@ import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.annotations.AbstractBindAdapter;
 import org.ligo.core.annotations.BindAdapter;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

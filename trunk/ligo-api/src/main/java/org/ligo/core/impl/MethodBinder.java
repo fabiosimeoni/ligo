@@ -16,8 +16,8 @@ import java.util.Map;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.BindingAnnotation;
-import org.ligo.core.data.LigoObject;
 import org.ligo.core.keys.Key;
+import org.ligo.data.LigoObject;
 
 /**
  * @author Fabio Simeoni

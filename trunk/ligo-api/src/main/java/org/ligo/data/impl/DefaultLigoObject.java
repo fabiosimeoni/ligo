@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.core.data.impl;
+package org.ligo.data.impl;
 
 import static java.util.Collections.*;
 
@@ -14,8 +14,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 
 /**
  * @author Fabio Simeoni

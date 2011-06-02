@@ -3,7 +3,7 @@
  */
 package org.ligo.patterns.objectpatterns;
 
-import org.ligo.core.data.LigoData;
+import org.ligo.data.LigoData;
 import org.ligo.patterns.LigoPattern;
 
 /**
