@@ -4,7 +4,7 @@
 package org.ligo.nodes.model.impl;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoValue;
+import org.ligo.core.data.impl.AbstractLigoValue;
 import org.ligo.nodes.model.api.Leaf;
 
 /**
@@ -37,12 +37,9 @@ public class DefaultLeaf implements Leaf {
 	/**{@inheritDoc}*/
 	@Override
 	public LigoData provide() {
-		return new LigoValue() {
+		return new AbstractLigoValue() {
 			public Object get() {
 				return value();
-			}
-			public String toString() {
-				return DefaultLeaf.this.toString();
 			}
 		};
 	}
