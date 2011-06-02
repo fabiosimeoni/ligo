@@ -1,7 +1,7 @@
 package org.ligo.nodes.binders;
 
 import static org.codehaus.jackson.JsonToken.*;
-import static org.ligo.core.Constants.*;
+import static org.ligo.core.utils.Constants.*;
 import static org.ligo.nodes.model.impl.Nodes.*;
 
 import java.io.Reader;
@@ -17,7 +17,7 @@ import org.codehaus.jackson.JsonToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ligo.core.Binder;
+import org.ligo.core.binders.api.Binder;
 import org.ligo.data.LigoData;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
