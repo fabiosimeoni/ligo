@@ -17,8 +17,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
-import org.ligo.core.data.impl.AbstractLigoObject;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;
@@ -289,20 +287,18 @@ public class DefaultInnerNode implements InnerNode {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public LigoData provide() {
-		return new AbstractLigoObject() {
-			public List<LigoProvider> get(QName name) {
-				List<LigoProvider> provided = new ArrayList<LigoProvider>();
+	public List<LigoData> get(QName name) {
+				List<LigoData> data = new ArrayList<LigoData>();
 				for (Node n: children(name))
-					provided.add(n);
-				return provided;
-			}
-			@Override public Set<QName> names() {
-				return new HashSet<QName>(labels());
-			}
-		};
-		
+					data.add(n);
+				return data;
 	}
+	
+	/**{@inheritDoc}*/
+	@Override 
+	public Set<QName> names() {
+		return new HashSet<QName>(labels());
+	}	
 	
 	@Override
 	public int hashCode() {

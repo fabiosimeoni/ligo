@@ -3,13 +3,15 @@
  */
 package org.ligo.nodes.model.api;
 
+import org.ligo.core.data.LigoValue;
+
 
 /**
  * 
  * @author Fabio Simeoni
  *
  */
-public interface Leaf extends Node {
+public interface Leaf extends Node,LigoValue {
 
 	String value();
 	

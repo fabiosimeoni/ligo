@@ -3,8 +3,6 @@
  */
 package org.ligo.nodes.model.impl;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.impl.AbstractLigoValue;
 import org.ligo.nodes.model.api.Leaf;
 
 /**
@@ -27,21 +25,18 @@ public class DefaultLeaf implements Leaf {
 	public String value() {
 		return value;
 	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public String get() {
+		return value;
+	}
+
 
 	/**{@inheritDoc}*/
 	@Override
 	public Leaf cloneNode() {
 		return new DefaultLeaf(value);
-	}
-	
-	/**{@inheritDoc}*/
-	@Override
-	public LigoData provide() {
-		return new AbstractLigoValue() {
-			public Object get() {
-				return value();
-			}
-		};
 	}
 	
 	/**{@inheritDoc}*/

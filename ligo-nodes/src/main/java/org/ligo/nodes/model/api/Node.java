@@ -4,7 +4,6 @@
 package org.ligo.nodes.model.api;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
 
 
 /**
@@ -12,10 +11,9 @@ import org.ligo.core.data.LigoProvider;
  * @author Fabio Simeoni
  *
  */
-public interface Node extends LigoProvider {
+public interface Node extends LigoData {
 
 	
 	Node cloneNode();
-	LigoData provide();
 	
 }
