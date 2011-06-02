@@ -1,6 +1,6 @@
 package org.ligo.dsl;
 
-import org.ligo.core.binders.Binder;
+import org.ligo.core.binders.api.Binder;
 import org.ligo.core.keys.Key;
 
 public class ClauseContext<TYPE,IN> {

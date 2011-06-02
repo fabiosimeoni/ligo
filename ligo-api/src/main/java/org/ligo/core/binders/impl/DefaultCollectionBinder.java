@@ -5,16 +5,16 @@ package org.ligo.core.binders.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 import static org.ligo.core.keys.Keys.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.ligo.core.binders.CollectionBinder;
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.CollectionBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 import org.slf4j.Logger;

@@ -2,7 +2,7 @@ package org.ligo.dsl;
 
 import java.lang.annotation.Annotation;
 
-import org.ligo.core.binders.Binder;
+import org.ligo.core.binders.api.Binder;
 import org.ligo.core.keys.Key;
 import org.ligo.core.keys.Keys;
 import org.ligo.core.keys.Literal;

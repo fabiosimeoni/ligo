@@ -1,11 +1,14 @@
 /**
  * 
  */
-package org.ligo.core.binders;
+package org.ligo.core.binders.impl;
 
-import org.ligo.core.binders.impl.LigoEnvironment;
+import org.ligo.core.binders.api.Binder;
+import org.ligo.core.binders.api.BinderFactory;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
-import org.ligo.core.resolvers.Resolver;
+import org.ligo.core.resolvers.api.Resolver;
 import org.ligo.data.LigoData;
 
 /**

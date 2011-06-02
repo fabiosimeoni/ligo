@@ -8,9 +8,9 @@ import static java.lang.String.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
-import org.ligo.core.binders.UnionBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
+import org.ligo.core.binders.api.UnionBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 import org.slf4j.Logger;

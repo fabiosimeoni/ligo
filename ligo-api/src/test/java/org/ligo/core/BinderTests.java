@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 import static org.ligo.data.impl.DataBuilders.*;
 
 import java.util.List;
@@ -29,8 +29,8 @@ import org.ligo.core.TestClassDefs.Partial;
 import org.ligo.core.TestClassDefs.Primitive;
 import org.ligo.core.TestClassDefs.SomeInterface;
 import org.ligo.core.TestClassDefs.TooManyConstructors;
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.binders.impl.LigoEnvironment;
 import org.ligo.core.resolvers.impl.LigoResolver;
 import org.ligo.data.LigoData;

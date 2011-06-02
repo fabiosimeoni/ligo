@@ -21,13 +21,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.core.keys.Literal;
 import org.ligo.core.kinds.Kind;
-import org.ligo.core.resolvers.ExpressionResolver;
-import org.ligo.core.resolvers.Resolver;
+import org.ligo.core.resolvers.api.ExpressionResolver;
+import org.ligo.core.resolvers.api.Resolver;
 import org.ligo.core.resolvers.impl.LigoExpressionResolver;
 import org.ligo.core.resolvers.impl.LigoResolver;
 import org.slf4j.Logger;

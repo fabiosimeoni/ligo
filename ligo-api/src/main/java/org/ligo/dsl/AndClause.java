@@ -1,7 +1,7 @@
 package org.ligo.dsl;
 
-import org.ligo.core.binders.Binder;
-import org.ligo.core.binders.BinderFactory;
+import org.ligo.core.binders.api.Binder;
+import org.ligo.core.binders.api.BinderFactory;
 
 public interface AndClause<TYPE,IN> {
 	

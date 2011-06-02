@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ligo.core.annotations.BindingAnnotation;
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoObject;
 

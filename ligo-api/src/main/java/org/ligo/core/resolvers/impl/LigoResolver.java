@@ -22,7 +22,7 @@ import java.util.Set;
 import org.ligo.core.annotations.Bind;
 import org.ligo.core.keys.Key;
 import org.ligo.core.keys.Literal;
-import org.ligo.core.resolvers.ConfigurableResolver;
+import org.ligo.core.resolvers.api.ConfigurableResolver;
 
 /**
  * @author Fabio Simeoni

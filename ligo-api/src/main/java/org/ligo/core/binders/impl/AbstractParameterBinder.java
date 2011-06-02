@@ -7,8 +7,8 @@ import java.lang.reflect.Member;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 
 /**
  * @author Fabio Simeoni
