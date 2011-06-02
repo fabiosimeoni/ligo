@@ -36,8 +36,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	static final String TO_STRING= "%1s-obj%2s";
 	static final String DUPLICATE_NAME= "ambiguous binding: name '%1s' is bound in %2s but also elsewhere in %3s";
-	static String CARDINALITY_ERROR = "%1s required one value but found: %2s";
-	static String INPUT_ERROR = "%1s required a structure but found: %2s";
+	static String CARDINALITY_ERROR = "%1s required one object but found: %2s";
 	
 	private final Environment env;
 	
