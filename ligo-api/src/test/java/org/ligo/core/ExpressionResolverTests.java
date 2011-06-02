@@ -12,7 +12,8 @@ import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoObject;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoExpressionResolver;
 import org.ligo.core.impl.LigoResolver;
@@ -36,7 +37,7 @@ public class ExpressionResolverTests {
 	@Test
 	public void resolve() {
 		
-		LigoProvider prov = s(
+		LigoObject lo = s(
 								p("1",
 									s(p("2",
 											s(p("3",1))))),
@@ -49,16 +50,16 @@ public class ExpressionResolverTests {
 		
 		LigoExpressionResolver r = new LigoExpressionResolver();
 		
-		List<LigoProvider> ps =  r.resolve(new QName("1/2/3"), prov);
+		List<LigoData> ps =  r.resolve(new QName("1/2/3"), lo);
 		assertEquals(list(v(1),v(2)), ps);
 		
-		ps =  r.resolve(new QName("1/(.*)"), prov);
+		ps =  r.resolve(new QName("1/(.*)"), lo);
 		assertEquals(3,ps.size());
 		
-		ps =  r.resolve(new QName("(.*)"), prov);
+		ps =  r.resolve(new QName("(.*)"), lo);
 		assertEquals(5,ps.size());
 		
-		ps =  r.resolve(new QName("1"), prov);
+		ps =  r.resolve(new QName("1"), lo);
 		assertEquals(4,ps.size());
 		
 	}

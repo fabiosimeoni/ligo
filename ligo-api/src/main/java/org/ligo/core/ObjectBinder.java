@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoProvider;
-
 /**
  * A {@link TypeBinder} for an arbitrary bound type.
  * <P>

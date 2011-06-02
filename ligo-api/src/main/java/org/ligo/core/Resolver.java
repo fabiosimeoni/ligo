@@ -18,7 +18,7 @@ public interface Resolver {
 	
 	/**
 	 * Resolves a key into one or more classes, each of which may refine the key's kind.
-	 * <p>
+	 * <data>
 	 * Returns the key's class (in a singleton list) if this has no refinements.
 	 * @param key the key.
 	 * @return the key's kind refinements.

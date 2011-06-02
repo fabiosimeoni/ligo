@@ -15,7 +15,6 @@ import javax.xml.namespace.QName;
 import org.ligo.core.ExpressionResolver;
 import org.ligo.core.data.LigoData;
 import org.ligo.core.data.LigoObject;
-import org.ligo.core.data.LigoProvider;
 
 /**
  * @author Fabio Simeoni
@@ -27,27 +26,26 @@ public class LigoExpressionResolver implements ExpressionResolver {
 
 	/**{@inheritDoc}*/
 	@Override
-	public List<LigoProvider> resolve(QName exp, LigoProvider provider) {
+	public List<LigoData> resolve(QName exp, LigoObject ligoObject) {
 		
 		String[] names = exp.getLocalPart().split("/");
-		List<LigoProvider> providers = singletonList(provider);
+		List<LigoData> data = singletonList((LigoData)ligoObject);
 		
 		for (String name : names) {
-			List<LigoProvider> results = new ArrayList<LigoProvider>();
-			for (LigoProvider p : providers) {
-				LigoData data = p.provide();
-				if (data instanceof LigoObject)
-					  results.addAll(match(new QName(exp.getNamespaceURI(),name),(LigoObject) data));
+			List<LigoData> results = new ArrayList<LigoData>();
+			for (LigoData d : data) {
+				if (d instanceof LigoObject)
+					  results.addAll(match(new QName(exp.getNamespaceURI(),name),(LigoObject) d));
 			}
-			providers=results;
+			data=results;
 		}
 		
-		return providers;
+		return data;
 	}
 
-	List<LigoProvider> match(QName name, LigoObject object) {
+	List<LigoData> match(QName name, LigoObject object) {
 		
-		List<LigoProvider> matches = new ArrayList<LigoProvider>();
+		List<LigoData> matches = new ArrayList<LigoData>();
 		Matcher matcher = REGEXP_PATTERN.matcher(name.getLocalPart());
 		
 		if (matcher.matches()) {//regexp case

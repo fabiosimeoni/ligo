@@ -9,16 +9,14 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.ligo.core.data.LigoData;
 import org.ligo.core.data.LigoObject;
-import org.ligo.core.data.LigoProvider;
 
 /**
  * @author Fabio Simeoni
  *
  */
 public abstract class AbstractLigoObject implements LigoObject {
-
-	List<LigoProvider> get;
 
 	@Override
 	public int hashCode() {
@@ -27,7 +25,7 @@ public abstract class AbstractLigoObject implements LigoObject {
 		Set<QName> names = names();
 		if (names()!=null)
 			for (QName name : names) {
-				List<LigoProvider> ps = get(name);
+				List<LigoData> ps = get(name);
 				if (ps!=null)
 					result = prime * result + ((ps == null) ? 0 : ps.hashCode());
 				else
@@ -53,8 +51,8 @@ public abstract class AbstractLigoObject implements LigoObject {
 				return false;
 		} else 
 			for (QName name : other.names()) {
-				List<LigoProvider> ps = get(name);
-				List<LigoProvider> otherps = other.get(name);
+				List<LigoData> ps = get(name);
+				List<LigoData> otherps = other.get(name);
 				if (ps ==null) {
 					if (otherps!=null)
 						return false;
@@ -68,7 +66,7 @@ public abstract class AbstractLigoObject implements LigoObject {
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		List<LigoProvider> ps = new ArrayList<LigoProvider>();
+		List<LigoData> ps = new ArrayList<LigoData>();
 		for (QName name : names())
 			ps.addAll(get(name));
 		return ps.toString();

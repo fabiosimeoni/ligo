@@ -19,7 +19,6 @@ import org.ligo.core.Environment;
 import org.ligo.core.ObjectBinder;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
 import org.ligo.core.data.LigoObject;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
@@ -85,39 +84,34 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<LigoProvider> providers) {
+	public T bind(List<LigoData> data) {
 		
 		try {
 			
-			if (providers.size()!=1)
+			if (data.size()!=1 || !(data.get(0) instanceof LigoObject)) {
 				if (mode()==STRICT)
-					throw new RuntimeException(format(CARDINALITY_ERROR,this,providers));
-				else
+					throw new RuntimeException(format(CARDINALITY_ERROR,this,data));
+				else {
+					logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,null});
 					return null;
+				}
+			}
 			
-			
-			LigoProvider provider = providers.get(0); 
-			LigoData data = provider.provide();
-			
-			if (!(data instanceof LigoObject))
-				if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,this,providers));
-				else
-					return null;
+			LigoObject ligoObject = (LigoObject) data.get(0);
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			T javaObject = (T) cBinder.bind(provider);
+			T javaObject = (T) cBinder.bind(ligoObject);
 			
 			//pull method parameters and invoke
 			for (MethodBinder mBinder : mBinders)
-				mBinder.bind(javaObject,provider);			
+				mBinder.bind(javaObject,ligoObject);			
 			
-			logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,javaObject});
+			logger.trace(BINDING_SUCCESS_LOG,new Object[]{ligoObject,this,javaObject});
 			
 			return javaObject;
 		}
 		catch(Throwable e) {
-			throw new RuntimeException(format(BINDING_ERROR,key(),providers),e);
+			throw new RuntimeException(format(BINDING_ERROR,key(),data),e);
 		}
 	}
 	

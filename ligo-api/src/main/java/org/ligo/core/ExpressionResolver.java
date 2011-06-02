@@ -7,7 +7,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoObject;
 
 /**
  * @author Fabio Simeoni
@@ -16,5 +17,5 @@ import org.ligo.core.data.LigoProvider;
 public interface ExpressionResolver {
 
 	
-	List<LigoProvider> resolve(QName exp, LigoProvider provider);
+	List<LigoData> resolve(QName exp, LigoObject provider);
 }

@@ -10,7 +10,8 @@ import javax.xml.namespace.QName;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.Bind;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoObject;
 
 public class DefaultParameterBinder<M extends Member> extends AbstractParameterBinder<M> {
 	
@@ -29,14 +30,14 @@ public class DefaultParameterBinder<M extends Member> extends AbstractParameterB
 	}
 	
 	@Override
-	public Object bind(LigoProvider provider) {
+	public Object bind(LigoObject ligoObject) {
 		
 		//set mode, lazily on potentially cached binders
 		if (annotation.mode()!=DEFAULT)
 			binder().setMode(annotation.mode());
 		
-		List<LigoProvider> providers = environment().expressionResolver().resolve(boundName(),provider);
-		return binder().bind(providers);
+		List<LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
+		return binder().bind(data);
 	
 	}
 	

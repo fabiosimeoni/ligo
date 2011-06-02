@@ -13,7 +13,6 @@ import java.util.List;
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
 import org.ligo.core.data.LigoValue;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
@@ -29,37 +28,26 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 	private static Logger logger= LoggerFactory.getLogger(PrimitiveBinder.class);
 	
 	static final String TO_STRING= "%1s-%2s";
-	static String CARDINALITY_ERROR = "%1s required one value but found: %2s";
-	static String INPUT_ERROR = "%1s required a scalar but found: %2s";
+	static String DATA_ERROR = "%1s required one scalar value but found: %2s";
 
 	
 	public PrimitiveBinder(Key<TYPE> key) {
 		super(key);
 	}
 	
-	public TYPE bind(List<LigoProvider> providers) {
+	public TYPE bind(List<LigoData> data) {
 		
 		TYPE defaultValue = (TYPE) defaultOf(key().toClass());
 		
-		if (providers.size()!=1)
+		if (data.size()!=1 || !(data.get(0) instanceof LigoValue))
 			if (mode()==STRICT)
-				throw new RuntimeException(format(CARDINALITY_ERROR,this,providers));
-			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{providers,this,defaultValue});
-				return defaultValue;
-			}
-		
-		LigoData data = providers.get(0).provide();
-	
-		if (!(data instanceof LigoValue))
-			if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,this,providers));
+				throw new RuntimeException(format(DATA_ERROR,this,data));
 			else {
 				logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,defaultValue});
 				return defaultValue;
 			}
 	
-		LigoValue ligoValue = (LigoValue) data;
+		LigoValue ligoValue = (LigoValue) data.get(0);
 		
 		Object javaObject = ligoValue.get();
 		
@@ -85,11 +73,11 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 				javaValue = defaultValue;
 			
 		@SuppressWarnings("unchecked")
-		TYPE result = (TYPE) javaValue;
+		TYPE typedJavaObject = (TYPE) javaValue;
 		
-		logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,result});
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{ligoValue,this,typedJavaObject});
 		
-		return result;
+		return typedJavaObject;
 	};
 	
 

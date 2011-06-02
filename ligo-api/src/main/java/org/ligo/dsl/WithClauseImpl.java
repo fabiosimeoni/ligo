@@ -4,7 +4,7 @@ import org.ligo.binders.Binder;
 import org.ligo.binders.BinderFactory;
 import org.ligo.core.Environment;
 import org.ligo.core.LigoFactory;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 
 class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
@@ -28,7 +28,7 @@ class WithClauseImpl<TYPE> implements WithClause<TYPE> {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public AndClause<TYPE,LigoProvider> in(Environment env) {
+	public AndClause<TYPE,LigoData> in(Environment env) {
 		return with(new LigoFactory<TYPE>(env));
 	}
 	
