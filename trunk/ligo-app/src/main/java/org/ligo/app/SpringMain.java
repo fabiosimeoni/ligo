@@ -3,7 +3,7 @@
  */
 package org.ligo.app;
 
-import org.ligo.core.impl.LigoEnvironment;
+import org.ligo.core.binders.impl.LigoEnvironment;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

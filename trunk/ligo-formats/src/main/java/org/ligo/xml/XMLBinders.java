@@ -3,7 +3,7 @@
  */
 package org.ligo.xml;
 
-import static org.ligo.core.Constants.*;
+import static org.ligo.core.utils.Constants.*;
 import static org.ligo.data.impl.DataBuilders.*;
 
 import java.io.Reader;
@@ -13,7 +13,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.ligo.core.Binder;
+import org.ligo.core.binders.api.Binder;
 import org.ligo.data.LigoData;
 import org.ligo.data.impl.NamedData;
 import org.w3c.dom.Element;
