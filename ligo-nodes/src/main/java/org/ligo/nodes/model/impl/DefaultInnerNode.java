@@ -287,7 +287,7 @@ public class DefaultInnerNode implements InnerNode {
 	
 	/**{@inheritDoc}*/
 	@Override
-	public List<LigoData> get(QName name) {
+	public List<LigoData> data(QName name) {
 				List<LigoData> data = new ArrayList<LigoData>();
 				for (Node n: children(name))
 					data.add(n);
@@ -297,7 +297,7 @@ public class DefaultInnerNode implements InnerNode {
 	/**{@inheritDoc}*/
 	@Override 
 	public Set<QName> names() {
-		return new HashSet<QName>(labels());
+		return new HashSet<QName>(names());
 	}	
 	
 	@Override
