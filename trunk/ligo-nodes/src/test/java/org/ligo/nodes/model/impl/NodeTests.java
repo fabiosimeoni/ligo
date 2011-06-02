@@ -51,7 +51,7 @@ public class NodeTests {
 	public void empty() {
 		
 		InnerNode node = n();
-		assertEquals(emptyList(), node.labels());
+		assertEquals(emptyList(), node.names());
 		assertEquals(emptyList(), node.edges());
 		assertEquals(emptyList(), node.edges("none"));
 		assertEquals(emptyList(), node.children());
@@ -92,7 +92,7 @@ public class NodeTests {
 		InnerNode node = n(e1,e2);
 
 		
-		assertEquals(asList(e1.label(),e2.label()), node.labels());
+		assertEquals(asList(e1.label(),e2.label()), node.names());
 		assertEquals(asList(e1.target(),e2.target()), node.children());
 		assertEquals(asList(e1,e2), node.edges());
 		
