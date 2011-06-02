@@ -13,7 +13,7 @@ import org.ligo.core.TestClassDefs.BindOnConstructor;
 import org.ligo.core.TestClassDefs.Empty;
 import org.ligo.core.TestClassDefs.Primitive;
 import org.ligo.core.TestClassDefs.SomeInterface;
-import org.ligo.core.impl.LigoResolver;
+import org.ligo.core.resolvers.impl.LigoResolver;
 
 /**
  * @author Fabio Simeoni

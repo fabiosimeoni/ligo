@@ -2,10 +2,10 @@ package org.ligo.dsl;
 
 import java.lang.annotation.Annotation;
 
-import org.ligo.core.Binder;
-import org.ligo.core.Literal;
+import org.ligo.core.binders.Binder;
 import org.ligo.core.keys.Key;
 import org.ligo.core.keys.Keys;
+import org.ligo.core.keys.Literal;
 
 public class Ligo {
 

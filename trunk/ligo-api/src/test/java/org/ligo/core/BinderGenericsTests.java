@@ -14,8 +14,11 @@ import org.ligo.core.TestGenericsClassDefs.MyAnnotatedGeneric;
 import org.ligo.core.TestGenericsClassDefs.MyGeneric;
 import org.ligo.core.TestGenericsClassDefs.NestedGeneric;
 import org.ligo.core.TestGenericsClassDefs.Sub;
-import org.ligo.core.impl.LigoEnvironment;
-import org.ligo.core.impl.LigoResolver;
+import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.impl.LigoEnvironment;
+import org.ligo.core.keys.Literal;
+import org.ligo.core.resolvers.impl.LigoResolver;
 
 /**
  * @author Fabio Simeoni

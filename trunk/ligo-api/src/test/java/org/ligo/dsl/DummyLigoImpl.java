@@ -7,10 +7,10 @@ import static org.ligo.core.keys.Keys.*;
 
 import java.io.Reader;
 
-import org.ligo.core.Binder;
-import org.ligo.core.BinderFactory;
-import org.ligo.core.Literal;
+import org.ligo.core.binders.Binder;
+import org.ligo.core.binders.BinderFactory;
 import org.ligo.core.keys.Key;
+import org.ligo.core.keys.Literal;
 import org.ligo.dsl.AndClause;
 import org.ligo.dsl.ClauseContext;
 import org.ligo.dsl.DSLDefaults;

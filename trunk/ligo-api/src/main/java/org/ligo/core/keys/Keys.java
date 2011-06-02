@@ -8,7 +8,6 @@ import static org.ligo.core.kinds.Kind.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import org.ligo.core.Literal;
 import org.ligo.core.kinds.Kind;
 
 /**

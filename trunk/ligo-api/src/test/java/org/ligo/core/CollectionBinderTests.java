@@ -11,8 +11,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.impl.LigoEnvironment;
-import org.ligo.core.impl.LigoResolver;
+import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.impl.LigoEnvironment;
+import org.ligo.core.keys.Literal;
+import org.ligo.core.resolvers.impl.LigoResolver;
 
 /**
  * @author Fabio Simeoni
