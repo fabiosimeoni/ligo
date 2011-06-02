@@ -4,7 +4,7 @@
 package org.ligo.xml;
 
 import static org.ligo.core.Constants.*;
-import static org.ligo.core.data.impl.DataBuilders.*;
+import static org.ligo.data.impl.DataBuilders.*;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.impl.NamedData;
+import org.ligo.core.Binder;
+import org.ligo.data.LigoData;
+import org.ligo.data.impl.NamedData;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;

@@ -18,10 +18,10 @@ import org.codehaus.jackson.JsonParser;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
+import org.ligo.core.Binder;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
+import org.ligo.data.LigoData;
 import org.ligo.nodes.model.api.Node;
 
 /**

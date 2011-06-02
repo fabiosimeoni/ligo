@@ -3,7 +3,7 @@
  */
 package org.ligo.nodes.patterns;
 
-import org.ligo.binders.Binder;
+import org.ligo.core.Binder;
 import org.ligo.nodes.model.api.Node;
 
 
