@@ -8,9 +8,11 @@ import static java.util.Collections.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -294,6 +296,9 @@ public class DefaultInnerNode implements InnerNode {
 				for (Node n: children(name))
 					provided.add(n);
 				return provided;
+			}
+			@Override public Set<QName> names() {
+				return new HashSet<QName>(labels());
 			}
 			public String toString() {
 				return DefaultInnerNode.this.toString();

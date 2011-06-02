@@ -146,7 +146,7 @@ public class BindingTests {
 		
 		resolver.bind(ManagedDep.class, DepImpl.class);
 		
-		Binder<Reader,Managed> binder = bind(Managed.class).in(env).and(JSON_READER).build();
+		Binder<Reader,ManagedJSON> binder = bind(ManagedJSON.class).in(env).and(JSON_READER).build();
 
 		String json = "{ " +
 		"			\"p1\" : \"hallo\", " +
@@ -158,7 +158,7 @@ public class BindingTests {
 		"		}";
 
 		
-		Managed m = binder.bind(new StringReader(json));
+		ManagedJSON m = binder.bind(new StringReader(json));
 		assertNotNull(m);
 	}
 }
