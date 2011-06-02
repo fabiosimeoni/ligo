@@ -6,14 +6,16 @@ package org.ligo.core;
 import static java.util.Arrays.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
 import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.data.LigoValue;
 
 
@@ -46,10 +48,30 @@ public class TestData {
 								result.add(p.p);
 						return result;
 					}
+					public Set<QName> names() {
+						Set<QName> names = new HashSet<QName>();
+						for (Pair p : ps)
+							names.add(new QName(p.s));
+						return names;
+					}
+					public boolean equals(Object obj) {
+						if (!(obj instanceof LigoObject))
+							return false; 
+						LigoObject lobj = (LigoObject) obj; 
+						for (Pair p : ps)
+							if (!(lobj.get(new QName(p.s)).equals(get(new QName(p.s)))))
+							 return false;
+						return true;
+					}
 					public String toString() {
 						return asList(ps).toString();
 					}
 				};
+			}
+			/**{@inheritDoc}*/
+			@Override
+			public boolean equals(Object obj) {
+				return obj instanceof LigoProvider && ((LigoProvider) obj).provide().equals(provide());
 			}
 			public String toString() {
 				return asList(ps).toString();
@@ -64,13 +86,22 @@ public class TestData {
 					public Object get() {
 						return o;
 					}
+					/**{@inheritDoc}*/
+					@Override
+					public boolean equals(Object obj) {
+						return obj instanceof LigoValue && ((LigoValue) obj).get().equals(o);
+					}
 					public String toString() {
 						return o.toString();
 					}
 				};
 				
 			}
-
+			/**{@inheritDoc}*/
+			@Override
+			public boolean equals(Object obj) {
+				return obj instanceof LigoProvider && ((LigoProvider) obj).provide().equals(provide());
+			}
 			public String toString() {
 				return o.toString();
 			}
@@ -94,4 +125,7 @@ public class TestData {
 			return s+":"+p.toString();
 		}
 	}
+	
+	
+
 }

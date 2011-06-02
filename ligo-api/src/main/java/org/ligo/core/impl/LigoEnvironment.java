@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ligo.core.Environment;
+import org.ligo.core.ExpressionResolver;
 import org.ligo.core.Literal;
 import org.ligo.core.Resolver;
 import org.ligo.core.TypeBinder;
@@ -77,30 +78,42 @@ public class LigoEnvironment implements Environment {
 
 	
 	private final Resolver resolver;
-	
+	private final ExpressionResolver expressionResolver;
+
 	/**
 	 * Creates an instance with default dependencies.
 	 */
 	public LigoEnvironment() {
-		this(new LigoResolver());
+		this(new LigoResolver(), new LigoExpressionResolver());
 	}
 	
 	/**
-	 * Creates an instance with a given {@link Resolver} and default {@link BinderProvider}s.
+	 * Creates an instance with a given {@link Resolver} and defaults for other dependencies.
 	 * @param r the resolver.
 	 */
 	public LigoEnvironment(Resolver r) {
-		this(r,DEFAULT_PROVIDERS);
+		this(r, new LigoExpressionResolver());
 	}
 	
 	/**
-	 * Creates an instance with a given {@link Resolver} and given {@link BinderProvider}s.
+	 * Creates an instance with a given {@link Resolver}, {@link ExpressionResolver}, and defaults for other dependencies.
 	 * @param r the resolver.
+	 * @param er the expression resolver.
+	 */
+	public LigoEnvironment(Resolver r, ExpressionResolver er) {
+		this(r,er,DEFAULT_PROVIDERS);
+	}
+	
+	/**
+	 * Creates an instance with a given {@link Resolver}, {@link ExpressionResolver}, and given {@link BinderProvider}s.
+	 * @param r the resolver.
+	 * @param er the expression resolver.
 	 * @param ps the providers.
 	 */
-	public LigoEnvironment(Resolver r, List<? extends BinderProvider<?>> ps) {
+	public LigoEnvironment(Resolver r, ExpressionResolver er, List<? extends BinderProvider<?>> ps) {
 		
 		resolver = r;
+		expressionResolver = er;
 		
 		//load providers
 		for (BinderProvider<?> provider : ps)
@@ -112,6 +125,12 @@ public class LigoEnvironment implements Environment {
 	public Resolver resolver() {
 		return resolver;
 	}
+	
+	/**{@inheritDoc}*/
+	@Override
+	public ExpressionResolver expressionResolver() {
+		return expressionResolver;
+	};
 
 	/**{@inheritDoc}*/
 	@Override

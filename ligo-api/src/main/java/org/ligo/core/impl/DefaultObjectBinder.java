@@ -85,40 +85,39 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<LigoProvider> provided) {
+	public T bind(List<LigoProvider> providers) {
 		
 		try {
 			
-			if (provided.size()!=1)
+			if (providers.size()!=1)
 				if (mode()==STRICT)
-					throw new RuntimeException(format(CARDINALITY_ERROR,this,provided));
+					throw new RuntimeException(format(CARDINALITY_ERROR,this,providers));
 				else
 					return null;
 			
 			
-			LigoData dp = provided.get(0).provide();
+			LigoProvider provider = providers.get(0); 
+			LigoData data = provider.provide();
 			
-			if (!(dp instanceof LigoObject))
+			if (!(data instanceof LigoObject))
 				if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,this,provided));
+					throw new RuntimeException(format(INPUT_ERROR,this,providers));
 				else
 					return null;
-			
-			LigoObject sp = (LigoObject) dp;
 			
 			@SuppressWarnings("unchecked") //internally consistent
-			T object = (T) cBinder.bind(sp);
+			T javaObject = (T) cBinder.bind(provider);
 			
 			//pull method parameters and invoke
 			for (MethodBinder mBinder : mBinders)
-				mBinder.bind(object,sp);			
+				mBinder.bind(javaObject,provider);			
 			
-			logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,object});
+			logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,javaObject});
 			
-			return object;
+			return javaObject;
 		}
 		catch(Throwable e) {
-			throw new RuntimeException(format(BINDING_ERROR,key(),provided),e);
+			throw new RuntimeException(format(BINDING_ERROR,key(),providers),e);
 		}
 	}
 	

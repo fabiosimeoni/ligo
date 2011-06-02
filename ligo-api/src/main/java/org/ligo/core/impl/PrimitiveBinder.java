@@ -37,57 +37,57 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		super(key);
 	}
 	
-	public TYPE bind(List<LigoProvider> provided) {
+	public TYPE bind(List<LigoProvider> providers) {
 		
 		TYPE defaultValue = (TYPE) defaultOf(key().toClass());
 		
-		if (provided.size()!=1)
+		if (providers.size()!=1)
 			if (mode()==STRICT)
-				throw new RuntimeException(format(CARDINALITY_ERROR,this,provided));
+				throw new RuntimeException(format(CARDINALITY_ERROR,this,providers));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{provided,this,defaultValue});
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{providers,this,defaultValue});
 				return defaultValue;
 			}
 		
-		LigoData dp = provided.get(0).provide();
+		LigoData data = providers.get(0).provide();
 	
-		if (!(dp instanceof LigoValue))
+		if (!(data instanceof LigoValue))
 			if (mode()==STRICT)
-					throw new RuntimeException(format(INPUT_ERROR,this,provided));
+					throw new RuntimeException(format(INPUT_ERROR,this,providers));
 			else {
-				logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,defaultValue});
+				logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,defaultValue});
 				return defaultValue;
 			}
 	
-		LigoValue vp = (LigoValue) dp;
+		LigoValue ligoValue = (LigoValue) data;
 		
-		Object input = vp.get();
+		Object javaObject = ligoValue.get();
 		
 		
-		Object output=null;
+		Object javaValue=null;
 		Throwable error=null;
 		
 		try{
-			output = key().toClass().isAssignableFrom(input.getClass())? 
-							key().toClass().cast(input) : 
-							valueOf(key().toClass(),input.toString());
+			javaValue = key().toClass().isAssignableFrom(javaObject.getClass())? 
+							key().toClass().cast(javaObject) : 
+							valueOf(key().toClass(),javaObject.toString());
 		}
 		catch(Throwable t) {
 			error=t;
 		}
 		
-		if (output == null)
+		if (javaValue == null)
 			if (mode()==STRICT)
 				throw error==null?
-					new RuntimeException(format(BINDING_ERROR,input,this)):
-					new RuntimeException(format(BINDING_ERROR,input,this),error);
+					new RuntimeException(format(BINDING_ERROR,javaObject,this)):
+					new RuntimeException(format(BINDING_ERROR,javaObject,this),error);
 			else
-				output = defaultValue;
+				javaValue = defaultValue;
 			
 		@SuppressWarnings("unchecked")
-		TYPE result = (TYPE) output;
+		TYPE result = (TYPE) javaValue;
 		
-		logger.trace(BINDING_SUCCESS_LOG,new Object[]{dp,this,result});
+		logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,result});
 		
 		return result;
 	};
