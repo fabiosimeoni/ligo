@@ -18,7 +18,7 @@ import javax.xml.namespace.QName;
 
 import org.ligo.core.data.LigoData;
 import org.ligo.core.data.LigoProvider;
-import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.impl.AbstractLigoObject;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;
@@ -290,7 +290,7 @@ public class DefaultInnerNode implements InnerNode {
 	/**{@inheritDoc}*/
 	@Override
 	public LigoData provide() {
-		return new LigoObject() {
+		return new AbstractLigoObject() {
 			public List<LigoProvider> get(QName name) {
 				List<LigoProvider> provided = new ArrayList<LigoProvider>();
 				for (Node n: children(name))
@@ -299,9 +299,6 @@ public class DefaultInnerNode implements InnerNode {
 			}
 			@Override public Set<QName> names() {
 				return new HashSet<QName>(labels());
-			}
-			public String toString() {
-				return DefaultInnerNode.this.toString();
 			}
 		};
 		
