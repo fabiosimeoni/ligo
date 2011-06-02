@@ -3,8 +3,9 @@
  */
 package org.ligo.core.data.impl;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -66,9 +67,11 @@ public abstract class AbstractLigoObject implements LigoObject {
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		List<LigoData> ps = new ArrayList<LigoData>();
+		Map<QName,LigoData> ps = new HashMap<QName,LigoData>();
 		for (QName name : names())
-			ps.addAll(data(name));
+			for (LigoData data : data(name))
+				ps.put(name,data);
+			
 		return ps.toString();
 	}
 	

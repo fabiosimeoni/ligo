@@ -36,7 +36,7 @@ public class DataBuilders {
 		return new NamedData(name, data);
 	}
 	
-	public static NamedData e(QName label, Object value) {
+	public static NamedData n(QName label, Object value) {
 		return new NamedData(label, v(value));
 	}
 	
