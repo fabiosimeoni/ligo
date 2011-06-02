@@ -4,12 +4,9 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.TestData.*;
+import static org.ligo.core.data.impl.DataBuilders.*;
 
 import org.junit.Test;
-import org.ligo.core.Environment;
-import org.ligo.core.Literal;
-import org.ligo.core.TypeBinder;
 import org.ligo.core.TestGenericsClassDefs.Generic;
 import org.ligo.core.TestGenericsClassDefs.GenericField;
 import org.ligo.core.TestGenericsClassDefs.IndirectNestedGeneric;
@@ -36,7 +33,7 @@ public class BinderGenericsTests {
 		//standard, flat-generic
 		TypeBinder<Generic<String>> b = env.binderFor(new Literal<Generic<String>>() {});
 		
-		Generic<String> r = b.bind(s(p("b","hello")));
+		Generic<String> r = b.bind(o(n("b","hello")));
 		
 		assertNotNull(r);
 		assertNotNull(r.t);
@@ -48,9 +45,9 @@ public class BinderGenericsTests {
 		//generic-of-a-generic: variable bindings retract along call chain
 		TypeBinder<Generic<Generic<String>>> b = env.binderFor(new Literal<Generic<Generic<String>>>() {});
 		
-		Generic<Generic<String>> r = b.bind(s(
-												p("b",
-													s(p("b","hello")))));
+		Generic<Generic<String>> r = b.bind(o(
+												n("b",
+													o(n("b","hello")))));
 		assertNotNull(r);
 		assertNotNull(r.t);
 		assertNotNull(r.t.t);
@@ -62,9 +59,9 @@ public class BinderGenericsTests {
 		//fields with different instantiations of same generic: Generic<String>, Generic<Integer>
 		TypeBinder<GenericField> b = env.binderFor(GenericField.class);	
 		
-		GenericField r = b.bind(s(
-								p("a",s(p("b","hello"))),
-								p("b",s(p("b",5)))));
+		GenericField r = b.bind(o(
+								n("a",o(n("b","hello"))),
+								n("b",o(n("b",5)))));
 		assertNotNull(r);
 		assertNotNull(r.gs);
 		assertNotNull(r.gi);
@@ -77,7 +74,7 @@ public class BinderGenericsTests {
 		//generic inherits binding from outer one: NestedGeneric<T> contains Generic<T>
 		TypeBinder<NestedGeneric<String>> b = env.binderFor(new Literal<NestedGeneric<String>>() {});
 		
-		NestedGeneric<String> r = b.bind(s(p("b",s(p("b","hello"))),p("c","world")));
+		NestedGeneric<String> r = b.bind(o(n("b",o(n("b","hello"))),n("c","world")));
 		
 		assertNotNull(r);
 		assertNotNull(r.t);
@@ -91,11 +88,11 @@ public class BinderGenericsTests {
 		//Generic<Dep> where Dep contains Generic<Integer>
 		TypeBinder<IndirectNestedGeneric> b = env.binderFor(new Literal<IndirectNestedGeneric>() {});
 		
-		IndirectNestedGeneric r = b.bind(s(
-											p("a",
-												s(p("b",
-														s(p("a",
-															s(p("b",5)))))))));
+		IndirectNestedGeneric r = b.bind(o(
+											n("a",
+												o(n("b",
+													o(n("a",
+														o(n("b",5)))))))));
 		
 		assertNotNull(r);
 		assertNotNull(r.gd);
@@ -112,7 +109,7 @@ public class BinderGenericsTests {
 		// variable bindings go up the inheritance hierarchy so that we can process inherited methods 
 		TypeBinder<MyGeneric> b = env.binderFor(MyGeneric.class);	
 		
-		MyGeneric r = b.bind(s(p("b","hello"),p("c",3)));
+		MyGeneric r = b.bind(o(n("b","hello"),n("c",3)));
 		
 		assertNotNull(r);
 		assertNotNull(r.t);
@@ -125,7 +122,7 @@ public class BinderGenericsTests {
 		//As before, but this this with overriding
 		TypeBinder<MyAnnotatedGeneric> b = env.binderFor(MyAnnotatedGeneric.class);	
 		
-		MyAnnotatedGeneric r = b.bind(s(p("a","hello"),p("c",3)));
+		MyAnnotatedGeneric r = b.bind(o(n("a","hello"),n("c",3)));
 		
 		assertNotNull(r);
 		assertNotNull(r.t);
@@ -138,7 +135,7 @@ public class BinderGenericsTests {
 		//As before, but this this with overriding
 		TypeBinder<Sub<Integer>> b = env.binderFor(new Literal<Sub<Integer>>() {});	
 		
-		Sub<Integer> r = b.bind(s(p("a","hello"),p("b",3)));
+		Sub<Integer> r = b.bind(o(n("a","hello"),n("b",3)));
 		
 		assertNotNull(r);
 	}

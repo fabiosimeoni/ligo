@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.TestData.*;
+import static org.ligo.core.data.impl.DataBuilders.*;
 
 import java.util.List;
 
@@ -37,21 +37,21 @@ public class ExpressionResolverTests {
 	@Test
 	public void resolve() {
 		
-		LigoObject lo = s(
-								p("1",
-									s(p("2",
-											s(p("3",1))))),
-								p("1",
-									s(p("2",
-											s(p("3",2))))),
-								p("1","stopshort"),
-								p("1",s(p("2","stopshort"))),
-								p("other",2));
+		LigoObject lo = o(
+							n("1",
+								o(n("2",
+										o(n("3",1))))),
+							n("1",
+								o(n("2",
+										o(n("3",2))))),
+							n("1","stopshort"),
+							n("1",o(n("2","stopshort"))),
+							n("other",2));
 		
 		LigoExpressionResolver r = new LigoExpressionResolver();
 		
 		List<LigoData> ps =  r.resolve(new QName("1/2/3"), lo);
-		assertEquals(list(v(1),v(2)), ps);
+		assertEquals(d(v(1),v(2)), ps);
 		
 		ps =  r.resolve(new QName("1/(.*)"), lo);
 		assertEquals(3,ps.size());

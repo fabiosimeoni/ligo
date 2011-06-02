@@ -52,10 +52,10 @@ public class LigoExpressionResolver implements ExpressionResolver {
 			String regexp = matcher.group(1);
 			for (QName n : object.names())
 				if (n.getLocalPart().matches(regexp))
-					matches.addAll(object.get(n));
+					matches.addAll(object.data(n));
 		}
 		else 
-			matches = object.get(name);
+			matches = object.data(name);
 		
 		return matches;
 	}

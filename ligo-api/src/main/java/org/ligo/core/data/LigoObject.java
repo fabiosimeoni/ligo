@@ -7,6 +7,6 @@ import javax.xml.namespace.QName;
 
 public interface LigoObject extends LigoData{
 
-	List<LigoData> get(QName name);
+	List<LigoData> data(QName name);
 	Set<QName> names();
 }
