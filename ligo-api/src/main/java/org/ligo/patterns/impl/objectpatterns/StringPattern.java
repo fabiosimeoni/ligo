@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.ligo.patterns.objectpatterns;
+package org.ligo.patterns.impl.objectpatterns;
 
 import static java.lang.String.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.ligo.patterns.ValuePattern;
-import org.ligo.patterns.constraints.Constraint;
+import org.ligo.patterns.api.Constraint;
+import org.ligo.patterns.impl.DefaultValuePattern;
 
 
 /**
@@ -17,7 +17,7 @@ import org.ligo.patterns.constraints.Constraint;
  *
  */
 @XmlRootElement 
-public class StringPattern extends ValuePattern<String, Constraint<? super String>> {
+public class StringPattern extends DefaultValuePattern<String, Constraint<? super String>> {
 	
 	/**
 	 * Creates an instance with a given constraint.

@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.ligo.patterns.constraints;
+package org.ligo.patterns.impl.constraints;
+
+import org.ligo.patterns.api.Constraint;
 
 
 /**

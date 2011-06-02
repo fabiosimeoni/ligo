@@ -5,11 +5,12 @@ package org.ligo.patterns;
 
 import static org.junit.Assert.*;
 import static org.ligo.data.impl.DataBuilders.*;
-import static org.ligo.patterns.Patterns.*;
+import static org.ligo.patterns.impl.Patterns.*;
 
 import org.junit.Test;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;
+import org.ligo.patterns.api.LigoPattern;
 
 /**
  * @author Fabio Simeoni
