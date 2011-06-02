@@ -5,7 +5,7 @@ package org.ligo.nodes.bindings;
 
 import static junit.framework.Assert.*;
 import static org.ligo.core.Constants.*;
-import static org.ligo.core.data.impl.DataBuilders.*;
+import static org.ligo.data.impl.DataBuilders.*;
 import static org.ligo.dsl.Ligo.*;
 import static org.ligo.json.JSonBinders.*;
 import static org.ligo.xml.XMLBinders.*;
@@ -18,11 +18,11 @@ import org.codehaus.jackson.JsonParser;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
+import org.ligo.core.Binder;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 
 /**
  * @author Fabio Simeoni

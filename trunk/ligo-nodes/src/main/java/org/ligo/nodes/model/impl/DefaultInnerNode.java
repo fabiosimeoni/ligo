@@ -16,7 +16,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
+import org.ligo.data.LigoData;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.InnerNode;
 import org.ligo.nodes.model.api.Node;

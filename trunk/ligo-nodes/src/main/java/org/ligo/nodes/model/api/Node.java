@@ -3,7 +3,7 @@
  */
 package org.ligo.nodes.model.api;
 
-import org.ligo.core.data.LigoData;
+import org.ligo.data.LigoData;
 
 
 /**

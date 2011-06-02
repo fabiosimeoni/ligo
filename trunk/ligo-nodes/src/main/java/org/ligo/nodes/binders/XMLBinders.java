@@ -13,8 +13,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
+import org.ligo.core.Binder;
+import org.ligo.data.LigoData;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
 import org.w3c.dom.Element;

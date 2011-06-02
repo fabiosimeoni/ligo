@@ -2,7 +2,7 @@ package org.ligo.json;
 
 import static org.codehaus.jackson.JsonToken.*;
 import static org.ligo.core.Constants.*;
-import static org.ligo.core.data.impl.DataBuilders.*;
+import static org.ligo.data.impl.DataBuilders.*;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import org.codehaus.jackson.JsonToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
-import org.ligo.core.data.impl.NamedData;
+import org.ligo.core.Binder;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
+import org.ligo.data.impl.NamedData;
 
 public class JSonBinders {
 	
