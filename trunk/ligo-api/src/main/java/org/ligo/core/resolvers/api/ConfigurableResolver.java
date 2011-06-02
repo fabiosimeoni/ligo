@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.core.resolvers;
+package org.ligo.core.resolvers.api;
 
 import java.lang.annotation.Annotation;
 

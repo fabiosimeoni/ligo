@@ -5,10 +5,10 @@ package org.ligo.core.binders.impl;
 
 import static java.lang.String.*;
 import static java.util.Collections.*;
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 
-import org.ligo.core.binders.BindMode;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.BindMode;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 

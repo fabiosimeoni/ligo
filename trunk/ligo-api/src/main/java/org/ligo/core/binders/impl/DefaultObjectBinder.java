@@ -4,7 +4,7 @@
 package org.ligo.core.binders.impl;
 
 import static java.lang.String.*;
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 import static org.ligo.core.binders.impl.MethodBinder.*;
 import static org.ligo.core.keys.Keys.*;
 
@@ -15,9 +15,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.ObjectBinder;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.ObjectBinder;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;

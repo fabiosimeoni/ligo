@@ -1,6 +1,6 @@
 package org.ligo.core.binders.impl;
 
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
@@ -9,7 +9,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.annotations.Bind;
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;
 

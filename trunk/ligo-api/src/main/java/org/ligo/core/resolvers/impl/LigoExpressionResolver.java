@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.resolvers.ExpressionResolver;
+import org.ligo.core.resolvers.api.ExpressionResolver;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;
 

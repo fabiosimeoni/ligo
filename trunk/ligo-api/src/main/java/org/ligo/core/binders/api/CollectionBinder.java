@@ -1,10 +1,9 @@
 /**
  * 
  */
-package org.ligo.core.binders;
+package org.ligo.core.binders.api;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 
 /**
@@ -13,7 +12,7 @@ import java.util.Iterator;
  * @author Fabio Simeoni
  *
  */
-public interface IteratorBinder<TYPE> extends TypeBinder<Iterator<TYPE>>{
+public interface CollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends TypeBinder<COLLTYPE>{
 
 	/**
 	 * Returns a binder for the elements of the collection to be bound.

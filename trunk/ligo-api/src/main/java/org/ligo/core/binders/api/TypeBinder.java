@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.core.binders;
+package org.ligo.core.binders.api;
 
 import java.util.List;
 

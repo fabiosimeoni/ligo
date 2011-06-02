@@ -12,7 +12,7 @@ import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 import org.ligo.core.binders.impl.LigoEnvironment;
 import org.ligo.core.resolvers.impl.LigoExpressionResolver;
 import org.ligo.core.resolvers.impl.LigoResolver;

@@ -13,7 +13,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.annotations.BindConstant;
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoObject;
 

@@ -1,12 +1,12 @@
 /**
  * 
  */
-package org.ligo.core.binders;
+package org.ligo.core.binders.api;
 
 import org.ligo.core.keys.Key;
 import org.ligo.core.keys.Literal;
-import org.ligo.core.resolvers.ExpressionResolver;
-import org.ligo.core.resolvers.Resolver;
+import org.ligo.core.resolvers.api.ExpressionResolver;
+import org.ligo.core.resolvers.api.Resolver;
 
 
 

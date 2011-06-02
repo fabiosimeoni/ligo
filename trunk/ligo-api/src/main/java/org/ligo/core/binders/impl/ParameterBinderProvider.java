@@ -6,7 +6,7 @@ package org.ligo.core.binders.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 
 /**
  * @author Fabio Simeoni

@@ -17,7 +17,7 @@ import java.util.Map;
 import org.ligo.core.annotations.Bind;
 import org.ligo.core.annotations.BindAdapter;
 import org.ligo.core.annotations.BindConstant;
-import org.ligo.core.binders.Environment;
+import org.ligo.core.binders.api.Environment;
 import org.ligo.core.keys.Key;
 
 

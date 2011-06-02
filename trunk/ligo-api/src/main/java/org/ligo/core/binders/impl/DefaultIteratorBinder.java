@@ -12,10 +12,10 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ligo.core.binders.CollectionBinder;
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.IteratorBinder;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.CollectionBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.IteratorBinder;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 import org.slf4j.Logger;

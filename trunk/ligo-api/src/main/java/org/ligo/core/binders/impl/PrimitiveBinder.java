@@ -4,14 +4,14 @@
 package org.ligo.core.binders.impl;
 
 import static java.lang.String.*;
-import static org.ligo.core.binders.BindMode.*;
+import static org.ligo.core.binders.api.BindMode.*;
 import static org.ligo.core.keys.Keys.*;
 import static org.ligo.core.utils.ReflectionUtils.*;
 
 import java.util.List;
 
-import org.ligo.core.binders.Environment;
-import org.ligo.core.binders.TypeBinder;
+import org.ligo.core.binders.api.Environment;
+import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
 import org.ligo.data.LigoValue;
