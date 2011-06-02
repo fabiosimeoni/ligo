@@ -4,16 +4,13 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.TestData.*;
+import static org.ligo.core.data.impl.DataBuilders.*;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.Environment;
-import org.ligo.core.Literal;
-import org.ligo.core.TypeBinder;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
@@ -38,7 +35,7 @@ public class CollectionBinderTests {
 	
 		TypeBinder<List<String>> b= env.binderFor(new Literal<List<String>>() {});
 		
-		List<String> r = b.bind(list(v("hello"),v("world")));
+		List<String> r = b.bind(d(v("hello"),v("world")));
 		assertNotNull(r);
 		assertEquals(2, r.size());
 		
@@ -49,7 +46,7 @@ public class CollectionBinderTests {
 	
 		TypeBinder<Iterator<String>> b= env.binderFor(new Literal<Iterator<String>>() {});
 		
-		Iterator<String> r = b.bind(list(v("hello"),v("world")));
+		Iterator<String> r = b.bind(d(v("hello"),v("world")));
 		assertNotNull(r);
 		while(r.hasNext())
 			assertNotNull(r.next());
@@ -61,7 +58,7 @@ public class CollectionBinderTests {
 	
 		TypeBinder<String[]> b= env.binderFor(new Literal<String[]>() {});
 		
-		String[] r = b.bind(list(v("hello"),v("world")));
+		String[] r = b.bind(d(v("hello"),v("world")));
 		assertNotNull(r);
 		
 	}
@@ -71,7 +68,7 @@ public class CollectionBinderTests {
 	
 		TypeBinder<List<String>[]> b1= env.binderFor(new Literal<List<String>[]>() {});
 		
-		List<String>[] r1 = b1.bind(list(v("hello"),v("world")));
+		List<String>[] r1 = b1.bind(d(v("hello"),v("world")));
 		assertNotNull(r1);
 		
 	}
@@ -81,7 +78,7 @@ public class CollectionBinderTests {
 	
 		TypeBinder<Integer[]> b2= env.binderFor(new Literal<Integer[]>() {});
 		
-		Integer[] r2 = b2.bind(list(v(3),v(5)));
+		Integer[] r2 = b2.bind(d(v(3),v(5)));
 		assertNotNull(r2);
 	}
 }

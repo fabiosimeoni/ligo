@@ -5,7 +5,7 @@ package org.ligo.core;
 
 import static org.junit.Assert.*;
 import static org.ligo.core.BindMode.*;
-import static org.ligo.core.TestData.*;
+import static org.ligo.core.data.impl.DataBuilders.*;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class BinderTests {
 	Environment env;
 	
 	@Before
-	public void setup() {
+	public void setun() {
 
 		resolver = new LigoResolver();
 		env = new LigoEnvironment(resolver);
@@ -60,14 +60,14 @@ public class BinderTests {
 		sb.bind(v(3));
 		
 		try {
-			sb.bind(s(p("1",v("hello"))));
+			sb.bind(o(n("1",v("hello"))));
 			fail();
 		}
 		catch(RuntimeException e) {
 			System.out.println("caught expected:"+e.getMessage());
 		}
 		
-		List<LigoData> ps = list(v("hello"),v("world"));
+		List<LigoData> ps = d(v("hello"),v("world"));
 		try {
 			sb.bind(ps);
 			fail();
@@ -81,7 +81,7 @@ public class BinderTests {
 		bound = sb.bind(v(3));
 		assertEquals("3",bound);
 		
-		bound = sb.bind(s(p("1",v("hello"))));
+		bound = sb.bind(o(n("1",v("hello"))));
 		assertNull(bound);
 		
 		bound = sb.bind(ps);
@@ -128,12 +128,12 @@ public class BinderTests {
 			System.out.println("caught expected:"+e.getMessage());
 		}
 		
-		SomeInterface r = b.bind(s());
+		SomeInterface r = b.bind(o());
 		assertNotNull(r);
 	}
 
 	@Test 
-	public void badConstructors() {
+	public void badConstructoro() {
 	
 		//badly annotated constructor
 		try {
@@ -160,27 +160,27 @@ public class BinderTests {
 		//on constructor
 		TypeBinder<BindOnConstructor> b0 = env.binderFor(BindOnConstructor.class);
 		
-		BindOnConstructor r0 = b0.bind(s(p("a","hello")));
+		BindOnConstructor r0 = b0.bind(o(n("a","hello")));
 		assertNotNull(r0);
 		
 		//on method
 		TypeBinder<BindOnMethod> b1 = env.binderFor(BindOnMethod.class);
 		
-		BindOnMethod r1 = b1.bind(s(p("a","hello")));
+		BindOnMethod r1 = b1.bind(o(n("a","hello")));
 		assertNotNull(r1);
 		assertTrue(r1.invoked);
 		
 		//on param
 		TypeBinder<BindOnParam> b2 = env.binderFor(BindOnParam.class);;
 		
-		BindOnParam r2 = b2.bind(s(p("a","hello")));
+		BindOnParam r2 = b2.bind(o(n("a","hello")));
 		assertNotNull(r2);
 		assertTrue(r2.invoked);
 		
 		//on many param
 		TypeBinder<BindOnManyParams> b3 = env.binderFor(BindOnManyParams.class);
 		
-		BindOnManyParams r3 = b3.bind(s(p("a","hello"),p("b","world")));
+		BindOnManyParams r3 = b3.bind(o(n("a","hello"),n("b","world")));
 		assertNotNull(r3);
 		assertTrue(r3.invoked);
 		
@@ -191,23 +191,23 @@ public class BinderTests {
 		
 		TypeBinder<Primitive> b = env.binderFor(Primitive.class);;
 		
-		Primitive r = b.bind(s(p("1",0),p("2",0),p("3",0),p("4",0),p("5",0),p("6",0),p("7",'c'),p("8",true)));
+		Primitive r = b.bind(o(n("1",0),n("2",0),n("3",0),n("4",0),n("5",0),n("6",0),n("7",'c'),n("8",true)));
 		assertNotNull(r);
 		assertEquals(8,r.invoked.size());
 	}
 	
 	@Test 
-	public void multiparams() {
+	public void multiparamo() {
 	
 		TypeBinder<MultiParams> b = env.binderFor(MultiParams.class);
 		
-		MultiParams r = b.bind(s(p("a","hello"),p("b","world")));
+		MultiParams r = b.bind(o(n("a","hello"),n("b","world")));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
 	
 	@Test 
-	public void duplicateLabels() {
+	public void duplicateLabelo() {
 	
 		//ambiguous constructors
 		try {
@@ -224,7 +224,7 @@ public class BinderTests {
 	
 		TypeBinder<Partial> b = env.binderFor(Partial.class);
 		
-		Partial r = b.bind(s(p("a","hello"),p("b","world")));
+		Partial r = b.bind(o(n("a","hello"),n("b","world")));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -235,13 +235,13 @@ public class BinderTests {
 		TypeBinder<Lax1> b = env.binderFor(Lax1.class);
 		
 		//a is missing, b is wrongly typed
-		Lax1 r = b.bind(s(p("b","world")));
+		Lax1 r = b.bind(o(n("b","world")));
 		assertNotNull(r);
 		assertTrue(r.invoked1);
 		assertTrue(r.invoked2);
 		
 		//all is missing
-		r = b.bind(s());
+		r = b.bind(o());
 		assertNotNull(r);
 		assertTrue(r.invoked1);
 		assertTrue(r.invoked2);
@@ -253,7 +253,7 @@ public class BinderTests {
 		TypeBinder<Lax2> b = env.binderFor(Lax2.class);
 		
 		//a is wrongly typed
-		Lax2 r = b.bind(s(p("a",3)));
+		Lax2 r = b.bind(o(n("a",3)));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -264,7 +264,7 @@ public class BinderTests {
 		TypeBinder<InterfaceImpl1> b = env.binderFor(InterfaceImpl1.class);
 		
 		//a is wrongly typed
-		InterfaceImpl1 r = b.bind(s(p("a","hello")));
+		InterfaceImpl1 r = b.bind(o(n("a","hello")));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -275,7 +275,7 @@ public class BinderTests {
 		TypeBinder<InterfaceImpl2> b = env.binderFor(InterfaceImpl2.class);
 		
 		//a is wrongly typed
-		InterfaceImpl2 r = b.bind(s(p("b","hello")));
+		InterfaceImpl2 r = b.bind(o(n("b","hello")));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -287,7 +287,7 @@ public class BinderTests {
 		TypeBinder<Adapted> b = env.binderFor(Adapted.class);
 		
 		//a is wrongly typed
-		Adapted r = b.bind(s(p("a","hello")));
+		Adapted r = b.bind(o(n("a","hello")));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -298,7 +298,7 @@ public class BinderTests {
 		TypeBinder<Adapted2> b = env.binderFor(Adapted2.class);
 		
 		//a is wrongly typed
-		Adapted2 r = b.bind(s(p("person",s(p("name","John"),p("age",20)))));
+		Adapted2 r = b.bind(o(n("person",o(n("name","John"),n("age",20)))));
 		assertNotNull(r);
 		assertTrue(r.invoked);
 	}
@@ -311,7 +311,7 @@ public class BinderTests {
 		
 		TypeBinder<SomeInterface> b = env.binderFor(SomeInterface.class);
 		
-		SomeInterface r = b.bind(s(p("a","hello"),p("c","world")));
+		SomeInterface r = b.bind(o(n("a","hello"),n("c","world")));
 		assertNotNull(r);
 		assertTrue(r instanceof Empty);
 	}

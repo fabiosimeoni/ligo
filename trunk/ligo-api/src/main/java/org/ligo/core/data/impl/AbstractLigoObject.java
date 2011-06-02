@@ -25,7 +25,7 @@ public abstract class AbstractLigoObject implements LigoObject {
 		Set<QName> names = names();
 		if (names()!=null)
 			for (QName name : names) {
-				List<LigoData> ps = get(name);
+				List<LigoData> ps = data(name);
 				if (ps!=null)
 					result = prime * result + ((ps == null) ? 0 : ps.hashCode());
 				else
@@ -51,8 +51,8 @@ public abstract class AbstractLigoObject implements LigoObject {
 				return false;
 		} else 
 			for (QName name : other.names()) {
-				List<LigoData> ps = get(name);
-				List<LigoData> otherps = other.get(name);
+				List<LigoData> ps = data(name);
+				List<LigoData> otherps = other.data(name);
 				if (ps ==null) {
 					if (otherps!=null)
 						return false;
@@ -68,7 +68,7 @@ public abstract class AbstractLigoObject implements LigoObject {
 	public String toString() {
 		List<LigoData> ps = new ArrayList<LigoData>();
 		for (QName name : names())
-			ps.addAll(get(name));
+			ps.addAll(data(name));
 		return ps.toString();
 	}
 	
