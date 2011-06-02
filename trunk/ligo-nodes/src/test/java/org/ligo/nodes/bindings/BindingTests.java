@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 import org.ligo.nodes.model.api.Node;
@@ -47,7 +47,7 @@ public class BindingTests {
 		
 		resolver.bind(ManagedDep.class, DepImpl.class);
 		
-		Binder<LigoProvider,Managed> binder = bind(Managed.class).in(env).build();
+		Binder<LigoData,Managed> binder = bind(Managed.class).in(env).build();
 		
 		Node n = n(
 				e("p1","hello"),

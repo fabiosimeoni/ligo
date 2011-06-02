@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
 import org.w3c.dom.Element;
@@ -33,16 +33,16 @@ public class XMLBinders {
 	static {
 		factory.setNamespaceAware(true);
 	}
-	public static final Binder<Element,LigoProvider> DOM = new Binder<Element,LigoProvider>() {
+	public static final Binder<Element,LigoData> DOM = new Binder<Element,LigoData>() {
 		@Override
-		public LigoProvider bind(Element e) {
+		public LigoData bind(Element e) {
 			return fromElementRec(e);
 		}
 	};
 	
-	public static final Binder<Reader,LigoProvider> XREADER = new Binder<Reader,LigoProvider>() {
+	public static final Binder<Reader,LigoData> XREADER = new Binder<Reader,LigoData>() {
 		@Override
-		public LigoProvider bind(Reader r) {
+		public LigoData bind(Reader r) {
 			try {
 				return XSOURCE.bind(new InputSource(r));
 			}
@@ -52,9 +52,9 @@ public class XMLBinders {
 		}
 	};
 	
-	public static final Binder<InputSource,LigoProvider> XSOURCE = new Binder<InputSource,LigoProvider>() {
+	public static final Binder<InputSource,LigoData> XSOURCE = new Binder<InputSource,LigoData>() {
 		@Override
-		public LigoProvider bind(InputSource s) {
+		public LigoData bind(InputSource s) {
 			try {
 				return fromElementRec(factory.newDocumentBuilder().parse(s).getDocumentElement());
 			}

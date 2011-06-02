@@ -7,12 +7,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.ligo.core.data.LigoObject;
+
 /**
  * 
  * @author Fabio Simeoni
  *
  */
-public interface InnerNode extends Node {
+public interface InnerNode extends Node,LigoObject {
 
 	List<QName> labels();
 

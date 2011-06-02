@@ -18,23 +18,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ligo.binders.Binder;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 import org.ligo.nodes.model.api.Edge;
 import org.ligo.nodes.model.api.Node;
 
 public class JSonBinders {
 	
-	public static final Binder<JSONObject,LigoProvider> JSON_OBJECT = new Binder<JSONObject,LigoProvider>() {
+	public static final Binder<JSONObject,LigoData> JSON_OBJECT = new Binder<JSONObject,LigoData>() {
 		@Override
-		public LigoProvider bind(JSONObject jso) {
+		public LigoData bind(JSONObject jso) {
 			return convert(jso);
 		}
 	};
 	
 	// to handle top-level json arrays
-	public static final Binder<JSONArray,LigoProvider> JSON_ARRAY = new Binder<JSONArray,LigoProvider>() {
+	public static final Binder<JSONArray,LigoData> JSON_ARRAY = new Binder<JSONArray,LigoData>() {
 		@Override
-		public LigoProvider bind(JSONArray jsa) {
+		public LigoData bind(JSONArray jsa) {
 			return convert(jsa);
 		}		
 	};
@@ -95,7 +95,7 @@ public class JSonBinders {
 	////////////////////JACKSON-BASED
 	
 	
-		public static final Binder<Reader,LigoProvider> JSON_READER = new Binder<Reader,LigoProvider>() {
+		public static final Binder<Reader,LigoData> JSON_READER = new Binder<Reader,LigoData>() {
 			@Override
 			public Node bind(Reader r) {
 				try {
