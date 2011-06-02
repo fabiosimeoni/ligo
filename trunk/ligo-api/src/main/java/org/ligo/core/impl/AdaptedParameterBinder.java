@@ -14,7 +14,6 @@ import org.ligo.core.TypeBinder;
 import org.ligo.core.annotations.AbstractBindAdapter;
 import org.ligo.core.annotations.BindAdapter;
 import org.ligo.core.data.LigoProvider;
-import org.ligo.core.data.LigoObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +45,14 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 
 	}
 	
-	public Object bind(LigoObject sp) {
+	public Object bind(LigoProvider provider) {
 		
 		//set mode, lazily on potentially cached binders
 		if (annotation.mode()!=DEFAULT)
 			binder().setMode(annotation.mode());
-			
-		return binder().bind(sp.get(boundName()));
+		
+		List<LigoProvider> providers = environment().expressionResolver().resolve(boundName(),provider);
+		return binder().bind(providers);
 	
 	}
 	

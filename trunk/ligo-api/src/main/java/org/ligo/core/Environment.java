@@ -46,4 +46,10 @@ public interface Environment {
 	 */
 	Resolver resolver();
 	
+	/**
+	 * Returns the {@link ExpressionResolver} used by the environment.
+	 * @return the resolver.
+	 */
+	ExpressionResolver expressionResolver();
+	
 }

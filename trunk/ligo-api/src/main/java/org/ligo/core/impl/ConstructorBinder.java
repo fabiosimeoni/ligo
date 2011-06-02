@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.BindingAnnotation;
-import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 
 /**
@@ -85,12 +85,12 @@ public class ConstructorBinder extends MemberBinder<Constructor<?>> {
 		
 	}
 	
-	public Object bind(LigoObject sp) {
+	public Object bind(LigoProvider provider) {
 		
 		List<Object> values = new ArrayList<Object>();
 		
 		for (ParameterBinder<?> pbinder : parameterBinders())
-			values.add(pbinder.bind(sp));
+			values.add(pbinder.bind(provider));
 		
 		return environment().resolver().resolve(key().toClass(),values);
 		

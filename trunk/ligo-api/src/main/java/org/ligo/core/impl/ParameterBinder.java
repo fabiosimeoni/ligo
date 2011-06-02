@@ -8,7 +8,7 @@ import java.lang.reflect.Member;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoProvider;
 
 /**
  * @author Fabio Simeoni
@@ -18,6 +18,6 @@ public interface ParameterBinder<M extends Member> {
 
 	QName boundName();
 	TypeBinder<?> binder();
-	Object bind(LigoObject sp);
+	Object bind(LigoProvider sp);
 	
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.ligo.core.Environment;
 import org.ligo.core.annotations.BindingAnnotation;
-import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoProvider;
 import org.ligo.core.keys.Key;
 
 /**
@@ -101,12 +101,12 @@ public class MethodBinder extends MemberBinder<Method> {
 		
 	}
 	
-	public void bind(Object o, LigoObject sp) throws Exception {
+	public void bind(Object o, LigoProvider p) throws Exception {
 		
 		List<Object> values = new ArrayList<Object>();
 		
 		for (ParameterBinder<?> pbinder : parameterBinders())
-			values.add(pbinder.bind(sp));
+			values.add(pbinder.bind(p));
 		
 		member().invoke(o,values.toArray(new Object[0]));
 

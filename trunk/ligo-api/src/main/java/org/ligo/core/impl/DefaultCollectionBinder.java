@@ -51,19 +51,19 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	}
 	
 	@Override
-	public COLLTYPE bind(List<LigoProvider> provided) {
+	public COLLTYPE bind(List<LigoProvider> providers) {
 		
 		List<TYPE> temp = new ArrayList<TYPE>();
 		
-		for (LigoProvider p : provided)
+		for (LigoProvider provider : providers)
 			try {
-				temp.add(binder.bind(singletonList(p)));
+				temp.add(binder.bind(singletonList(provider)));
 			}
 			catch(RuntimeException e) {
 				switch(mode()) {
 					case STRICT: throw e; 
 					case LAX: 
-						logger.warn("skipping "+p+", which cannot be bound",e);
+						logger.warn("skipping "+provider+", which cannot be bound",e);
 						continue;
 				}
 				
