@@ -3,8 +3,6 @@
  */
 package org.ligo.core;
 
-import static java.util.Arrays.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,7 +12,8 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoObject;
+import org.ligo.core.data.LigoValue;
 import org.ligo.core.data.impl.AbstractLigoObject;
 import org.ligo.core.data.impl.AbstractLigoValue;
 
@@ -26,82 +25,55 @@ import org.ligo.core.data.impl.AbstractLigoValue;
 public class TestData {
 
 	
-	public static List<LigoProvider> list(LigoProvider ... ps) {
+	public static List<LigoData> list(LigoData ... data) {
 		
-		List<LigoProvider> result = new LinkedList<LigoProvider>();
-		for (LigoProvider p : ps)
-			result.add(p);
+		List<LigoData> result = new LinkedList<LigoData>();
+		for (LigoData d : data)
+			result.add(d);
 		return result;
 		
 	}
 	
-	public static LigoProvider s(final Pair ...ps) {
+	public static LigoObject s(final Pair ...ps) {
 		
-		return new LigoProvider() {
-			
-			public LigoData provide() {
-				return new AbstractLigoObject() {
-					public List<LigoProvider> get(QName name) {
-						List<LigoProvider> result = new ArrayList<LigoProvider>();
+		return new AbstractLigoObject() {
+					public List<LigoData> get(QName name) {
+						List<LigoData> result = new ArrayList<LigoData>();
 						for (Pair p : ps)
-							if (p.s.equals(name.getLocalPart()))
-								result.add(p.p);
+							if (p.name.equals(name))
+								result.add(p.data);
 						return result;
 					}
 					public Set<QName> names() {
 						Set<QName> names = new HashSet<QName>();
 						for (Pair p : ps)
-							names.add(new QName(p.s));
+							names.add(p.name);
 						return names;
 					}
 				};
-			}
-			/**{@inheritDoc}*/
-			@Override
-			public boolean equals(Object obj) {
-				return obj instanceof LigoProvider && ((LigoProvider) obj).provide().equals(provide());
-			}
-			public String toString() {
-				return asList(ps).toString();
-			}
-		};
 	}
 
-	public static LigoProvider v(final Object o) {
-		return new LigoProvider() {
-			public LigoData provide() {
-				return new AbstractLigoValue() {
-					public Object get() {
-						return o;
-					}
+	public static LigoValue v(final Object o) {
+		return new AbstractLigoValue() {
+					public Object get() {return o;}
 				};
-			}
-			/**{@inheritDoc}*/
-			@Override
-			public boolean equals(Object obj) {
-				return obj instanceof LigoProvider && ((LigoProvider) obj).provide().equals(provide());
-			}
-			public String toString() {
-				return o.toString();
-			}
-		};
-		
 	}
 	
-	public static Pair p(String s,LigoProvider p) {
-		return new Pair(s,p);
+	public static Pair p(String s,LigoData p) {
+		return new Pair(new QName(s),p);
 	}
 	public static Pair p(String s,Object o) {
-		return new Pair(s,v(o));
+		return new Pair(new QName(s),v(o));
 	}
 	
 	static class Pair {
-		String s; LigoProvider p;
-		Pair(String s, LigoProvider p) {
-			this.s=s;this.p=p;
+		QName name; LigoData data;
+		Pair(QName n, LigoData d) {
+			name=n;
+			data=d;
 		}
 		public String toString() {
-			return s+":"+p.toString();
+			return name+":"+data;
 		}
 	}
 	

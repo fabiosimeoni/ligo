@@ -13,7 +13,8 @@ import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.annotations.AbstractBindAdapter;
 import org.ligo.core.annotations.BindAdapter;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
+import org.ligo.core.data.LigoObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +46,14 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 
 	}
 	
-	public Object bind(LigoProvider provider) {
+	public Object bind(LigoObject ligoObject) {
 		
 		//set mode, lazily on potentially cached binders
 		if (annotation.mode()!=DEFAULT)
 			binder().setMode(annotation.mode());
 		
-		List<LigoProvider> providers = environment().expressionResolver().resolve(boundName(),provider);
-		return binder().bind(providers);
+		List<LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
+		return binder().bind(data);
 	
 	}
 	
@@ -71,7 +72,7 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 
 		/**{@inheritDoc}*/
 		@Override
-		public OUTTYPE bind(List<LigoProvider> i) {
+		public OUTTYPE bind(List<LigoData> i) {
 			INTYPE bound = inBinder.bind(i);
 			OUTTYPE adapted = adapter.bind(bound);
 			logger.trace("bound {} to {}",bound,adapted);

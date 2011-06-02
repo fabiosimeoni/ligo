@@ -4,15 +4,13 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.TestData.*;
 import static org.ligo.core.BindMode.*;
+import static org.ligo.core.TestData.*;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.Environment;
-import org.ligo.core.TypeBinder;
 import org.ligo.core.TestClassDefs.Adapted;
 import org.ligo.core.TestClassDefs.Adapted2;
 import org.ligo.core.TestClassDefs.BadPlacement;
@@ -31,7 +29,7 @@ import org.ligo.core.TestClassDefs.Partial;
 import org.ligo.core.TestClassDefs.Primitive;
 import org.ligo.core.TestClassDefs.SomeInterface;
 import org.ligo.core.TestClassDefs.TooManyConstructors;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoResolver;
 
@@ -69,7 +67,7 @@ public class BinderTests {
 			System.out.println("caught expected:"+e.getMessage());
 		}
 		
-		List<LigoProvider> ps = list(v("hello"),v("world"));
+		List<LigoData> ps = list(v("hello"),v("world"));
 		try {
 			sb.bind(ps);
 			fail();

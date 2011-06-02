@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The default {@link Environment} implementation.
- * <p>
+ * <data>
  * It caches {@link TypeBinder}s and resolves type variables. By default, it relies on a {@link LigoResolver}
  * and on a set of default {@link BinderProvider}s.
  * 

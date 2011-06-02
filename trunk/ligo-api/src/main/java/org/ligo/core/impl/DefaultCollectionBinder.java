@@ -15,7 +15,7 @@ import java.util.List;
 import org.ligo.core.CollectionBinder;
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.LigoProvider;
+import org.ligo.core.data.LigoData;
 import org.ligo.core.keys.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +51,11 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	}
 	
 	@Override
-	public COLLTYPE bind(List<LigoProvider> providers) {
+	public COLLTYPE bind(List<LigoData> data) {
 		
 		List<TYPE> temp = new ArrayList<TYPE>();
 		
-		for (LigoProvider provider : providers)
+		for (LigoData provider : data)
 			try {
 				temp.add(binder.bind(singletonList(provider)));
 			}
