@@ -14,9 +14,9 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
 import org.ligo.core.data.LigoProvider;
-import org.ligo.core.data.LigoValue;
+import org.ligo.core.data.impl.AbstractLigoObject;
+import org.ligo.core.data.impl.AbstractLigoValue;
 
 
 /**
@@ -40,7 +40,7 @@ public class TestData {
 		return new LigoProvider() {
 			
 			public LigoData provide() {
-				return new LigoObject() {
+				return new AbstractLigoObject() {
 					public List<LigoProvider> get(QName name) {
 						List<LigoProvider> result = new ArrayList<LigoProvider>();
 						for (Pair p : ps)
@@ -53,18 +53,6 @@ public class TestData {
 						for (Pair p : ps)
 							names.add(new QName(p.s));
 						return names;
-					}
-					public boolean equals(Object obj) {
-						if (!(obj instanceof LigoObject))
-							return false; 
-						LigoObject lobj = (LigoObject) obj; 
-						for (Pair p : ps)
-							if (!(lobj.get(new QName(p.s)).equals(get(new QName(p.s)))))
-							 return false;
-						return true;
-					}
-					public String toString() {
-						return asList(ps).toString();
 					}
 				};
 			}
@@ -82,20 +70,11 @@ public class TestData {
 	public static LigoProvider v(final Object o) {
 		return new LigoProvider() {
 			public LigoData provide() {
-				return new LigoValue() {
+				return new AbstractLigoValue() {
 					public Object get() {
 						return o;
 					}
-					/**{@inheritDoc}*/
-					@Override
-					public boolean equals(Object obj) {
-						return obj instanceof LigoValue && ((LigoValue) obj).get().equals(o);
-					}
-					public String toString() {
-						return o.toString();
-					}
 				};
-				
 			}
 			/**{@inheritDoc}*/
 			@Override
