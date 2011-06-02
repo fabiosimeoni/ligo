@@ -1,8 +1,8 @@
 package org.ligo.dsl;
 
-import org.ligo.core.Binder;
-import org.ligo.core.BinderFactory;
-import org.ligo.core.Environment;
+import org.ligo.core.binders.Binder;
+import org.ligo.core.binders.BinderFactory;
+import org.ligo.core.binders.Environment;
 import org.ligo.data.LigoData;
 
 public interface WithClause<TYPE> {

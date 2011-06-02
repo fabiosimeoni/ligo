@@ -5,13 +5,13 @@ package org.ligo.core.annotations;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
-import static org.ligo.core.BindMode.*;
+import static org.ligo.core.binders.BindMode.*;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.ligo.core.BindMode;
+import org.ligo.core.binders.BindMode;
 
 
 /**

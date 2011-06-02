@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.BindMode.*;
+import static org.ligo.core.binders.BindMode.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

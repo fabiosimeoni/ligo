@@ -11,8 +11,8 @@ import static org.ligo.core.kinds.Kind.KindValue.*;
 import java.util.List;
 
 import org.junit.Test;
-import org.ligo.core.Literal;
 import org.ligo.core.keys.Key;
+import org.ligo.core.keys.Literal;
 import org.ligo.core.kinds.Kind;
 
 /**
