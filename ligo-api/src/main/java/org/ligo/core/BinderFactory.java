@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.binders;
+package org.ligo.core;
 
 import org.ligo.core.keys.Key;
 

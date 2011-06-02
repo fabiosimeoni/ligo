@@ -3,11 +3,9 @@
  */
 package org.ligo.core;
 
-import org.ligo.binders.Binder;
-import org.ligo.binders.BinderFactory;
-import org.ligo.core.data.LigoData;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.keys.Key;
+import org.ligo.data.LigoData;
 
 /**
  * A env of {@link TypeBinder}s.

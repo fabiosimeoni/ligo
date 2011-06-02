@@ -1,6 +1,6 @@
 package org.ligo.dsl;
 
-import org.ligo.binders.Binder;
+import org.ligo.core.Binder;
 
 class DelegateBinder<IN,TYPE> implements Binder<IN, TYPE> {
 	

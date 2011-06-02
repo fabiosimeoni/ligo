@@ -1,4 +1,4 @@
-package org.ligo.core.data;
+package org.ligo.data;
 
 import java.util.List;
 import java.util.Set;

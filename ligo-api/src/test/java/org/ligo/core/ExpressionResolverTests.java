@@ -4,7 +4,7 @@
 package org.ligo.core;
 
 import static org.junit.Assert.*;
-import static org.ligo.core.data.impl.DataBuilders.*;
+import static org.ligo.data.impl.DataBuilders.*;
 
 import java.util.List;
 
@@ -12,11 +12,11 @@ import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
 import org.ligo.core.impl.LigoEnvironment;
 import org.ligo.core.impl.LigoExpressionResolver;
 import org.ligo.core.impl.LigoResolver;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 
 /**
  * @author Fabio Simeoni

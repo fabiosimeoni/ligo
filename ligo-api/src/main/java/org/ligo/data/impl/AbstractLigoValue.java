@@ -1,9 +1,9 @@
 /**
  * 
  */
-package org.ligo.core.data.impl;
+package org.ligo.data.impl;
 
-import org.ligo.core.data.LigoValue;
+import org.ligo.data.LigoValue;
 
 /**
  * @author Fabio Simeoni

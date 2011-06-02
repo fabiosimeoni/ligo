@@ -9,8 +9,8 @@ import static org.ligo.core.BindMode.*;
 
 import org.ligo.core.BindMode;
 import org.ligo.core.TypeBinder;
-import org.ligo.core.data.LigoData;
 import org.ligo.core.keys.Key;
+import org.ligo.data.LigoData;
 
 /**
  * @author Fabio Simeoni

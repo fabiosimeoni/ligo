@@ -7,8 +7,8 @@ import static org.ligo.core.keys.Keys.*;
 
 import java.io.Reader;
 
-import org.ligo.binders.Binder;
-import org.ligo.binders.BinderFactory;
+import org.ligo.core.Binder;
+import org.ligo.core.BinderFactory;
 import org.ligo.core.Literal;
 import org.ligo.core.keys.Key;
 import org.ligo.dsl.AndClause;

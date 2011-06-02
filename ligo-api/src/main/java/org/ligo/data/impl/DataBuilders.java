@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.core.data.impl;
+package org.ligo.data.impl;
 
 import static java.util.Arrays.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
-import org.ligo.core.data.LigoValue;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
+import org.ligo.data.LigoValue;
 
 /**
  * @author Fabio Simeoni

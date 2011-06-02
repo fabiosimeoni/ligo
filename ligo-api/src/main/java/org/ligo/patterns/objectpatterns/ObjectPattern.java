@@ -11,10 +11,10 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.ligo.core.data.LigoData;
-import org.ligo.core.data.LigoObject;
-import org.ligo.core.data.impl.DefaultLigoObject;
-import org.ligo.core.data.impl.NamedData;
+import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
+import org.ligo.data.impl.DefaultLigoObject;
+import org.ligo.data.impl.NamedData;
 import org.ligo.patterns.DataPattern;
 import org.ligo.patterns.LigoPattern;
 

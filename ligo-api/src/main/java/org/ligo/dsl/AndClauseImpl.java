@@ -2,8 +2,8 @@ package org.ligo.dsl;
 
 import static org.ligo.dsl.Ligo.*;
 
-import org.ligo.binders.Binder;
-import org.ligo.binders.BinderFactory;
+import org.ligo.core.Binder;
+import org.ligo.core.BinderFactory;
 
 class AndClauseImpl<TYPE,IN> implements AndClause<TYPE, IN> {
 	

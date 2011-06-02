@@ -1,4 +1,4 @@
-package org.ligo.binders;
+package org.ligo.core;
 
 /**
  * Binds an input to an output.

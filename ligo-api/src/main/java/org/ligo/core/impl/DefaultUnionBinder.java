@@ -11,8 +11,8 @@ import java.util.List;
 import org.ligo.core.Environment;
 import org.ligo.core.TypeBinder;
 import org.ligo.core.UnionBinder;
-import org.ligo.core.data.LigoData;
 import org.ligo.core.keys.Key;
+import org.ligo.data.LigoData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

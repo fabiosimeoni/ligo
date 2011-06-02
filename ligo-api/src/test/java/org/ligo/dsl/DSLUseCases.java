@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.junit.Test;
-import org.ligo.binders.Binder;
+import org.ligo.core.Binder;
 import org.ligo.core.Literal;
 import org.ligo.dsl.DummyLigoImpl.Data;
 import org.ligo.dsl.DummyLigoImpl.DataBinder;

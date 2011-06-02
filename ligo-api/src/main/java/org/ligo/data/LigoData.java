@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ligo.core.data;
+package org.ligo.data;
 
 
 
