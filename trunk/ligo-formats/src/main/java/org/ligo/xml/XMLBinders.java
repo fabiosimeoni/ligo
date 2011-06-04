@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.ligo.core.binders.api.Binder;
 import org.ligo.data.LigoData;
+import org.ligo.data.LigoValue;
 import org.ligo.data.impl.NamedData;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -80,9 +81,9 @@ public class XMLBinders {
 		
 		NodeList children = e.getChildNodes();
 		if (children.getLength()==1 && children.item(0).getNodeType()==3) {
-			Object value = v(children.item(0).getNodeValue());
+			LigoValue value = v(children.item(0).getNodeValue());
 			if (data.size()==0)
-				return v(children.item(0).getNodeValue());
+				return value;
 			else
 				data.add(n(NONAME,value));
 		}		
