@@ -45,7 +45,7 @@ public class DefaultUnionBinder<T> extends AbstractBinder<T> implements UnionBin
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<LigoData> i) {
+	public T bind(List<? extends LigoData> i) {
 		
 		for (TypeBinder<T> branch : branches)
 			try {

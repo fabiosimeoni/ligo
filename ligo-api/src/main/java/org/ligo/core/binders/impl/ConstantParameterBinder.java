@@ -45,7 +45,7 @@ public class ConstantParameterBinder<M extends Member> extends AbstractParameter
 		
 		setBinder(new AbstractBinder<Object>(param.key()) {
 
-			@Override public Object bind(List<LigoData> data) {
+			@Override public Object bind(List<? extends LigoData> data) {
 				return constant;
 			}
 			

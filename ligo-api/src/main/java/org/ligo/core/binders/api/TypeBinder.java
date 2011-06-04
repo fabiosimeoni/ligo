@@ -31,7 +31,7 @@ public interface TypeBinder<T> extends Binder<LigoData,T> {
 	public T bind(LigoData data);
 	
 	/**{@inheritDoc}*/
-	public T bind(List<LigoData> data);
+	public T bind(List<? extends LigoData> data);
 	
 	/**
 	 * Sets the {@link BindMode} on the binder.

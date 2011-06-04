@@ -3,6 +3,9 @@
  */
 package org.ligo.core.utils;
 
+import javax.xml.namespace.QName;
+
+
 
 /**
  * @author Fabio Simeoni
@@ -11,9 +14,5 @@ package org.ligo.core.utils;
 public class Constants {
 
 	public static final String NONAME="_"+'\u00C6'+"_";
-	
-	public static void main(String[] args) {
-		
-		System.out.println(NONAME);
-	}
+	public static final QName NONAME_QNAME=new QName("_"+'\u00C6'+"_");
 }

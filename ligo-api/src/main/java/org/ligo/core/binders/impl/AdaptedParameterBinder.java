@@ -52,7 +52,7 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 		if (annotation.mode()!=DEFAULT)
 			binder().setMode(annotation.mode());
 		
-		List<LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
+		List<? extends LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
 		return binder().bind(data);
 	
 	}
@@ -72,7 +72,7 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 
 		/**{@inheritDoc}*/
 		@Override
-		public OUTTYPE bind(List<LigoData> i) {
+		public OUTTYPE bind(List<? extends LigoData> i) {
 			INTYPE bound = inBinder.bind(i);
 			OUTTYPE adapted = adapter.bind(bound);
 			logger.trace("bound {} to {}",bound,adapted);

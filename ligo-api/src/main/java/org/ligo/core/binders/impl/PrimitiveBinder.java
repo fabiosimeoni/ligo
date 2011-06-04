@@ -35,7 +35,7 @@ class PrimitiveBinder<TYPE> extends AbstractBinder<TYPE> {
 		super(key);
 	}
 	
-	public TYPE bind(List<LigoData> data) {
+	public TYPE bind(List<? extends LigoData> data) {
 		
 		TYPE defaultValue = (TYPE) defaultOf(key().toClass());
 		

@@ -63,7 +63,7 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	}
 	
 	@Override
-	public Iterator<TYPE> bind(List<LigoData> data) {
+	public Iterator<TYPE> bind(List<? extends LigoData> data) {
 		Iterator<TYPE> iterator = backing.bind(data).iterator();
 		logger.trace(BINDING_SUCCESS_LOG,new Object[]{data,this,iterator});
 		return iterator;
