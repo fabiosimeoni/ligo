@@ -3,9 +3,9 @@
  */
 package org.ligo.data.impl;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -46,33 +46,52 @@ public abstract class AbstractLigoObject implements LigoObject {
 			return false;
 		if (!(obj instanceof LigoObject))
 			return false;
+		
 		LigoObject other = (LigoObject) obj;
-		if (names() == null) {
-			if (other.names() != null)
+		
+		Set<QName> othernames = other.names();
+		Set<QName> names = new HashSet<QName>(names());
+		
+		if (names == null) {
+			if (othernames != null)
 				return false;
-		} else 
-			for (QName name : other.names()) {
+		} else {
+			for (QName name : othernames) {
 				List<LigoData> ps = data(name);
 				List<LigoData> otherps = other.data(name);
 				if (ps ==null) {
 					if (otherps!=null)
 						return false;
 				}
-				else 
-					return ps.equals(otherps);
+				else {
+					if (!ps.equals(otherps))
+						return false;
+					else
+						names.remove(name);
+				}
+			}
+			if (!names.isEmpty())
+				return false;
 		}
+		
 		return true;
 	}
 	
 	/**{@inheritDoc}*/
 	@Override
 	public String toString() {
-		Map<QName,LigoData> ps = new HashMap<QName,LigoData>();
-		for (QName name : names())
-			for (LigoData data : data(name))
-				ps.put(name,data);
-			
-		return ps.toString();
+		StringBuilder b = new StringBuilder();
+		b.append("["); 
+		Iterator<QName> nit = names().iterator();
+		while (nit.hasNext()) {
+			QName name = nit.next();
+			Iterator<LigoData> dit = data(name).iterator();
+			while (dit.hasNext())
+				b.append(name+"="+dit.next()+(dit.hasNext()?",":""));
+			b.append(nit.hasNext()?",":"");
+		}
+		b.append("]");
+		return b.toString();
 	}
 	
 }

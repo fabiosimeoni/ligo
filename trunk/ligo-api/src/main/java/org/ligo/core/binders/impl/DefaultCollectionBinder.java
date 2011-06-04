@@ -7,16 +7,21 @@ import static java.lang.String.*;
 import static java.util.Collections.*;
 import static org.ligo.core.binders.api.BindMode.*;
 import static org.ligo.core.keys.Keys.*;
+import static org.ligo.core.utils.Constants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.ligo.core.binders.api.CollectionBinder;
 import org.ligo.core.binders.api.Environment;
 import org.ligo.core.binders.api.TypeBinder;
 import org.ligo.core.keys.Key;
 import org.ligo.data.LigoData;
+import org.ligo.data.LigoObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,20 +56,33 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 	}
 	
 	@Override
-	public COLLTYPE bind(List<LigoData> data) {
+	public COLLTYPE bind(List<? extends LigoData> data) {
 		
 		List<TYPE> temp = new ArrayList<TYPE>();
 		
-		for (LigoData provider : data)
+		//infer collection node
+		if (data.size()==1) {
+			LigoData datum = data.get(0);
+			if (datum instanceof LigoObject) {
+				LigoObject object = (LigoObject) data.get(0);
+				Set<QName> names = object.names();
+				if (names.size()==1 && names.iterator().next().equals(NONAME_QNAME)) {
+					logger.trace("processing collection node {}",datum);
+					return bind(object.data(NONAME_QNAME));
+				}
+			}
+		}
+		
+		loop:for (LigoData datum : data)
 			try {
-				temp.add(binder.bind(singletonList(provider)));
+				temp.add(binder.bind(singletonList(datum)));
 			}
 			catch(RuntimeException e) {
 				switch(mode()) {
 					case STRICT: throw e; 
 					case LAX: 
-						logger.warn("skipping "+provider+", which cannot be bound",e);
-						continue;
+						logger.warn("skipping "+datum+", which cannot be bound",e);
+						continue loop;
 				}
 				
 				

@@ -258,4 +258,74 @@ public class TestClassDefs {
 			return map;
 		}
 	}
+	
+	
+	static class ImplicitList {
+		
+		List<String> l;
+		
+		@Bind("a")
+		void m(List<String> ls) {
+			
+			l=ls;
+		}
+	}
+	
+	static class ExplicitList {
+		
+		List<String> l;
+		List<String> l2;
+		
+		//collect 'a's under "list"  (equivalent to list/a)
+		@Bind("list[a]")
+		void m(List<String> ls) {
+			
+			l=ls;
+		}
+		
+		//collect anything under "shortlist" (equivalent to the above)
+		@Bind("shortlist[]")
+		void f(List<String> ls) {
+			
+			l2=ls;
+		}
+	}
+	
+	static class ImplicitNestedList {
+		
+		List<List<String>> families;
+		List<List<String>> families2;
+		
+		//collect "family"s and "person"s under each "family"
+		@Bind("family[person]")  
+		void m(List<List<String>> f) {
+			families=f;
+		}
+		
+		//collect "shortfamily"s and anything under each "family"
+		@Bind("shortfamily[]")  
+		void f(List<List<String>> f) {
+			families2=f;
+		}
+		
+	}
+	
+	static class ExplicitNestedList {
+		
+		List<List<String>> families;
+		List<List<String>> families2;
+		
+		//collect"person"s under each "family" and "family"s under "families" 
+		@Bind("families[family[person]]")
+		void m(List<List<String>> f) {
+			families=f;
+		}
+		
+		//collect anything under "shortfamilies" and anything under each collection (allowed but very opaque)
+		@Bind("shortfamilies[[]]") 
+		void f(List<List<String>> f) {
+			families2=f;
+		}
+		
+	}
 }

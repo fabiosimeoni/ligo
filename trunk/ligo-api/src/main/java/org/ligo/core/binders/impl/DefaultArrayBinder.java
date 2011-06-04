@@ -70,7 +70,7 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 	}
 	
 	@Override
-	public TYPE[] bind(List<LigoData> data) {
+	public TYPE[] bind(List<? extends LigoData> data) {
 		
 		List<TYPE> list = backing.bind(data);
 		

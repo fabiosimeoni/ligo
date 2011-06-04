@@ -3,7 +3,9 @@
  */
 package org.ligo.core;
 
+import static java.util.Arrays.*;
 import static org.junit.Assert.*;
+import static org.ligo.core.utils.Constants.*;
 import static org.ligo.data.impl.DataBuilders.*;
 
 import java.util.List;
@@ -51,7 +53,7 @@ public class ExpressionResolverTests {
 		
 		LigoExpressionResolver r = new LigoExpressionResolver();
 		
-		List<LigoData> ps =  r.resolve(new QName("1/2/3"), lo);
+		List<? extends LigoData> ps =  r.resolve(new QName("1/2/3"), lo);
 		assertEquals(d(v(1),v(2)), ps);
 		
 		ps =  r.resolve(new QName("1/(.*)"), lo);
@@ -62,6 +64,28 @@ public class ExpressionResolverTests {
 		
 		ps =  r.resolve(new QName("1"), lo);
 		assertEquals(4,ps.size());
+		
+	}
+	
+	@Test
+	public void groups() {
+		
+		LigoObject lo = o(
+							n("a",o(
+									n("b",1),
+									n("b",2))),
+							n("a",o(
+									n("b",3),
+									n("b",4))));
+		
+		LigoExpressionResolver r = new LigoExpressionResolver();
+		
+		List<? extends LigoData> ps =  r.resolve(new QName("a[b]"), lo);
+		List<LigoObject> expected = asList(
+				o(n(NONAME,1),n(NONAME,2)),
+				o(n(NONAME,3),n(NONAME,4)));
+		assertEquals(expected, ps);
+		
 		
 	}
 

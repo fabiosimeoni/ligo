@@ -36,7 +36,7 @@ public class DefaultParameterBinder<M extends Member> extends AbstractParameterB
 		if (annotation.mode()!=DEFAULT)
 			binder().setMode(annotation.mode());
 		
-		List<LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
+		List<? extends LigoData> data = environment().expressionResolver().resolve(boundName(),ligoObject);
 		return binder().bind(data);
 	
 	}

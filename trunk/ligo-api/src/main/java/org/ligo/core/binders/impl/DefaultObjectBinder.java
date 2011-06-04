@@ -83,7 +83,7 @@ class DefaultObjectBinder<T> extends AbstractBinder<T> implements ObjectBinder<T
 	
 	/**{@inheritDoc}*/
 	@Override
-	public T bind(List<LigoData> data) {
+	public T bind(List<? extends LigoData> data) {
 		
 		try {
 			
