@@ -35,11 +35,10 @@ public class LigoExpressionResolver implements ExpressionResolver {
 
 	private static final Logger logger = LoggerFactory.getLogger(LigoExpressionResolver.class);
 	
-	static final Pattern COLLEXP_PATTERN = Pattern.compile("^([^\\[]+)\\[(.*)\\]$");
+	static final Pattern COLLEXP_PATTERN = Pattern.compile("^([^\\[]*)\\[(.*)\\]$");
 	static final Pattern PATHEXP_PATTERN = Pattern.compile("^([^/\\[]+)$|^([^/\\[]+)/(.+)$");
-	static final String INVALID_EXPRESSION_ERROR = "malformed expression %1";
 	static final Pattern REGEXP_PATTERN = Pattern.compile("^\\((.*)\\)$");
-	static final Pattern IMPLICIT_ELEMENT_PATTERN = Pattern.compile("^\\[(.*)\\]$");
+	static final String INVALID_EXPRESSION_ERROR = "malformed expression %1";
 	static final String COLLNODE_CREATION_LOG = "converted {} into collection node {}";
 
 	private static final QName emptyExp = new QName("");
@@ -80,27 +79,28 @@ public class LigoExpressionResolver implements ExpressionResolver {
 	
 	List<? extends LigoData> resolveCollection(QName collExp, QName elementExp, LigoData data) {
 		
-		//looks ahead to set defaults for element expression
-		String unqualifiedElementExp = elementExp.getLocalPart();
-		if (unqualifiedElementExp.isEmpty())
+		if (collExp.getLocalPart().isEmpty())
+			collExp = new QName(collExp.getNamespaceURI(),"(.*)");
+		
+		if (elementExp.getLocalPart().isEmpty())
 			elementExp = new QName(elementExp.getNamespaceURI(),"(.*)");
-		else {
-			Matcher implicitElMatcher = IMPLICIT_ELEMENT_PATTERN.matcher(unqualifiedElementExp);
-			if (implicitElMatcher.matches())
-				elementExp = new QName(collExp.getNamespaceURI(), "(.*)"+implicitElMatcher.group(0));
-		}
 		
 		List<LigoData> resolved = new ArrayList<LigoData>();
 		
-		//for each 
 		for (LigoData match : matchLabel(collExp,data)) {
+			
 			List<NamedData> elements = new ArrayList<NamedData>();
 			//System.out.println("resolving "+elementPath+" on "+match);
 			for (LigoData el : resolve(elementExp,match))
 				elements.add(n(NONAME,el));
-			LigoObject collection = o(elements.toArray(new NamedData[0])); 
-			resolved.add(collection);
-			logger.trace(COLLNODE_CREATION_LOG,data,collection);
+			
+			if (!elements.isEmpty()) {
+				LigoObject collection = o(elements.toArray(new NamedData[0])); 
+				
+				resolved.add(collection);
+				
+				logger.trace(COLLNODE_CREATION_LOG,match,collection);
+			}
 		}
 		
 		return resolved;
@@ -117,7 +117,7 @@ public class LigoExpressionResolver implements ExpressionResolver {
 		List<LigoData> resolved = new ArrayList<LigoData>();
 		
 		for (LigoData match :matches)
-			resolved.addAll(resolve(rest,match)); //if rest is empty we will be adding nothing 
+			resolved.addAll(resolve(rest,match)); 
 		
 		return resolved;
 		
