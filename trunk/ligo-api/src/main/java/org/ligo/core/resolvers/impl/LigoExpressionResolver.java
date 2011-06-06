@@ -23,112 +23,133 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 
+ * 	  LBL = l | (l) | epsilon
+ *    PATH = LBL  | PATH/EXP 
+*  	  EXP = EXP [EXP] | PATH
+ * 
  * @author Fabio Simeoni
  *
  */
 public class LigoExpressionResolver implements ExpressionResolver {
 
-	
 	private static final Logger logger = LoggerFactory.getLogger(LigoExpressionResolver.class);
 	
-	private static final Pattern REGEXP_PATTERN = Pattern.compile("^\\((.*)\\)$");
-	private static final Pattern COLLNODE_PATTERN = Pattern.compile("^([^\\[]*)\\[(.*)\\]$");
-	private static final Pattern IMPLICIT_ELEMENT_PATTERN = Pattern.compile("^\\[(.*)\\]$");
-	private static final String COLLNODE_CREATION_LOG = "converted {} into collection node {}";
+	static final Pattern COLLEXP_PATTERN = Pattern.compile("^([^\\[]+)\\[(.*)\\]$");
+	static final Pattern PATHEXP_PATTERN = Pattern.compile("^([^/\\[]+)$|^([^/\\[]+)/(.+)$");
+	static final String INVALID_EXPRESSION_ERROR = "malformed expression %1";
+	static final Pattern REGEXP_PATTERN = Pattern.compile("^\\((.*)\\)$");
+	static final Pattern IMPLICIT_ELEMENT_PATTERN = Pattern.compile("^\\[(.*)\\]$");
+	static final String COLLNODE_CREATION_LOG = "converted {} into collection node {}";
 
+	private static final QName emptyExp = new QName("");
+	
 	/**{@inheritDoc}*/
 	@Override
 	public List<? extends LigoData> resolve(QName exp, LigoData data) {
 		
-		String[] names = exp.getLocalPart().split("/");
-		List<QName> path = new ArrayList<QName>();
-		for (String name : names) 
-			path.add(new QName(exp.getNamespaceURI(),name));
-			
-		return resolve(path,data);
-	}
-	
-	
-	List<? extends LigoData> resolve(List<QName> path, LigoData data) {
+		String unqualified = exp.getLocalPart();
 		
-		//empty path
-		if (path.isEmpty())
-			return singletonList(data);
+		//is it a coll expression?
+		Matcher m = COLLEXP_PATTERN.matcher(unqualified);
 		
-		//non-empty path
-		List<LigoData> resolved = new ArrayList<LigoData>();
+		if (m.matches()) {
+			QName collExp = new QName(exp.getNamespaceURI(),m.group(1));
+			QName elementExp = new QName(exp.getNamespaceURI(),m.group(2));
+			return resolveCollection(collExp,elementExp, data);
 		
-		//value case: path can no longer be resolved
-		if (data instanceof LigoValue)
-			return resolved;
-		
-		//object case
-		LigoObject object = (LigoObject) data;
-		
-		//get first name on path
-		QName currentName = path.get(0);
-		
-		//process grouping, if any (e.g. people[person])
-		String unqualified = currentName.getLocalPart();
-		Matcher matcher = COLLNODE_PATTERN.matcher(unqualified);
-		if (matcher.matches()) {
-			
-			//extract collection expression (e.g. people[person]->people)
-			String collExpression = matcher.group(1);
-			currentName = new QName(currentName.getNamespaceURI(),collExpression);
-			
-			//extract element expression (e.g. people[person]->people)
-			String  elementExpression = matcher.group(2); 
-			if (elementExpression.isEmpty())
-				elementExpression = "(.*)";
-			else {
-				Matcher implicitElMatcher = IMPLICIT_ELEMENT_PATTERN.matcher(elementExpression);
-				if (implicitElMatcher.matches())
-					elementExpression = "(.*)"+implicitElMatcher.group(0);
+		}
+		// is it a path expression
+		m= PATHEXP_PATTERN.matcher(unqualified);
+		if (m.matches())
+			//is it a plain name?
+			if (m.group(1)!=null)
+				return resolvePath(exp,emptyExp,data);
+			//it is a full path
+			else {//path case
+				QName name = new QName(exp.getNamespaceURI(),m.group(2));
+				QName rest = new QName(exp.getNamespaceURI(),m.group(3));
+				return resolvePath(name,rest,data);
 			}
 				
-			QName elementPath = new QName(currentName.getNamespaceURI(),elementExpression);
-			
-			//System.out.println(currentName+" matches "+match(currentName,object));
-			
-			//for each 
-			for (LigoData match : match(currentName,object)) {
-				List<NamedData> elements = new ArrayList<NamedData>();
-				//System.out.println("resolving "+elementPath+" on "+match);
-				for (LigoData element : resolve(elementPath,match))
-					elements.add(n(NONAME,element));
-				LigoObject collection = o(elements.toArray(new NamedData[0])); 
-				resolved.add(collection);
-				logger.trace(COLLNODE_CREATION_LOG,object,collection);
-			}
-			
-					
-		} 
-		else
-			for (LigoData match : match(currentName,object))
-				resolved.addAll(resolve(path.subList(1, path.size()),match));
-		
-		return resolved;
+		//it is an malformed expression
+		throw new RuntimeException(String.format(INVALID_EXPRESSION_ERROR,unqualified));
 	}
 	
-	List<LigoData> match(QName name, LigoObject object) {
+	
+	
+	List<? extends LigoData> resolveCollection(QName collExp, QName elementExp, LigoData data) {
+		
+		//looks ahead to set defaults for element expression
+		String unqualifiedElementExp = elementExp.getLocalPart();
+		if (unqualifiedElementExp.isEmpty())
+			elementExp = new QName(elementExp.getNamespaceURI(),"(.*)");
+		else {
+			Matcher implicitElMatcher = IMPLICIT_ELEMENT_PATTERN.matcher(unqualifiedElementExp);
+			if (implicitElMatcher.matches())
+				elementExp = new QName(collExp.getNamespaceURI(), "(.*)"+implicitElMatcher.group(0));
+		}
+		
+		List<LigoData> resolved = new ArrayList<LigoData>();
+		
+		//for each 
+		for (LigoData match : matchLabel(collExp,data)) {
+			List<NamedData> elements = new ArrayList<NamedData>();
+			//System.out.println("resolving "+elementPath+" on "+match);
+			for (LigoData el : resolve(elementExp,match))
+				elements.add(n(NONAME,el));
+			LigoObject collection = o(elements.toArray(new NamedData[0])); 
+			resolved.add(collection);
+			logger.trace(COLLNODE_CREATION_LOG,data,collection);
+		}
+		
+		return resolved;
+		
+	}
+	
+	List<? extends LigoData> resolvePath(QName name, QName rest, LigoData data) {
+		
+		List<LigoData> matches =  matchLabel(name,data);
+		
+		if (rest.getLocalPart().isEmpty())
+			return matches;
+		
+		List<LigoData> resolved = new ArrayList<LigoData>();
+		
+		for (LigoData match :matches)
+			resolved.addAll(resolve(rest,match)); //if rest is empty we will be adding nothing 
+		
+		return resolved;
+		
+		
+		
+	}
+	
+	List<LigoData> matchLabel(QName name, LigoData data) {
+		
+		if (data instanceof LigoValue)
+			return emptyList();
+		
+		LigoObject object = (LigoObject) data;
 		
 		List<LigoData> matches = new ArrayList<LigoData>();
 		
-		String unqualified = name.getLocalPart();
 		
+		String unqualified = name.getLocalPart();
+			
 		Matcher matcher = REGEXP_PATTERN.matcher(unqualified);
 		
 		if (matcher.matches()) {//regexp case
 			String regexp = matcher.group(1);
 			for (QName n : object.names())
-				if (unqualified.matches(regexp))
+				if (n.getNamespaceURI().equals(name.getNamespaceURI()) && n.getLocalPart().matches(regexp))
 					matches.addAll(object.data(n));
 		}
 		else 
 			matches = object.data(name);
 
-				
 		return matches;
 	}
+
+
 }
