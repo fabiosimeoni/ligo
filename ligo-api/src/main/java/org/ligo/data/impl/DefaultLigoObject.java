@@ -23,6 +23,7 @@ import org.ligo.data.LigoObject;
  */
 public class DefaultLigoObject extends AbstractLigoObject implements LigoObject {
 	
+	//preserving insertion order
 	final Map<QName,List<LigoData>> dataMap = new HashMap<QName,List<LigoData>>();
 
 	public DefaultLigoObject(List<NamedData> data) {

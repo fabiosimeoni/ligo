@@ -37,7 +37,7 @@ public class ExpressionResolverTests {
 	String collpath = "foo[boo/goo]";
 	String pathcoll = "foo/boo[goo]";
 	String nestedcoll = "foo[boo[goo/noo]]";
-	String malformedcoll = "[]";
+	String implicitcoll = "[]";
 	String emptycoll = "foo[]";
 	String emptynestedcoll = "foo[boo/goo[]]";
 	
@@ -78,8 +78,12 @@ public class ExpressionResolverTests {
 		assertEquals("foo",collmatcher.group(1));
 		assertEquals("boo[goo/noo]",collmatcher.group(2));
 		
-		collmatcher = COLLEXP_PATTERN.matcher(malformedcoll);
-		assertFalse(collmatcher.matches());
+		collmatcher = COLLEXP_PATTERN.matcher(implicitcoll);
+		assertTrue(collmatcher.matches());
+		assertTrue(collmatcher.group(1).isEmpty());
+		assertTrue(collmatcher.group(2).isEmpty());
+		
+	
 		
 		collmatcher = COLLEXP_PATTERN.matcher(emptycoll);
 		assertTrue(collmatcher.matches());
@@ -119,7 +123,7 @@ public class ExpressionResolverTests {
 		matcher = PATHEXP_PATTERN.matcher(nestedcoll);
 		assertFalse(matcher.matches());
 		
-		matcher = PATHEXP_PATTERN.matcher(malformedcoll);
+		matcher = PATHEXP_PATTERN.matcher(implicitcoll);
 		assertFalse(matcher.matches());
 		
 		matcher = PATHEXP_PATTERN.matcher(emptycoll);
@@ -130,7 +134,7 @@ public class ExpressionResolverTests {
 	}
 	
 	@Test
-	public void resolve() {
+	public void path() {
 		
 		LigoObject lo = o(
 							n("1",
@@ -166,17 +170,43 @@ public class ExpressionResolverTests {
 							n("a",o(
 									n("b",1),
 									n("b",2))),
-							n("a",o(
+									
+							n("extra",o(
 									n("b",3),
-									n("b",4))));
+									n("b",4))),
+							n("a",o(
+									n("d",5),
+									n("d",6))),
+							n("a",o(
+									n("b",7),
+									n("b",8))));
 		
 		LigoExpressionResolver r = new LigoExpressionResolver();
 		
-		List<? extends LigoData> ps =  r.resolve(new QName("a[b]"), lo);
+		List<? extends LigoData> ps =  r.resolve(new QName("[]"), lo);
 		List<LigoObject> expected = asList(
+						o(n(NONAME,1),n(NONAME,2)),
+						o(n(NONAME,3),n(NONAME,4)),
+						o(n(NONAME,5),n(NONAME,6)),
+						o(n(NONAME,7),n(NONAME,8)));
+
+		ps =  r.resolve(new QName("a[]"), lo);
+		expected = asList(
 				o(n(NONAME,1),n(NONAME,2)),
-				o(n(NONAME,3),n(NONAME,4)));
+				o(n(NONAME,5),n(NONAME,6)),
+				o(n(NONAME,7),n(NONAME,8)));
 		assertEquals(expected, ps);
+		
+		ps =  r.resolve(new QName("[b]"), lo);
+		assertEquals(3, ps.size());
+		
+		ps =  r.resolve(new QName("a[b]"), lo);
+		expected = asList(
+				o(n(NONAME,1),n(NONAME,2)),
+				o(n(NONAME,7),n(NONAME,8)));
+		assertEquals(expected, ps);
+		
+
 		
 		
 	}
