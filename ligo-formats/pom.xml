@@ -7,9 +7,8 @@
   </parent>
   
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.ligo</groupId>
   <artifactId>ligo-formats</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  
   <name>Ligo Formats</name>
   <description>Default Implementation of Ligo API</description>
   

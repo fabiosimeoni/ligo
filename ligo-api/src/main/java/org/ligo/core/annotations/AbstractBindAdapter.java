@@ -5,7 +5,7 @@ import static org.ligo.core.kinds.Kind.*;
 
 import org.ligo.core.keys.Key;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"rawtypes","unchecked"})
 public abstract class AbstractBindAdapter<INTYPE,OUTTYPE> {
 	
 	public abstract OUTTYPE bind(INTYPE i);

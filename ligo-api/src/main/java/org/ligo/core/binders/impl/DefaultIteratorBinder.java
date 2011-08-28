@@ -3,9 +3,9 @@
  */
 package org.ligo.core.binders.impl;
 
-import static java.lang.String.*;
-import static org.ligo.core.keys.Keys.*;
-import static org.ligo.core.kinds.Kind.*;
+import static java.lang.String.format;
+import static org.ligo.core.keys.Keys.newKey;
+import static org.ligo.core.kinds.Kind.GENERIC;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -34,7 +34,7 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 	
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	DefaultIteratorBinder(final Key<? extends Iterator<TYPE>> key, Environment e) {
 		
 		super(key);
@@ -45,7 +45,7 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 			@Override public Type[] getActualTypeArguments() {return new Type[]{GENERIC(key.kind()).getActualTypeArguments()[0]};}
 		};
 		
-		TypeBinder<List<TYPE>> binder = (CollectionBinder) (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
+		TypeBinder<List<TYPE>> binder = (TypeBinder) e.binderFor(newKey(type,key.qualifier()));
 		
 		setMode(binder.mode());
 		
@@ -83,7 +83,7 @@ class DefaultIteratorBinder<TYPE> extends AbstractBinder<Iterator<TYPE>> impleme
 				return new DefaultIteratorBinder<Object>(key,env);
 			}			
 			
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({"rawtypes","unchecked"})
 			@Override public Key<Iterator<Object>> matchingKey() {
 				return (Key) newKey(Iterator.class);
 			}

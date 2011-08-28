@@ -33,12 +33,12 @@ public class AdaptedParameterBinder<M extends Member> extends AbstractParameterB
 	
 		setBoundName(new QName(annotation.ns(),annotation.value()));
 		
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		Class<? extends AbstractBindAdapter> adapterClass = annotation.adapter();
 		
 		adapter =  env.resolver().resolve(adapterClass, emptyList());
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({"rawtypes","unchecked"})
 		AdaptedBinder<?,?> bindingAdapter = (AdaptedBinder<?,?>) new AdaptedBinder(adapter);
 		
 		setBinder(bindingAdapter);	
