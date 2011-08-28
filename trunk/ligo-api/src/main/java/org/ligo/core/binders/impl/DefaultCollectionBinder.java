@@ -46,7 +46,7 @@ class DefaultCollectionBinder<COLLTYPE extends Collection<TYPE>,TYPE> extends Ab
 		setMode(LAX);
 	
 		@SuppressWarnings("unchecked")
-		TypeBinder<TYPE> objectBinder = (TypeBinder) env.binderFor(newKey(key().toClass().getTypeParameters()[0]));
+		TypeBinder<TYPE> objectBinder = (TypeBinder<TYPE>) env.binderFor(newKey(key().toClass().getTypeParameters()[0]));
 		binder = objectBinder;
 	}
 	

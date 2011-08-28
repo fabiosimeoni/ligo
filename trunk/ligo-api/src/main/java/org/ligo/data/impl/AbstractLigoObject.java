@@ -50,20 +50,22 @@ public abstract class AbstractLigoObject implements LigoObject {
 		LigoObject other = (LigoObject) obj;
 		
 		Set<QName> othernames = other.names();
-		Set<QName> names = new HashSet<QName>(names());
 		
-		if (names == null) {
+		if (names() == null) {
 			if (othernames != null)
 				return false;
 		} else {
+			Set<QName> names = new HashSet<QName>(names());
 			for (QName name : othernames) {
-				Set<LigoData> ps = new HashSet<LigoData>(data(name));
-				Set<LigoData> otherps = new HashSet<LigoData>(other.data(name));
-				if (ps ==null) {
-					if (otherps!=null)
+				List<LigoData> ps_list = data(name);
+				List<LigoData> otherps_list = other.data(name);
+				if (ps_list ==null) {
+					if (otherps_list!=null)
 						return false;
 				}
 				else {
+					Set<LigoData >ps = new HashSet<LigoData>(data(name));
+					Set<LigoData> otherps = new HashSet<LigoData>(other.data(name));
 					if (!ps.equals(otherps))
 						return false;
 					else

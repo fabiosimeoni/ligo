@@ -8,9 +8,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.ligo</groupId>
 	<artifactId>ligo-app</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+
 	<name>Ligo Test Application</name>
 	<description>Ligo Test Application</description>
 

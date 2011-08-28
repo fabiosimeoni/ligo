@@ -21,7 +21,7 @@ public class Key<T> {
 	private Class<T> clazz;
 	private Class<? extends Annotation> qualifier;
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	Key(Kind<?> k,Class<? extends Annotation> a) {
 		kind=k;
 		qualifier=a;

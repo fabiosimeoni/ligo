@@ -61,7 +61,7 @@ public class LigoEnvironment implements Environment {
 	private Map<TypeVariable<?>,Key<?>> vars = new HashMap<TypeVariable<?>,Key<?>>();
 	private Map<Key<?>,BinderProvider<?>> providers = new HashMap<Key<?>,BinderProvider<?>>();
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private static final List<BinderProvider<?>> DEFAULT_PROVIDERS = (List) asList(
 			DefaultObjectBinder.provider(),
 			DefaultCollectionBinder.provider(Collection.class),
@@ -159,7 +159,7 @@ public class LigoEnvironment implements Environment {
 		//resolve variables
 		if (kind.value()==TYPEVAR) {
 			TypeVariable<?> var = TYPEVAR(kind);
-			@SuppressWarnings("unchecked") //internally consistent
+			@SuppressWarnings({"rawtypes","unchecked"}) //internally consistent
 			TypeBinder<T> binder = (TypeBinder) resolve(var);
 			if (binder==null)
 				throw new RuntimeException(String.format(UNBOUND_VARIABLE_ERROR,kind));
@@ -167,7 +167,7 @@ public class LigoEnvironment implements Environment {
 			return binder;
 		}
 		//hit cache
-		@SuppressWarnings("unchecked") //internally consistent
+		@SuppressWarnings({"rawtypes","unchecked"}) //internally consistent
 		TypeBinder<T> binder = (TypeBinder) cache.get(unqualifiedKey);
 		
 		if (binder!=null) {
@@ -198,7 +198,7 @@ public class LigoEnvironment implements Environment {
 			//bind variables
 			bindVariables(resolvedKey.kind());
 			
-			@SuppressWarnings("unchecked") //internally consistent
+			@SuppressWarnings({"rawtypes","unchecked"}) //internally consistent
 			TypeBinder<T> newBinder = (TypeBinder) provider.binder((Key)resolvedKey,this); 
 			
 			logger.trace(BUILT_LOG,newBinder,qualifiedKey);

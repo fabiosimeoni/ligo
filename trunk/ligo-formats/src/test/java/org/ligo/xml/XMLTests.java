@@ -142,7 +142,7 @@ public class XMLTests {
 				asList(new Dependency("hello"),new Dependency("world")),
 				asList(new Dependency("ciao"),new Dependency("mondo"))),m.p6);
 		
-		assertEquals(asList(new Generic(new Dependency("hello")), new Generic(new Dependency("world"))), m.p7);
+		assertEquals(asList(new Generic<Dependency>(new Dependency("hello")), new Generic<Dependency>(new Dependency("world"))), m.p7);
 		
 		assertEquals(new Structure("hello","world"), m.p8);
 		

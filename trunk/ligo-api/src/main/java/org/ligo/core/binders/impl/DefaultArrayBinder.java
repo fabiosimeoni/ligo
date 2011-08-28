@@ -35,7 +35,7 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 	
 	private final CollectionBinder<List<TYPE>,TYPE> backing;
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	DefaultArrayBinder(final Key<? extends TYPE[]> key, Environment e) {
 		
 		super(key);
@@ -101,7 +101,7 @@ class DefaultArrayBinder<TYPE> extends AbstractBinder<TYPE[]> implements ArrayBi
 				return new DefaultArrayBinder<Object>(key,env);
 			}			
 			
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({"rawtypes","unchecked"})
 			@Override public Key<Object[]> matchingKey() {
 				return (Key) newKey(Object[].class);
 			}

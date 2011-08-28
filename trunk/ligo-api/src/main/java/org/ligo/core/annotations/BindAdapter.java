@@ -34,7 +34,7 @@ public @interface BindAdapter {
 	
 	BindMode mode() default DEFAULT;
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	Class<? extends AbstractBindAdapter> adapter() default AbstractBindAdapter.class;
 
 }

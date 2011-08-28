@@ -39,7 +39,7 @@ public class LigoResolver implements ConfigurableResolver {
 	}
 	
 	/**{@inheritDoc}*/
-	@SuppressWarnings("unchecked") //internally consistent
+	@SuppressWarnings({"rawtypes","unchecked"}) //internally consistent
 	public synchronized <T> List<Class<? extends T>> resolve(Key<T> key) {
 	
 		List<Class<? extends T>> bound = (List) bindings.get(key);
@@ -58,7 +58,7 @@ public class LigoResolver implements ConfigurableResolver {
 	
 	/**{@inheritDoc}*/
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	public synchronized <T> T resolve(Class<T> clazz, List<? extends Object> args) {
 		
 		Constructor<T> constructor=null;
